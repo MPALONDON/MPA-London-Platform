@@ -1,0 +1,899 @@
+{% extends "base.html" %}
+
+{% block title %}Attendance Analytics - Music Performance Academy{% endblock %}
+
+{% block head %}
+<!-- Debug error logging for troubleshooting -->
+<script>
+  console.log('Debug error handler loading');
+  window.addEventListener('error', function(event) {
+    console.error('JavaScript Error:', event.error);
+    const errorDiv = document.createElement('div');
+    errorDiv.style.backgroundColor = '#ffeeee';
+    errorDiv.style.color = 'red';
+    errorDiv.style.padding = '10px';
+    errorDiv.style.margin = '10px 0';
+    errorDiv.style.border = '1px solid red';
+    errorDiv.innerHTML = `
+      <h3>JavaScript Error Detected:</h3>
+      <p><strong>Message:</strong> ${event.error.message}</p>
+      <p><strong>Line:</strong> ${event.lineno}, <strong>Column:</strong> ${event.colno}</p>
+      <p><strong>File:</strong> ${event.filename}</p>
+      <p><strong>Stack:</strong> <pre>${event.error.stack}</pre></p>
+    `;
+    document.body.prepend(errorDiv);
+  });
+  
+  // Log all script load events
+  window.addEventListener('load', function() {
+    console.log('All resources loaded');
+    const scripts = document.querySelectorAll('script');
+    scripts.forEach(script => {
+      console.log('Script loaded:', script.src || 'inline script');
+    });
+  });
+</script>
+
+<!-- Debug information to ensure this template is loading properly -->
+<script>
+  console.log('Attendance Analytics template loaded');
+  document.addEventListener('DOMContentLoaded', function() {
+    console.log('Attendance Analytics DOM loaded');
+    
+    // Check library loading
+    console.log('jQuery available:', typeof $ !== 'undefined' ? 'Yes' : 'No');
+    console.log('Bootstrap available:', typeof bootstrap !== 'undefined' ? 'Yes' : 'No');
+    console.log('Chart.js available:', typeof Chart !== 'undefined' ? 'Yes' : 'No');
+    
+    // Add visual indicators for missing dependencies
+    if (typeof $ === 'undefined') {
+      const errorDiv = document.createElement('div');
+      errorDiv.style.backgroundColor = '#ffeeee';
+      errorDiv.style.color = 'red';
+      errorDiv.style.padding = '10px';
+      errorDiv.style.margin = '10px 0';
+      errorDiv.textContent = 'ERROR: jQuery is not loaded! Please check network errors in the console.';
+      document.body.prepend(errorDiv);
+    }
+    if (typeof bootstrap === 'undefined') {
+      const errorDiv = document.createElement('div');
+      errorDiv.style.backgroundColor = '#ffeeee';
+      errorDiv.style.color = 'red';
+      errorDiv.style.padding = '10px';
+      errorDiv.style.margin = '10px 0';
+      errorDiv.style.border = '1px solid red';
+      errorDiv.innerHTML = `
+        <h3>Bootstrap Not Loaded</h3>
+        <p>The Bootstrap library is not loaded, which is required for the buttons to work.</p>
+      `;
+      document.body.prepend(errorDiv);
+    }
+    if (typeof Chart === 'undefined') {
+      const errorDiv = document.createElement('div');
+      errorDiv.style.backgroundColor = '#ffeeee';
+      errorDiv.style.color = 'red';
+      errorDiv.style.padding = '10px';
+      errorDiv.style.margin = '10px 0';
+      errorDiv.style.border = '1px solid red';
+      errorDiv.innerHTML = `
+        <h3>Chart.js Not Loaded</h3>
+        <p>The Chart.js library is not loaded, which is required for the charts to display.</p>
+      `;
+      document.body.prepend(errorDiv);
+    }
+    
+    // Check for specific elements
+    console.log('studentFilter found:', document.getElementById('studentFilter') !== null);
+    console.log('applyFilters found:', document.getElementById('applyFilters') !== null);
+    console.log('exportCSV found:', document.getElementById('exportCSV') !== null);
+  });
+</script>
+
+<!-- Add datepicker and Chart.js CDN links -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.9.0/css/bootstrap-datepicker.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+<style>
+    .attendance-analytics-container {
+        padding: 2rem;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        margin-bottom: 2rem;
+    }
+
+    /* Add some padding for navbar */
+    .content-wrapper {
+        padding-top: 80px; /* Add enough space for navbar */
+    }
+
+    .analytics-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .analytics-header h2 {
+        font-size: 1.75rem;
+        color: #2c3e50;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .filters-section {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 1.25rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .date-range-picker {
+        display: flex;
+        align-items: center;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .date-range-picker .input-group {
+        max-width: 200px;
+    }
+
+    .filter-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 1rem;
+        margin-bottom: 1rem;
+    }
+
+    .filter-item {
+        flex: 1;
+        min-width: 200px;
+    }
+
+    .chart-container {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+        height: 400px;
+    }
+
+    .dashboard-cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+        gap: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .stat-card {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        padding: 1.25rem;
+        display: flex;
+        flex-direction: column;
+        border-left: 4px solid;
+        transition: transform 0.2s;
+    }
+
+    .stat-card:hover {
+        transform: translateY(-3px);
+    }
+
+    .card-present {
+        border-left-color: #4CAF50;
+    }
+
+    .card-absent {
+        border-left-color: #F44336;
+    }
+
+    .card-late {
+        border-left-color: #FFC107;
+    }
+
+    .card-excused {
+        border-left-color: #2196F3;
+    }
+
+    .stat-title {
+        font-size: 0.875rem;
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+        font-size: 2rem;
+        font-weight: 600;
+        margin-bottom: 0.5rem;
+    }
+
+    .stat-change {
+        font-size: 0.875rem;
+        display: flex;
+        align-items: center;
+    }
+
+    .stat-change.positive {
+        color: #4CAF50;
+    }
+
+    .stat-change.negative {
+        color: #F44336;
+    }
+
+    .table-responsive {
+        margin-top: 1.5rem;
+    }
+
+    .attendance-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .attendance-table th {
+        background: #f8f9fa;
+        color: #2c3e50;
+        font-weight: 600;
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 2px solid #eee;
+    }
+
+    .attendance-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+        color: #444;
+        vertical-align: middle;
+    }
+
+    .attendance-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .attendance-table tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .status-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    .badge-present {
+        background: #e8f5e9;
+        color: #2e7d32;
+    }
+
+    .badge-absent {
+        background: #ffebee;
+        color: #c62828;
+    }
+
+    .badge-late {
+        background: #fff8e1;
+        color: #f57f17;
+    }
+
+    .badge-excused {
+        background: #e3f2fd;
+        color: #1565c0;
+    }
+
+    .export-options {
+        display: flex;
+        gap: 0.5rem;
+        margin-left: auto;
+    }
+
+    .export-options button {
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .pagination-controls {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: 1rem;
+    }
+
+    .page-info {
+        color: #6c757d;
+    }
+
+    .page-buttons {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .advanced-filters {
+        margin-top: 1rem;
+        border-top: 1px solid #dee2e6;
+        padding-top: 1rem;
+        display: none;
+    }
+
+    .toggle-advanced-filters {
+        background: none;
+        border: none;
+        color: #007bff;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0;
+        margin-top: 0.5rem;
+    }
+
+    @media (max-width: 768px) {
+        .attendance-analytics-container {
+            padding: 1rem;
+        }
+
+        .analytics-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .filter-row {
+            flex-direction: column;
+            gap: 0.75rem;
+        }
+
+        .date-range-picker {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .date-range-picker .input-group {
+            max-width: 100%;
+            width: 100%;
+        }
+
+        .export-options {
+            margin-left: 0;
+            margin-top: 1rem;
+            width: 100%;
+            justify-content: space-between;
+        }
+    }
+</style>
+
+<!-- Make sure the script is loaded both in head and at end of body -->
+<script src="{{ url_for('static', filename='js/attendance-analytics.js') }}"></script>
+{% endblock %}
+
+{% block content %}
+<!-- Main content area with added top margin to avoid navbar overlap -->
+<div class="content-wrapper">
+    <div class="container-fluid py-4">
+        <!-- Debug button to check functionality -->
+        <div class="alert alert-secondary mt-3">
+            <p><strong>Debug Tools:</strong> Use these buttons if the regular buttons don't work</p>
+            <button onclick="checkScriptLoaded()" class="btn btn-sm btn-info">Check Script Loaded</button>
+            <button onclick="manualLoadAttendance()" class="btn btn-sm btn-primary">Manual Load Attendance</button>
+        </div>
+
+        <div class="attendance-analytics-container">
+            <div class="analytics-header">
+                <h2>Attendance Analytics</h2>
+                <div class="export-options">
+                    <button id="exportCSV" class="btn btn-outline-secondary">
+                        <i class="fas fa-file-csv"></i> Export CSV
+                    </button>
+                    <button id="exportPDF" class="btn btn-outline-secondary">
+                        <i class="fas fa-file-pdf"></i> Export PDF
+                    </button>
+                    <button id="printReport" class="btn btn-outline-primary">
+                        <i class="fas fa-print"></i> Print
+                    </button>
+                </div>
+            </div>
+
+            <!-- Filters Section -->
+            <div class="filters-section">
+                <div class="date-range-picker">
+                    <div class="input-group date" id="startDatePicker">
+                        <input type="text" id="startDate" class="form-control flatpickr-input" placeholder="Start Date" readonly>
+                        <button class="input-group-text" type="button" id="startDateButton">
+                            <i class="fas fa-calendar"></i>
+                        </button>
+                    </div>
+                    <div class="input-group date" id="endDatePicker">
+                        <input type="text" id="endDate" class="form-control flatpickr-input" placeholder="End Date" readonly>
+                        <button class="input-group-text" type="button" id="endDateButton">
+                            <i class="fas fa-calendar"></i>
+                        </button>
+                    </div>
+                    <div class="date-presets">
+                        <button class="btn btn-sm btn-outline-secondary" data-range="week">This Week</button>
+                        <button class="btn btn-sm btn-outline-secondary" data-range="month">This Month</button>
+                        <button class="btn btn-sm btn-outline-secondary" data-range="term">Current Term</button>
+                        <button class="btn btn-sm btn-outline-secondary" data-range="year">This Year</button>
+                    </div>
+                </div>
+
+                <div class="filter-row">
+                    <div class="filter-item">
+                        <label for="studentFilter">Student</label>
+                        <select id="studentFilter" class="form-select">
+                            <option value="">All Students</option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="instrumentFilter">Instrument</label>
+                        <select id="instrumentFilter" class="form-select">
+                            <option value="">All Instruments</option>
+                            <!-- Will be populated by JavaScript -->
+                        </select>
+                    </div>
+                    <div class="filter-item">
+                        <label for="statusFilter">Status</label>
+                        <select id="statusFilter" class="form-select">
+                            <option value="">All Statuses</option>
+                            <option value="present">Present</option>
+                            <option value="absent">Absent</option>
+                            <option value="late">Late</option>
+                            <option value="excused">Excused</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="button" class="btn btn-link toggle-advanced-filters" id="toggleAdvancedFilters">
+                    <i class="fas fa-sliders-h"></i> Advanced Filters
+                </button>
+
+                <div id="advancedFilters" class="advanced-filters" style="display: none;">
+                    <div class="filter-row">
+                        <div class="filter-item">
+                            <label for="groupFilter">Group</label>
+                            <select id="groupFilter" class="form-select">
+                                <option value="">All Groups</option>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="roomFilter">Room</label>
+                            <select id="roomFilter" class="form-select">
+                                <option value="">All Rooms</option>
+                                <!-- Will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="dayOfWeekFilter">Day of Week</label>
+                            <select id="dayOfWeekFilter" class="form-select">
+                                <option value="">All Days</option>
+                                <option value="1">Monday</option>
+                                <option value="2">Tuesday</option>
+                                <option value="3">Wednesday</option>
+                                <option value="4">Thursday</option>
+                                <option value="5">Friday</option>
+                                <option value="6">Saturday</option>
+                                <option value="0">Sunday</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="filter-row">
+                        <div class="filter-item">
+                            <label for="invoiceStatusFilter">Invoice Status</label>
+                            <select id="invoiceStatusFilter" class="form-select">
+                                <option value="">All Statuses</option>
+                                <option value="invoiced">Invoiced</option>
+                                <option value="not_invoiced">Not Invoiced</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="sessionTypeFilter">Session Type</label>
+                            <select id="sessionTypeFilter" class="form-select">
+                                <option value="">All Types</option>
+                                <option value="individual">Individual</option>
+                                <option value="group">Group</option>
+                            </select>
+                        </div>
+                        <div class="filter-item">
+                            <label for="searchFilter">Search</label>
+                            <input type="text" id="searchFilter" class="form-control" placeholder="Search notes, names...">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-3 text-end">
+                    <button type="button" id="clearFilters" class="btn btn-outline-secondary">
+                        <i class="fas fa-times"></i> Clear Filters
+                    </button>
+                    <button type="button" id="applyFilters" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Apply Filters
+                    </button>
+                </div>
+                
+                <!-- Debug info - remove in production -->
+                <div class="alert alert-info mt-2" style="font-size: 0.8rem;">
+                    <strong>Debug Info:</strong> If buttons don't work, check the browser console for errors (F12).
+                    <button onclick="console.log('Debug check - current page status:', { filteredData: window.filteredData ? window.filteredData.length : 'undefined', attendanceData: window.attendanceData ? window.attendanceData.length : 'undefined' });" 
+                            class="btn btn-sm btn-outline-secondary">
+                        Log Data Status
+                    </button>
+                </div>
+            </div>
+
+            <!-- Dashboard Stats -->
+            <div class="dashboard-cards">
+                <div class="stat-card card-present">
+                    <div class="stat-title">Present</div>
+                    <div class="stat-value" id="presentCount">0</div>
+                    <div class="stat-change positive" id="presentChange">
+                        <i class="fas fa-arrow-up"></i> 0% vs previous period
+                    </div>
+                </div>
+                <div class="stat-card card-absent">
+                    <div class="stat-title">Absent</div>
+                    <div class="stat-value" id="absentCount">0</div>
+                    <div class="stat-change negative" id="absentChange">
+                        <i class="fas fa-arrow-down"></i> 0% vs previous period
+                    </div>
+                </div>
+                <div class="stat-card card-late">
+                    <div class="stat-title">Late</div>
+                    <div class="stat-value" id="lateCount">0</div>
+                    <div class="stat-change" id="lateChange">
+                        <i class="fas fa-minus"></i> 0% vs previous period
+                    </div>
+                </div>
+                <div class="stat-card card-excused">
+                    <div class="stat-title">Excused</div>
+                    <div class="stat-value" id="excusedCount">0</div>
+                    <div class="stat-change" id="excusedChange">
+                        <i class="fas fa-minus"></i> 0% vs previous period
+                    </div>
+                </div>
+            </div>
+
+            <!-- Chart Section -->
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <canvas id="attendanceChart" width="400" height="400"></canvas>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="chart-container">
+                        <canvas id="trendChart" width="400" height="400"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Data Table -->
+            <div class="table-responsive">
+                <table class="attendance-table" id="attendanceTable">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Student</th>
+                            <th>Instrument</th>
+                            <th>Status</th>
+                            <th>Session Type</th>
+                            <th>Room</th>
+                            <th>Notes</th>
+                            <th>Invoiced</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="attendanceTableBody">
+                        <!-- Will be populated by JavaScript -->
+                    </tbody>
+                </table>
+                <div class="pagination-controls">
+                    <div class="page-info">
+                        Showing <span id="startRecord">0</span> to <span id="endRecord">0</span> of <span id="totalRecords">0</span> entries
+                    </div>
+                    <div class="page-buttons">
+                        <button id="prevPage" class="btn btn-sm btn-outline-secondary" disabled>
+                            <i class="fas fa-chevron-left"></i> Previous
+                        </button>
+                        <button id="nextPage" class="btn btn-sm btn-outline-secondary" disabled>
+                            Next <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Edit Attendance Modal -->
+        <div class="modal fade" id="editAttendanceModal" tabindex="-1" aria-labelledby="editAttendanceModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="editAttendanceModalLabel">Edit Attendance Record</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="editAttendanceForm">
+                            <input type="hidden" id="editRecordId">
+                            <div class="mb-3">
+                                <label for="editStudentName" class="form-label">Student</label>
+                                <input type="text" class="form-control" id="editStudentName" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editSessionDate" class="form-label">Date</label>
+                                <input type="text" class="form-control" id="editSessionDate" disabled>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editStatus" class="form-label">Status</label>
+                                <select class="form-select" id="editStatus">
+                                    <option value="present">Present</option>
+                                    <option value="absent">Absent</option>
+                                    <option value="late">Late</option>
+                                    <option value="excused">Excused</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <label for="editNotes" class="form-label">Notes</label>
+                                <textarea class="form-control" id="editNotes" rows="3"></textarea>
+                            </div>
+                            <div class="mb-3 form-check">
+                                <input type="checkbox" class="form-check-input" id="editInvoiced">
+                                <label class="form-check-label" for="editInvoiced">Mark as Invoiced</label>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn btn-primary" id="saveAttendanceChanges">Save Changes</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<!-- Make sure we have all required libraries in the right order -->
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.1/dist/chart.min.js"></script>
+
+<!-- Add jsPDF for PDF export -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
+
+<!-- Additional debugging script to check if our file loaded -->
+<script>
+  console.log('Bottom of template reached - checking if attendance-analytics.js was loaded...');
+  
+  // Give it 1 second to load and then check if our functions exist
+  setTimeout(function() {
+    if (typeof loadAttendanceData === 'function') {
+      console.log('✅ attendance-analytics.js loaded successfully - loadAttendanceData function exists');
+    } else {
+      console.error('❌ attendance-analytics.js failed to load or did not define expected functions');
+      alert('Error: The attendance analytics JavaScript failed to load properly. Please refresh the page or contact support.');
+    }
+  }, 1000);
+</script>
+
+<!-- Fallback functions in case the main script doesn't load properly -->
+<script>
+// Debug function to check if script is loaded
+function checkScriptLoaded() {
+    console.log("Script load check:");
+    console.log("- loadAttendanceData exists:", typeof window.loadAttendanceData === 'function');
+    console.log("- clearAllFilters exists:", typeof window.clearAllFilters === 'function');
+    console.log("- exportToCSV exists:", typeof window.exportToCSV === 'function');
+    
+    alert('Script load status logged to console. Press F12 to view.');
+}
+
+// Emergency fallback for loading attendance data
+function manualLoadAttendance() {
+    console.log("Manual load attendance called");
+    
+    if (typeof window.loadAttendanceData === 'function') {
+        window.loadAttendanceData();
+    } else {
+        // Direct fetch fallback
+        fetch('/api/attendance')
+            .then(response => response.json())
+            .then(data => {
+                console.log("Manually loaded attendance data:", data);
+                alert(`Loaded ${data.length} records. See console for details.`);
+                
+                // Try to update the table
+                try {
+                    const tbody = document.getElementById('attendanceTableBody');
+                    if (tbody) {
+                        tbody.innerHTML = data.map(record => `
+                            <tr>
+                                <td>${record.date || ''}</td>
+                                <td>${record.student_name || ''}</td>
+                                <td>${record.instrument || ''}</td>
+                                <td>${record.status || ''}</td>
+                                <td>${record.session_type || ''}</td>
+                                <td>${record.room_name || ''}</td>
+                                <td>${record.notes || ''}</td>
+                                <td>${record.invoiced ? 'Yes' : 'No'}</td>
+                            </tr>
+                        `).join('');
+                    }
+                } catch (e) {
+                    console.error("Error updating table:", e);
+                }
+            })
+            .catch(error => {
+                console.error("Error manually loading attendance:", error);
+                alert("Error loading attendance data. See console for details.");
+            });
+    }
+}
+</script>
+
+<!-- Load our custom JavaScript file at the end as well -->
+<script src="{{ url_for('static', filename='js/attendance-analytics.js') }}"></script>
+
+<!-- Initialize Flatpickr date pickers -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Helper function to reset chart canvases
+    function resetCharts() {
+        console.log('Resetting chart canvases');
+        
+        try {
+            // First destroy any existing chart instances
+            if (window.chartInstances) {
+                if (window.chartInstances.attendanceChart) {
+                    window.chartInstances.attendanceChart.destroy();
+                    window.chartInstances.attendanceChart = null;
+                }
+                
+                if (window.chartInstances.trendChart) {
+                    window.chartInstances.trendChart.destroy();
+                    window.chartInstances.trendChart = null;
+                }
+            }
+            
+            // Now recreate the canvas elements with the same ID
+            const attendanceCanvas = document.getElementById('attendanceChart');
+            const trendCanvas = document.getElementById('trendChart');
+            
+            if (attendanceCanvas) {
+                // Create a new canvas element
+                const newAttendanceCanvas = document.createElement('canvas');
+                newAttendanceCanvas.id = 'attendanceChart';
+                newAttendanceCanvas.width = 400;
+                newAttendanceCanvas.height = 400;
+                
+                // Replace the old canvas by inserting the new one before it and removing the old one
+                if (attendanceCanvas.parentNode) {
+                    attendanceCanvas.parentNode.insertBefore(newAttendanceCanvas, attendanceCanvas);
+                    attendanceCanvas.parentNode.removeChild(attendanceCanvas);
+                }
+            }
+            
+            if (trendCanvas) {
+                // Create a new canvas element
+                const newTrendCanvas = document.createElement('canvas');
+                newTrendCanvas.id = 'trendChart';
+                newTrendCanvas.width = 400;
+                newTrendCanvas.height = 400;
+                
+                // Replace the old canvas by inserting the new one before it and removing the old one
+                if (trendCanvas.parentNode) {
+                    trendCanvas.parentNode.insertBefore(newTrendCanvas, trendCanvas);
+                    trendCanvas.parentNode.removeChild(trendCanvas);
+                }
+            }
+            
+            console.log('Chart canvases reset successfully');
+        } catch (error) {
+            console.error('Error resetting charts:', error);
+        }
+    }
+
+    // Add reset charts button to debug section
+    const debugSection = document.querySelector('.alert.alert-secondary');
+    if (debugSection) {
+        const resetButton = document.createElement('button');
+        resetButton.className = 'btn btn-sm btn-warning';
+        resetButton.textContent = 'Reset Charts';
+        resetButton.onclick = resetCharts;
+        debugSection.appendChild(resetButton);
+    }
+
+    // Initialize date pickers
+    const startDatePicker = flatpickr("#startDate", {
+        dateFormat: "Y-m-d",
+        maxDate: "today",
+        disableMobile: true, // Force desktop version on mobile to ensure consistent behavior
+        onChange: function(selectedDates, dateStr) {
+            endDatePicker.set("minDate", dateStr);
+            // Call resetCharts before loading data to avoid conflicts
+            resetCharts();
+            // Small delay to ensure charts are reset
+            setTimeout(() => {
+                if (typeof loadAttendanceData === 'function') {
+                    loadAttendanceData();
+                }
+            }, 100);
+        }
+    });
+
+    const endDatePicker = flatpickr("#endDate", {
+        dateFormat: "Y-m-d",
+        maxDate: "today",
+        disableMobile: true, // Force desktop version on mobile to ensure consistent behavior
+        onChange: function(selectedDates, dateStr) {
+            startDatePicker.set("maxDate", dateStr);
+            // Call resetCharts before loading data to avoid conflicts
+            resetCharts();
+            // Small delay to ensure charts are reset
+            setTimeout(() => {
+                if (typeof loadAttendanceData === 'function') {
+                    loadAttendanceData();
+                }
+            }, 100);
+        }
+    });
+
+    // Make calendar icon buttons functional
+    document.getElementById('startDateButton').addEventListener('click', function() {
+        startDatePicker.open();
+    });
+
+    document.getElementById('endDateButton').addEventListener('click', function() {
+        endDatePicker.open();
+    });
+
+    // Set initial dates to current month
+    const today = new Date();
+    const firstDay = new Date(today.getFullYear(), today.getMonth(), 1);
+    const lastDay = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+    
+    startDatePicker.setDate(firstDay);
+    endDatePicker.setDate(lastDay);
+
+    // Date preset buttons
+    document.querySelectorAll('.date-presets button').forEach(button => {
+        button.addEventListener('click', function() {
+            const range = this.dataset.range;
+            const today = new Date();
+            let start, end;
+
+            switch(range) {
+                case 'week':
+                    start = new Date(today.setDate(today.getDate() - today.getDay()));
+                    end = new Date(today.setDate(today.getDate() - today.getDay() + 6));
+                    break;
+                case 'month':
+                    start = new Date(today.getFullYear(), today.getMonth(), 1);
+                    end = new Date(today.getFullYear(), today.getMonth() + 1, 0);
+                    break;
+                case 'term':
+                    // You'll need to implement term date logic here
+                    break;
+                case 'year':
+                    start = new Date(today.getFullYear(), 0, 1);
+                    end = new Date(today.getFullYear(), 11, 31);
+                    break;
+            }
+
+            startDatePicker.setDate(start);
+            endDatePicker.setDate(end);
+            loadAttendanceData();
+        });
+    });
+});
+</script>
+{% endblock %} 

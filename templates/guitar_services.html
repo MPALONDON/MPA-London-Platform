@@ -1,0 +1,503 @@
+{% extends "base.html" %}
+
+{% block title %}Guitar & Bass Services - Music Performance Academy{% endblock %}
+
+{% block content %}
+<div class="page-header guitar-services-header">
+    <div class="container">
+        <h1>Guitar & Bass Services</h1>
+        <p>Professional guitar and bass maintenance and repair services by experienced luthiers</p>
+    </div>
+</div>
+
+<div class="content-wrapper">
+    <section class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-8">
+                    <h2>Expert Instrument Care</h2>
+                    <p>At Music Performance Academy, we understand that your instrument is more than just a tool - it's an extension of your musical expression. Our professional luthier services ensure your guitar or bass performs at its best, whether you're a beginner or a professional musician.</p>
+                    
+                    <div class="service-card">
+                        <h3>Basic Setup & Maintenance</h3>
+                        <p>Keep your instrument playing perfectly with our comprehensive setup service. Includes:</p>
+                        <ul>
+                            <li>Action adjustment</li>
+                            <li>Intonation check and adjustment</li>
+                            <li>Truss rod adjustment</li>
+                            <li>String replacement</li>
+                            <li>Basic cleaning and polishing</li>
+                        </ul>
+                        <div class="price">From £{{ basic_setup.pounds }}{% if basic_setup.pence %}.{{ "%02d"|format(basic_setup.pence) }}{% endif %} + cost of strings</div>
+                    </div>
+
+                    <div class="service-card">
+                        <h3>Advanced Services</h3>
+                        <p>For more complex maintenance needs:</p>
+                        <ul>
+                            {% for service in advanced_services %}
+                            <li>{{ service.service_name }} {% if service.pounds %}(£{{ service.pounds }}{% if service.pence %}.{{ "%02d"|format(service.pence) }}{% endif %}){% endif %}</li>
+                            {% endfor %}
+                        </ul>
+                        <div class="price">Please contact us for a quote</div>
+                        <p class="mt-3 text-muted"><small>*For pickup changes, electronics work, and custom modifications, please contact us for a detailed quote based on your specific requirements.</small></p>
+                    </div>
+
+                    <div class="service-card">
+                        <h3>Complete Fretwork</h3>
+                        <p>Professional fret replacement and maintenance:</p>
+                        <ul>
+                            <li>Full fret replacement</li>
+                            <li>Custom fret wire options</li>
+                            <li>Fretboard maintenance</li>
+                            <li>Radius adjustment</li>
+                            <li>Bass fretboard treatment</li>
+                        </ul>
+                        <div class="price">From £{{ complete_fretwork.pounds }}{% if complete_fretwork.pence %}.{{ "%02d"|format(complete_fretwork.pence) }}{% endif %} (price varies based on instrument type and materials)</div>
+                    </div>
+                </div>
+
+                <div class="col-md-4 sticky-sidebar-container">
+                    <div class="sidebar-card">
+                        <h3>Why Choose Our Services?</h3>
+                        <ul>
+                            <li>Experienced luthiers with years of expertise</li>
+                            <li>Quality workmanship guaranteed</li>
+                            <li>Use of premium materials and parts</li>
+                            <li>Detailed assessment before any work</li>
+                            <li>Transparent pricing</li>
+                            <li>Specialized in both guitar and bass maintenance</li>
+                        </ul>
+                    </div>
+
+                    <div class="sidebar-card">
+                        <h3>Book a Service</h3>
+                        <p>Drop your instrument in for a free assessment. We'll provide a detailed quote and timeline for any necessary work.</p>
+                        <a href="#contact-form-section" class="btn btn-primary scroll-to-form">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<section class="program-features">
+    <div class="container">
+        <h2 class="text-center mb-4">What Sets Our Services Apart</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <h3>Expert Craftsmanship</h3>
+                    <p>Our luthiers bring years of experience and attention to detail to every instrument they work on. We treat each guitar and bass with the care and precision it deserves.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <h3>Quality Materials</h3>
+                    <p>We use only the highest quality parts and materials for all our services. From premium strings to professional-grade fret wire, we ensure your instrument gets the best.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <h3>Transparent Process</h3>
+                    <p>We believe in clear communication and honest pricing. You'll receive a detailed assessment and quote before any work begins, with no hidden costs or surprises.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="learning-approach">
+    <div class="container">
+        <h2 class="text-center mb-4">Our Service Process</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="approach-card">
+                    <h3>Initial Assessment</h3>
+                    <p>We begin with a thorough evaluation of your instrument, identifying any issues and discussing your specific needs. This helps us provide an accurate quote and timeline for the work required.</p>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="approach-card">
+                    <h3>Quality Assurance</h3>
+                    <p>Every service includes a final quality check to ensure your instrument meets our high standards. We'll demonstrate the improvements and make any final adjustments needed.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="contact-form-section-wrapper">
+    <section class="contact-form-section">
+        <div class="container">
+            <h2 class="text-center mb-4">Have Questions About Our Services?</h2>
+            <p class="text-center mb-5">Fill out the form below and we'll get back to you as soon as possible.</p>
+            
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <form action="{{ url_for('contact') }}" method="POST" class="contact-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="subject" name="subject" value="Guitar & Bass Services Inquiry" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Get Your Instrument in Perfect Shape</h2>
+            <p>Let our expert luthiers help you achieve the perfect setup for your guitar or bass. Book a free assessment today.</p>
+            <div class="cta-buttons">
+                <a href="#contact-form-section" class="btn btn-primary scroll-to-form">Contact Us</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<style>
+.guitar-services-header {
+    background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/guitar-services-bg.jpg');
+    background-size: cover;
+    background-position: center 40%;
+    color: white;
+    padding: 100px 0;
+    text-align: center;
+}
+
+.content-wrapper {
+    background-color: #ffffff;
+}
+
+.content {
+    padding: 70px 0;
+    background-color: #ffffff;
+}
+
+.content h2 {
+    font-size: 2.2rem;
+    color: #2c3e50;
+    margin-bottom: 1.5rem;
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.content h2:after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(to right, #3498db, transparent);
+}
+
+.content > p {
+    font-size: 1.1rem;
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 2.5rem;
+    max-width: 90%;
+}
+
+.service-card {
+    background: #fff;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.service-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+.service-card h3 {
+    color: #2c3e50;
+    font-size: 1.5rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+.service-card p {
+    color: #555;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.service-card ul {
+    list-style-type: none;
+    padding-left: 5px;
+    margin-bottom: 1.5rem;
+}
+
+.service-card ul li {
+    position: relative;
+    padding: 8px 0 8px 25px;
+    border-bottom: 1px solid #f0f0f0;
+    color: #555;
+}
+
+.service-card ul li:before {
+    content: "•";
+    color: #3498db;
+    position: absolute;
+    left: 0;
+    font-size: 1.2rem;
+}
+
+.service-card ul li:last-child {
+    border-bottom: none;
+}
+
+.price {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-top: 20px;
+    padding: 15px;
+    border-top: 2px solid #f0f0f0;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    text-align: center;
+}
+
+.sidebar-card {
+    background: #f8f9fa;
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+    border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.sticky-sidebar-container {
+    position: sticky;
+    top: 150px;
+    height: fit-content;
+    align-self: flex-start;
+}
+
+.sidebar-card h3 {
+    color: #2c3e50;
+    font-size: 1.4rem;
+    margin-bottom: 1.2rem;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #e9ecef;
+}
+
+.sidebar-card p {
+    color: #555;
+    margin-bottom: 1.5rem;
+    line-height: 1.6;
+}
+
+.sidebar-card ul {
+    list-style-type: none;
+    padding-left: 5px;
+    margin-bottom: 1.5rem;
+}
+
+.sidebar-card ul li {
+    position: relative;
+    padding: 10px 0 10px 28px;
+    border-bottom: 1px solid #e9ecef;
+    color: #555;
+}
+
+.sidebar-card ul li:before {
+    content: "✓";
+    color: #28a745;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+.sidebar-card ul li:last-child {
+    border-bottom: none;
+}
+
+.sidebar-card .btn {
+    width: 100%;
+    padding: 12px;
+    font-weight: 500;
+    margin-top: 0.5rem;
+}
+
+.col-md-4 {
+    height: fit-content;
+}
+
+@media (max-width: 768px) {
+    .sticky-sidebar-container {
+        position: relative;
+        top: 0;
+    }
+    
+    .content h2 {
+        font-size: 1.8rem;
+    }
+    
+    .service-card, .sidebar-card {
+        padding: 20px;
+    }
+}
+
+.program-features {
+    background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+    padding: 50px 0;
+    width: 100%;
+}
+
+.learning-approach {
+    background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+    padding: 50px 0;
+    width: 100%;
+}
+
+.feature-card, .approach-card {
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    height: 100%;
+    transition: transform 0.3s ease;
+}
+
+.feature-card:hover, .approach-card:hover {
+    transform: translateY(-10px);
+}
+
+.feature-card h3, .approach-card h3 {
+    color: #3498db;
+    margin-bottom: 1rem;
+}
+
+.contact-form-section-wrapper {
+    background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+}
+
+.contact-form-section {
+    background-color: #ffffff;
+    padding: 50px 0;
+    width: 100%;
+    scroll-margin-top: 100px;
+}
+
+.contact-form {
+    background-color: #ffffff;
+    padding: 30px;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.contact-form .form-label {
+    font-weight: 500;
+    color: #2c3e50;
+}
+
+.contact-form .form-control {
+    border: 1px solid #dee2e6;
+    padding: 10px;
+}
+
+.contact-form .form-control:focus {
+    border-color: #2c3e50;
+    box-shadow: 0 0 0 0.2rem rgba(44, 62, 80, 0.25);
+}
+
+.contact-form .btn-primary {
+    padding: 10px 30px;
+    font-weight: 500;
+}
+
+.cta-section {
+    padding: 100px 0;
+    background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.cta-section::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+    opacity: 0.1;
+    z-index: 0;
+}
+
+.cta-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.cta-section h2 {
+    color: #2c3e50;
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+.cta-section p {
+    color: #34495e;
+    font-size: 1.25rem;
+    margin-bottom: 2rem;
+}
+
+.cta-buttons {
+    display: flex;
+    gap: 20px;
+    justify-content: center;
+}
+
+.cta-section .btn {
+    padding: 12px 30px;
+    font-size: 1.1rem;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+}
+
+.cta-section .btn-primary {
+    background-color: #2c3e50;
+    color: white;
+    border: none;
+}
+
+.cta-section .btn-primary:hover {
+    background-color: #34495e;
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+</style>
+{% endblock %} 

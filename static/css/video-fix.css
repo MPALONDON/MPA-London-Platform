@@ -1,0 +1,1 @@
+/* Ensure video background remains visible in dark mode */ body.dark-theme .video-background { background-color: transparent !important; } body.dark-theme .video-background video { background-color: transparent !important; }

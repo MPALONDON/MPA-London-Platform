@@ -1,0 +1,584 @@
+{% extends 'base.html' %}
+{% block title %}Events{% endblock %}
+{% block content %}
+<div class="container-fluid p-0">
+    {% if next_event %}
+    <div class="upcoming-event-hero">
+            {% if next_event.image_url %}
+        <div class="event-image-container">
+            {% if 'drive.google.com/uc?id=' in next_event.image_url %}
+            <img src="https://drive.google.com/thumbnail?id={{ next_event.image_url.split('id=')[-1] }}&sz=w1920" alt="{{ next_event.title }}" class="event-hero-image">
+            {% else %}
+            <img src="{{ next_event.image_url }}" alt="{{ next_event.title }}" class="event-hero-image">
+            {% endif %}
+            <div class="event-overlay"></div>
+        </div>
+        {% endif %}
+        <div class="event-content">
+            <div class="container">
+                <div class="row">
+                    <div class="col-12">
+                        <div class="event-content-wrapper">
+                            <h1 class="event-title mb-4">{{ next_event.title }}</h1>
+                            <div class="event-details mb-4">
+                                <div class="event-date">
+                                    <i class="fas fa-calendar-alt"></i>
+                                    {{ next_event.date.strftime('%A, %B %d, %Y') }}
+                                </div>
+                                <div class="event-time">
+                                    <i class="fas fa-clock"></i>
+                                    {{ next_event.time }}
+                                </div>
+                                <div class="event-price">
+                                    <i class="fas fa-ticket-alt"></i>
+                                    {% if next_event.price %}£{{ "%.2f"|format(next_event.price) }}{% else %}Free{% endif %}
+                                </div>
+                            </div>
+                            <div class="event-description">
+                                {{ next_event.description }}
+                            </div>
+                            <div class="event-cta mt-5">
+                                <a href="#event-details" class="btn btn-outline-light btn-lg">EXPLORE</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="event-details" class="event-details-section">
+        <div class="container py-5">
+            <div class="row justify-content-center">
+                <div class="col-lg-10">
+                    <div class="event-info-wrapper">
+                        <div class="event-info-header">
+                            <h2 class="section-title">About This Event</h2>
+                            <div class="section-divider"></div>
+                        </div>
+                        
+                        <div class="event-highlights">
+                            <div class="highlight-card">
+                                <div class="highlight-icon">
+                                    <i class="fas fa-music"></i>
+                                </div>
+                                <div class="highlight-content">
+                                    <h3>World-Class Performance</h3>
+                                    <p>Experience an extraordinary evening of captivating musical performances that will leave you inspired.</p>
+                                </div>
+                            </div>
+
+                            <div class="highlight-card">
+                                <div class="highlight-icon">
+                                    <i class="fas fa-comments"></i>
+                                </div>
+                                <div class="highlight-content">
+                                    <h3>Engaging Discussion</h3>
+                                    <p>Join in an intimate conversation and Q&A session with our talented performers.</p>
+                                </div>
+                            </div>
+
+                            <div class="highlight-card">
+                                <div class="highlight-icon">
+                                    <i class="fas fa-star"></i>
+                                </div>
+                                <div class="highlight-content">
+                                    <h3>Unique Experience</h3>
+                                    <p>Each event brings its own distinctive atmosphere and unforgettable moments.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="event-description-card">
+                            <div class="description-content">
+                                <h3>What to Expect</h3>
+                                <p>Join us for an exceptional evening of music and conversation. Our events are designed to create a unique space where music, art, and community come together. Whether you're a music enthusiast or simply looking for a memorable night out, this event promises to deliver an experience that resonates with everyone.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% else %}
+    <div class="default-events-page">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-lg-8 text-center">
+                    <h1 class="events-title mb-4">Upcoming Events</h1>
+                    <div class="events-intro mb-5">
+                        <p class="lead">Join us for extraordinary musical experiences that bring together exceptional talent and passionate audiences.</p>
+                        <p>Our events showcase the finest musicians and performers from across the UK, creating unforgettable evenings of live music and intimate conversations.</p>
+                        <p>Each event is carefully curated to offer a unique blend of world-class performances and engaging discussions, allowing you to connect with the artists and their stories.</p>
+                        <p>From intimate acoustic sessions to dynamic ensemble performances, our events celebrate the power of music to inspire, connect, and transform.</p>
+                    </div>
+                    <div class="events-cta">
+                        <a href="{{ url_for('home') }}#newsletter-section" class="btn btn-primary btn-lg">Get Updates</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if next_event %}
+    <section class="contact-form-section">
+        <div class="container">
+            <h2 class="text-center mb-4">Have Questions About This Event?</h2>
+            <p class="text-center mb-5">Fill out the form below and we'll get back to you as soon as possible.</p>
+            
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <form action="{{ url_for('contact') }}" method="POST" class="contact-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="subject" name="subject" value="Event Inquiry: {{ next_event.title }}" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+    {% endif %}
+</div>
+
+<style>
+/* Event Page Styles */
+.upcoming-event-hero {
+    position: relative;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    background-color: #f8f9fa;
+    overflow: hidden;
+}
+
+.event-image-container {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.event-hero-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    object-position: center;
+}
+
+.event-hero-image.portrait {
+    object-fit: contain;
+    background-color: #000;
+}
+
+.event-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(
+        to bottom,
+        rgba(0, 0, 0, 0.4) 0%,
+        rgba(0, 0, 0, 0.6) 50%,
+        rgba(0, 0, 0, 0.8) 100%
+    );
+}
+
+.event-content {
+    position: relative;
+    z-index: 1;
+    color: white;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+}
+
+.event-content-wrapper {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 4rem 2rem;
+    text-align: center;
+}
+
+.event-title {
+    font-size: 3.5rem;
+    font-weight: 600;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    letter-spacing: 1px;
+    margin-bottom: 2rem;
+}
+
+.event-details {
+    font-size: 1.25rem;
+    display: flex;
+    justify-content: center;
+    gap: 2rem;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.event-date, .event-time {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.event-description {
+    font-size: 1.2rem;
+    line-height: 1.8;
+    text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    margin-bottom: 2rem;
+}
+
+.event-cta .btn {
+    padding: 1rem 2.5rem;
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    border-width: 2px;
+    transition: all 0.3s ease;
+}
+
+.event-cta .btn:hover {
+    background-color: white;
+    color: #000;
+}
+
+.event-details-section {
+    background-color: #f8f9fa;
+    padding: 6rem 0;
+}
+
+.event-info-wrapper {
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    overflow: hidden;
+}
+
+.event-info-header {
+    text-align: center;
+    padding: 3rem 2rem 2rem;
+    background-color: #343a40;
+    color: white;
+}
+
+.section-title {
+    font-size: 2.5rem;
+    font-weight: 600;
+    margin-bottom: 1rem;
+    color: white;
+}
+
+.section-divider {
+    width: 60px;
+    height: 3px;
+    background: rgba(255, 255, 255, 0.3);
+    margin: 0 auto;
+    border-radius: 2px;
+}
+
+.event-highlights {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    padding: 3rem;
+    background: white;
+}
+
+.highlight-card {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: #f8f9fa;
+    border-radius: 6px;
+    transition: transform 0.2s ease;
+}
+
+.highlight-card:hover {
+    transform: translateY(-3px);
+}
+
+.highlight-icon {
+    flex-shrink: 0;
+    width: 50px;
+    height: 50px;
+    background: #343a40;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.highlight-icon i {
+    font-size: 1.25rem;
+    color: white;
+}
+
+.highlight-content {
+    flex-grow: 1;
+}
+
+.highlight-content h3 {
+    font-size: 1.2rem;
+    color: #343a40;
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+}
+
+.highlight-content p {
+    color: #6c757d;
+    line-height: 1.6;
+    margin: 0;
+    font-size: 0.95rem;
+}
+
+.event-description-card {
+    padding: 3rem;
+    background: #f8f9fa;
+    border-top: 1px solid #dee2e6;
+}
+
+.description-content {
+    max-width: 800px;
+    margin: 0 auto;
+    text-align: center;
+}
+
+.description-content h3 {
+    font-size: 1.5rem;
+    color: #343a40;
+    margin-bottom: 1.5rem;
+    font-weight: 600;
+}
+
+.description-content p {
+    font-size: 1rem;
+    line-height: 1.7;
+    color: #6c757d;
+}
+
+/* Default Events Page Styles */
+.default-events-page {
+    padding: 100px 0;
+    background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+    min-height: calc(100vh - 70px);
+    display: flex;
+    align-items: center;
+}
+
+.events-title {
+    font-size: 3.5rem;
+    font-weight: 600;
+    color: #2c3e50;
+    margin-bottom: 2rem;
+}
+
+.events-intro {
+    color: #666;
+    font-size: 1.2rem;
+    line-height: 1.8;
+}
+
+.events-intro p {
+    margin-bottom: 1.5rem;
+}
+
+.events-intro .lead {
+    font-size: 1.4rem;
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.events-cta {
+    margin-top: 3rem;
+}
+
+.events-cta .btn {
+    padding: 1rem 2.5rem;
+    font-size: 1.2rem;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    transition: all 0.3s ease;
+
+}
+
+.events-cta .btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+
+}
+
+@media (max-width: 768px) {
+    .upcoming-event-hero {
+        min-height: 100vh;
+    }
+
+    .event-content-wrapper {
+        padding: 2rem 1rem;
+    }
+
+    .event-title {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .event-details {
+        font-size: 1rem;
+        gap: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .event-description {
+        font-size: 1rem;
+        margin-bottom: 1.5rem;
+    }
+
+    .event-cta .btn {
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+    }
+
+    .event-details-section {
+        padding: 3rem 0;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .event-highlights {
+        padding: 2rem;
+        gap: 1.5rem;
+    }
+
+    .highlight-card {
+        padding: 1.25rem;
+    }
+
+    .highlight-icon {
+        width: 45px;
+        height: 45px;
+    }
+
+    .highlight-icon i {
+        font-size: 1.1rem;
+    }
+
+    .event-description-card {
+        padding: 2rem;
+    }
+
+    .description-content h3 {
+        font-size: 1.3rem;
+    }
+
+    .description-content p {
+        font-size: 0.95rem;
+    }
+
+    .default-events-page {
+        padding: 60px 0;
+    }
+
+    .events-title {
+        font-size: 2.5rem;
+    }
+
+    .events-intro {
+        font-size: 1.1rem;
+    }
+
+    .events-intro .lead {
+        font-size: 1.2rem;
+    }
+}
+
+/* Contact Form Section Styles */
+.contact-form-section {
+    padding: 80px 0;
+    background-color: #ffffff;
+}
+
+.contact-form-section h2 {
+    color: #2c3e50;
+    font-size: 2rem;
+    margin-bottom: 1rem;
+}
+
+.contact-form-section p {
+    color: #666;
+}
+
+.form-label {
+    color: #2c3e50;
+    font-weight: 500;
+}
+
+.form-control {
+    border: 1px solid #ddd;
+    padding: 0.75rem;
+    border-radius: 4px;
+}
+
+.form-control:focus {
+    border-color: #2c3e50;
+    box-shadow: 0 0 0 0.2rem rgba(44, 62, 80, 0.25);
+}
+
+
+
+@media (max-width: 768px) {
+    .contact-form-section {
+        padding: 40px 0;
+    }
+    
+    .contact-form-section h2 {
+        font-size: 1.75rem;
+    }
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const heroImage = document.querySelector('.event-hero-image');
+    if (heroImage) {
+        // Check if image is loaded
+        if (heroImage.complete) {
+            checkImageOrientation(heroImage);
+        } else {
+            heroImage.addEventListener('load', function() {
+                checkImageOrientation(heroImage);
+            });
+        }
+    }
+});
+
+function checkImageOrientation(img) {
+    if (img.naturalHeight > img.naturalWidth) {
+        img.classList.add('portrait');
+    }
+}
+</script>
+{% endblock %} 

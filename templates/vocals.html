@@ -1,0 +1,1059 @@
+{% extends "base.html" %}
+
+{% block title %}Vocal Lessons - Music Performance Academy{% endblock %}
+
+{% block content %}
+<div class="page-header vocals-header">
+    <div class="container">
+        <h1>Vocal Lessons</h1>
+        <p>Discover your voice and develop your singing skills with our comprehensive vocal lessons</p>
+    </div>
+</div>
+
+<div class="content-wrapper">
+    <section class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="content-main">
+                        <h2>Your Path to Vocal Mastery</h2>
+                        <p class="intro-text">At Music Performance Academy, we believe every vocalist has a unique sound waiting to be discovered. Our vocal lessons are designed to nurture your individual style while building a strong foundation in essential vocal techniques. Whether you're singing for the first time or looking to refine your existing skills, our experienced instructors will guide you through every step of your musical journey.</p>
+                        
+                        <div class="learning-areas">
+                            <h3>Core Learning Areas</h3>
+                            <ul class="learning-list">
+                                <li><i class="fas fa-lungs"></i>Breath control and vocal support</li>
+                                <li><i class="fas fa-microphone-alt"></i>Tone development and vocal resonance</li>
+                                <li><i class="fas fa-music"></i>Pitch accuracy and ear training</li>
+                                <li><i class="fas fa-notes-medical"></i>Vocal health and maintenance</li>
+                                <li><i class="fas fa-users"></i>Performance techniques and stage presence</li>
+                            </ul>
+                        </div>
+                        
+                        <div class="learning-details">
+                            <h4>What You'll Learn</h4>
+                            <div class="learning-grid">
+                                <div class="learning-item">
+                                    <h5>Technique Development</h5>
+                                    <p>Master essential vocal techniques including proper breathing, support, articulation, and projection. Learn how to use your voice effectively and safely across your full range.</p>
+                                </div>
+                                <div class="learning-item">
+                                    <h5>Vocal Expression</h5>
+                                    <p>Develop your unique vocal style and learn techniques for emotional expression. Explore various tonal qualities, dynamics, and phrasing to bring songs to life.</p>
+                                </div>
+                                <div class="learning-item">
+                                    <h5>Style Exploration</h5>
+                                    <p>Explore various musical styles including pop, rock, jazz, R&B, and more. Learn genre-specific techniques and approaches to expand your vocal versatility.</p>
+                                </div>
+                                <div class="learning-item">
+                                    <h5>Performance Skills</h5>
+                                    <p>Develop confidence in singing live, including stage presence, microphone technique, and managing performance anxiety. Learn how to connect with your audience for impactful performances.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="pricing-card">
+                        <h3>Private Lessons</h3>
+                        <div class="pricing-options">
+                            <div class="single-lesson">
+                                <h4>Single Lesson</h4>
+                                <div class="price">
+                                    {% if single_lesson_price is number and single_lesson_price != single_lesson_price|int %}
+                                        £{{ "%.2f"|format(single_lesson_price) }}
+                                    {% else %}
+                                        £{{ single_lesson_price }}
+                                    {% endif %}
+                                    <span class="price-period">per session</span>
+                                </div>
+                                <p>45-minute one-on-one sessions with our experienced instructors</p>
+                                {% if mobile_service_available %}
+                                <div class="mobile-service">
+                                    <h5>Mobile Service Available</h5>
+                                    <div class="price">
+                                        {% if mobile_price is number and mobile_price != mobile_price|int %}
+                                            £{{ "%.2f"|format(mobile_price) }}
+                                        {% else %}
+                                            £{{ mobile_price }}
+                                        {% endif %}
+                                        <span class="price-period">per session</span>
+                                    </div>
+                                    <p>We can come to you! Add £10 to your lesson price for mobile service.</p>
+                                </div>
+                                {% else %}
+                                <div class="mobile-service coming-soon">
+                                    <h5>Mobile Service</h5>
+                                    <div class="coming-soon-badge">Coming Soon</div>
+                                    <p>We're working on bringing our lessons to your location. Stay tuned!</p>
+                                </div>
+                                {% endif %}
+                            </div>
+                            
+                            <div class="pricing-divider"></div>
+                            
+                            <div class="package-deal">
+                                <h4>10-Lesson Package</h4>
+                                <div class="price">
+                                    £{{ package_price }}
+                                    <span class="package-savings">Save £{{ (single_lesson_price * 10) - package_price }}!</span>
+                                </div>
+                                <p>Book 10 lessons in advance and save</p>
+                                <ul class="package-features">
+                                    <li><i class="fas fa-check"></i> 10 x 45-minute sessions</li>
+                                    <li><i class="fas fa-check"></i> Flexible scheduling</li>
+                                    <li><i class="fas fa-check"></i> Priority booking</li>
+                                </ul>
+                                <div class="klarna-info">
+                                    <p><i class="fas fa-credit-card"></i> Available with Klarna:</p>
+                                    <ul>
+                                        <li>Pay now</li>
+                                        <li>Pay in 30 days</li>
+                                        <li>3 interest-free payments of £{{ (package_price / 3)|round(2) }}</li>
+                                    </ul>
+                                </div>
+                                <div class="trust-badges">
+                                    <p><i class="fas fa-shield-alt"></i> All tutors are:</p>
+                                    <div class="badges-grid">
+                                        <span><i class="fas fa-check-circle"></i> DBS Checked</span>
+                                        <span><i class="fas fa-check-circle"></i> Safeguarding Certified</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <a href="#contact-form-section" class="btn btn-primary scroll-to-form">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<section class="lesson-features">
+    <div class="container">
+        <h2 class="text-center mb-4">What Makes Our Vocal Lessons Special</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <h3>Weekly Jam Sessions</h3>
+                    <p>Join our vibrant community of musicians at our weekly jam nights. These sessions provide the perfect opportunity to develop your stage presence, collaborate with other musicians, and gain valuable performance experience in a supportive environment.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <h3>Performance Focus</h3>
+                    <p>Regular performance opportunities at our jam nights help you build confidence and stage presence. From small ensembles to full band performances, we provide various platforms to showcase your talent.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="feature-card">
+                    <h3>Comprehensive Training</h3>
+                    <p>Our curriculum covers everything from breathing techniques to advanced vocal styles, ensuring you develop a well-rounded understanding of singing and its role in music.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="learning-approach">
+    <div class="container">
+        <h2 class="text-center mb-4">Our Teaching Philosophy</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="approach-card">
+                    <h3>Building Strong Foundations</h3>
+                    <p>We emphasize proper technique from the start, ensuring you develop good habits that will serve you throughout your musical journey. Our instructors focus on breath control, posture, and vocal health.</p>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="approach-card">
+                    <h3>Practical Application</h3>
+                    <p>Every lesson includes practical exercises and real-world applications. You'll learn how to apply theoretical concepts to actual songs and musical situations, making your learning experience both engaging and relevant.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="extra-curricular-wrapper">
+    <section class="extra-curricular">
+        <div class="container">
+            <h2 class="text-center mb-5">Enhance Your Experience</h2>
+            <div class="row g-4">
+                <div class="col-12">
+                    <div class="extra-feature">
+                        <div class="row align-items-center">
+                            <div class="col-md-6">
+                                <div class="feature-content">
+                                    <h3>Weekly Jam Sessions</h3>
+                                    <p>Join our vibrant community of musicians at our weekly jam sessions. These events provide the perfect opportunity to develop your stage presence, collaborate with other musicians, and gain valuable performance experience in a supportive environment.</p>
+                                    <a href="{{ url_for('weekly_jam') }}" class="btn btn-outline-primary">Learn More</a>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-image">
+                                    <img src="{{ url_for('static', filename='images/jam-session.jpg') }}" alt="Weekly Jam Session" class="img-fluid rounded">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="extra-feature">
+                        <div class="row align-items-center flex-row-reverse">
+                            <div class="col-md-6">
+                                <div class="feature-content">
+                                    <h3>Masterclasses & Workshops</h3>
+                                    <p>Participate in exclusive masterclasses and workshops led by industry professionals. These sessions cover advanced techniques, music theory, performance skills, and industry insights, helping you take your playing to the next level.</p>
+                                    <a href="{{ url_for('home') }}#newsletter-section" class="btn btn-outline-primary scroll-to-newsletter">Get Updates</a>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="feature-image">
+                                    <img src="{{ url_for('static', filename='images/masterclass.jpg') }}" alt="Masterclass" class="img-fluid rounded">
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<section class="student-success">
+    <div class="container">
+        <h2 class="text-center mb-4">Student Success Stories</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card">
+                    <p>"The focus on proper technique completely transformed my singing. I've gained confidence and control I never thought possible."</p>
+                    <div class="student-name">- Sarah, Intermediate Student</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card">
+                    <p>"The combination of technical training and performance opportunities gave me the confidence to pursue music professionally."</p>
+                    <div class="student-name">- David, Advanced Student</div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="testimonial-card">
+                    <p>"Starting as a complete beginner, I was amazed at how quickly I could sing my favorite songs. The supportive environment made all the difference."</p>
+                    <div class="student-name">- Emma, Beginner Student</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="contact-form-section-wrapper">
+<section class="contact-form-section">
+    <div class="container">
+        <h2 class="text-center mb-4">Have Questions About Vocal Lessons?</h2>
+        <p class="text-center mb-5">Fill out the form below and we'll get back to you as soon as possible.</p>
+        
+        <div class="row justify-content-center">
+            <div class="col-md-8">
+                <form action="{{ url_for('contact') }}" method="POST" class="contact-form">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="name" class="form-label">Name</label>
+                            <input type="text" class="form-control" id="name" name="name" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="email" class="form-label">Email</label>
+                            <input type="email" class="form-control" id="email" name="email" required>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="subject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="subject" name="subject" value="Vocal Lessons Inquiry" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="message" class="form-label">Message</label>
+                        <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                    </div>
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-primary">Send Message</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</section>
+</div>
+
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Begin Your Vocal Journey Today</h2>
+            <p>Take the first step towards becoming the vocalist you've always wanted to be. Our expert instructors are ready to guide you on this exciting musical adventure.</p>
+            <div class="cta-buttons">
+                <a href="#contact-form-section" class="btn btn-primary scroll-to-form">Contact Us</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block head %}
+<style>
+    .page-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("{{ url_for('static', filename='images/vocals.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 100px 0;
+        text-align: center;
+        margin-bottom: 50px;
+    }
+    
+    .page-header h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .content {
+        padding: 50px 0;
+        background-color: #ffffff;
+    }
+    
+    .program-features {
+        background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+        padding: 50px 0;
+        width: 100%;
+    }
+    
+    .program-features .feature-card {
+        background-color: #ffffff;
+    }
+    
+    .learning-approach {
+        background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+        padding: 50px 0;
+        width: 100%;
+    }
+    
+    .extra-curricular-wrapper {
+        background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+    }
+    
+    .extra-curricular {
+        background-color: #ffffff;
+        padding: 50px 0;
+        width: 100%;
+    }
+    
+    .student-success {
+        background-color: #ffffff;
+        padding: 50px 0;
+    }
+    
+    .contact-form-section-wrapper {
+        background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+    }
+    
+    .contact-form-section {
+        background-color: #ffffff;
+        padding: 50px 0;
+        width: 100%;
+        scroll-margin-top: 100px;
+    }
+    
+    .pricing-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        text-align: center;
+    }
+    
+    .price {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #2a5298;
+        margin: 1rem 0;
+    }
+
+    .feature-card, .extra-card, .approach-card, .testimonial-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover, .extra-card:hover, .approach-card:hover, .testimonial-card:hover {
+        transform: translateY(-10px);
+    }
+
+    .feature-card h3, .extra-card h3, .approach-card h3 {
+        color: #3498db;
+        margin-bottom: 1rem;
+    }
+
+    .testimonial-card {
+        text-align: center;
+        padding: 40px 30px;
+    }
+
+    .testimonial-card p {
+        font-style: italic;
+        margin-bottom: 1.5rem;
+    }
+
+    .student-name {
+        font-weight: 600;
+        color: #3498db;
+    }
+    
+    .cta-section {
+        padding: 100px 0;
+        background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.1;
+        z-index: 0;
+    }
+    
+    .cta-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .cta-section h2 {
+        color: #2c3e50;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .cta-section p {
+        color: #34495e;
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+    }
+    
+    .cta-section .btn {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+    }
+    
+    .cta-section .btn-primary {
+        background-color: #2c3e50;
+        color: white;
+        border: none;
+    }
+    
+    .cta-section .btn-primary:hover {
+        background-color: #34495e;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .cta-section .btn-secondary {
+        background-color: transparent;
+        color: #2c3e50;
+        border: 2px solid #2c3e50;
+    }
+    
+    .cta-section .btn-secondary:hover {
+        background-color: rgba(44, 62, 80, 0.05);
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .page-header h1 {
+            font-size: 2.5rem;
+        }
+        
+        .cta-buttons {
+            flex-direction: column;
+        }
+    }
+
+    .contact-form-section {
+        padding: 80px 0;
+        background-color: #f8f9fa;
+        scroll-margin-top: 100px;
+    }
+    
+    .contact-form {
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+        border: 1px solid #ddd;
+        padding: 0.75rem;
+        border-radius: 4px;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(var(--primary-color-rgb), 0.25);
+    }
+    
+    .form-control[readonly] {
+        background-color: #f8f9fa;
+    }
+    
+    .contact-form .btn-primary {
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .contact-form-section {
+            padding: 60px 0;
+        }
+    }
+
+    html {
+        scroll-behavior: smooth;
+    }
+
+    .extra-feature {
+        background: linear-gradient(145deg, #ffffff, #f8f9fa);
+        border-radius: 15px;
+        padding: 30px;
+        margin-bottom: 30px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.1);
+    }
+
+    .extra-feature:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+        border-color: rgba(0, 0, 0, 0.2);
+    }
+
+    .feature-content {
+        padding: 20px;
+    }
+
+    .feature-content h3 {
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        font-size: 1.8rem;
+    }
+
+    .feature-content p {
+        color: #666;
+        margin-bottom: 25px;
+        font-size: 1.1rem;
+        line-height: 1.6;
+    }
+
+    .feature-image {
+        overflow: hidden;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-image img {
+        transition: transform 0.3s ease;
+    }
+
+    .feature-image:hover img {
+        transform: scale(1.05);
+    }
+
+    .btn-outline-primary {
+        border-width: 2px;
+        padding: 10px 25px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .btn-outline-primary:hover {
+        background-color: var(--primary-color);
+        color: white;
+        transform: translateY(-2px);
+    }
+
+    @media (max-width: 768px) {
+        .extra-feature {
+            padding: 20px;
+        }
+
+        .feature-content {
+            padding: 15px;
+        }
+
+        .feature-content h3 {
+            font-size: 1.5rem;
+        }
+
+        .feature-image {
+            margin-top: 20px;
+        }
+    }
+
+    .pricing-options {
+        margin: 20px 0;
+    }
+    
+    .single-lesson, .package-deal {
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+    }
+    
+    .single-lesson {
+        background-color: #f8f9fa;
+    }
+    
+    .package-deal {
+        background-color: #e8f4f8;
+        border: 2px solid var(--primary-color);
+    }
+    
+    .package-deal h4 {
+        color: var(--primary-color);
+    }
+    
+    .package-savings {
+        display: block;
+        font-size: 0.9rem;
+        color: #28a745;
+        margin-top: 5px;
+    }
+    
+    .package-features {
+        list-style: none;
+        padding: 0;
+        margin: 15px 0;
+    }
+    
+    .package-features li {
+        margin-bottom: 8px;
+    }
+    
+    .package-features i {
+        color: var(--primary-color);
+        margin-right: 8px;
+    }
+
+    .learning-details {
+        margin-top: 2rem;
+    }
+    
+    .learning-details h4 {
+        color: var(--primary-color);
+        margin-bottom: 1.5rem;
+        font-size: 1.5rem;
+    }
+    
+    .learning-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .learning-item {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    
+    .learning-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .learning-item h5 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+    }
+    
+    .learning-item p {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+    
+    @media (max-width: 768px) {
+        .learning-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Improved Content Section Styling */
+    .content-wrapper {
+        background-color: #ffffff;
+    }
+    
+    .content {
+        padding: 70px 0;
+        background-color: #ffffff;
+    }
+    
+    .content-main {
+        padding-right: 20px;
+    }
+    
+    .content-main h2 {
+        font-size: 2.2rem;
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+        position: relative;
+        padding-bottom: 15px;
+    }
+    
+    .content-main h2:after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 80px;
+        height: 3px;
+        background: linear-gradient(to right, #3498db, transparent);
+    }
+    
+    .intro-text {
+        font-size: 1.1rem;
+        color: #555;
+        line-height: 1.7;
+        margin-bottom: 2.5rem;
+    }
+    
+    .learning-areas {
+        margin-bottom: 2.5rem;
+    }
+    
+    .learning-areas h3 {
+        color: #2c3e50;
+        font-size: 1.6rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .learning-list {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+    }
+    
+    .learning-list li {
+        padding: 12px 0;
+        border-bottom: 1px solid #f0f0f0;
+        display: flex;
+        align-items: center;
+        color: #555;
+    }
+    
+    .learning-list li:last-child {
+        border-bottom: none;
+    }
+    
+    .learning-list li i {
+        color: #2c3e50;
+        margin-right: 15px;
+        font-size: 1.2rem;
+        width: 20px;
+        text-align: center;
+    }
+    
+    .learning-details {
+        margin-top: 2rem;
+    }
+    
+    .learning-details h4 {
+        color: #2c3e50;
+        font-size: 1.6rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .learning-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 1.5rem;
+    }
+    
+    .learning-item {
+        background-color: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .learning-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .learning-item h5 {
+        color: #2c3e50;
+        margin-bottom: 1rem;
+        font-size: 1.2rem;
+    }
+    
+    .learning-item p {
+        color: #666;
+        line-height: 1.6;
+        margin-bottom: 0;
+    }
+    
+    /* Pricing Card Styling */
+    /* Sticky container styles removed */
+    
+    .pricing-card {
+        background-color: #fff;
+        border-radius: 12px;
+        box-shadow: 0 5px 20px rgba(0, 0, 0, 0.05);
+        padding: 30px;
+        text-align: center;
+        border: 1px solid rgba(0, 0, 0, 0.05);
+    }
+    
+    .pricing-card h3 {
+        color: #2c3e50;
+        font-size: 1.8rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .pricing-options {
+        margin: 20px 0;
+    }
+    
+    .single-lesson, .package-deal {
+        padding: 20px;
+        border-radius: 8px;
+        margin-bottom: 20px;
+        background-color: #f8f9fa;
+        transition: transform 0.3s ease;
+        text-align: center;
+    }
+    
+    .pricing-divider {
+        height: 1px;
+        background: linear-gradient(to right, transparent, #dee2e6, transparent);
+        margin: 30px 0;
+    }
+    
+    .single-lesson h4, .package-deal h4 {
+        color: #2c3e50;
+        margin-bottom: 15px;
+        font-size: 1.4rem;
+    }
+    
+    .price {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #2a5298;
+        margin: 1rem 0;
+    }
+    
+    .price-period {
+        display: block;
+        font-size: 0.9rem;
+        color: #666;
+        font-weight: normal;
+    }
+    
+    .package-savings {
+        display: block;
+        font-size: 0.9rem;
+        color: #28a745;
+        margin-top: 5px;
+    }
+    
+    .package-features {
+        list-style: none;
+        padding: 0;
+        margin: 15px 0;
+    }
+    
+    .package-features li {
+        margin-bottom: 10px;
+        color: #555;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .package-features i {
+        color: #28a745;
+        margin-right: 10px;
+    }
+    
+    .klarna-info {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+        border: 1px solid #f0f0f0;
+    }
+    
+    .klarna-info p {
+        margin-bottom: 10px;
+        color: #666;
+        font-weight: 500;
+    }
+    
+    .klarna-info ul {
+        list-style: none;
+        padding: 0;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    .klarna-info li {
+        color: #666;
+        margin-bottom: 5px;
+        display: inline-block;
+    }
+    
+    .klarna-info li:not(:last-child):after {
+        content: "•";
+        color: #666;
+        margin: 0 5px;
+    }
+    
+    .mobile-service {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+        border: 1px solid #f0f0f0;
+    }
+    
+    .mobile-service.coming-soon {
+        background-color: #f8f9fa;
+        border: 1px dashed #dee2e6;
+    }
+    
+    .mobile-service h5 {
+        color: #2c3e50;
+        margin-bottom: 10px;
+        font-size: 1.1rem;
+    }
+    
+    .coming-soon-badge {
+        display: inline-block;
+        background-color: #ffc107;
+        color: #000;
+        padding: 5px 10px;
+        border-radius: 15px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        margin: 10px 0;
+    }
+    
+    .trust-badges {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+        border: 1px solid #f0f0f0;
+    }
+    
+    .trust-badges p {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .badges-grid {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+    
+    .badges-grid span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #28a745;
+    }
+    
+    .pricing-card .btn {
+        width: 100%;
+        padding: 12px;
+        font-weight: 500;
+        margin-top: 1rem;
+        background-color: #dc3545;
+        border: none;
+        transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    
+    .pricing-card .btn:hover {
+        background-color: #b52a37;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+    }
+    
+    @media (max-width: 768px) {
+        /* Sticky container mobile styles removed */
+        
+        .content-main {
+            padding-right: 0;
+        }
+        
+        .content-main h2 {
+            font-size: 1.8rem;
+        }
+        
+        .learning-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .single-lesson, .package-deal, .pricing-card {
+            padding: 15px;
+        }
+        
+        .badges-grid {
+            flex-direction: column;
+            gap: 10px;
+        }
+    }
+
+    .lesson-features {
+        background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+        padding: 50px 0;
+        width: 100%;
+    }
+    
+    .lesson-features .feature-card {
+        background-color: #ffffff;
+    }
+</style>
+{% endblock %}

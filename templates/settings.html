@@ -1,0 +1,271 @@
+{% extends "base.html" %}
+
+{% block title %}Settings{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="settings-section">
+        <div class="section-header">
+            <h2>Settings</h2>
+        </div>
+        
+        <div class="settings-container">
+            <!-- Student Account Management -->
+            <div class="settings-card">
+                <h3>Student Account Management</h3>
+                <p>Create and manage student accounts for accessing the student dashboard.</p>
+                
+                <div class="form-container">
+                    <h4>Create New Student Account</h4>
+                    <form id="createStudentForm">
+                        <div class="form-group">
+                            <label for="username">Full Name</label>
+                            <input type="text" id="username" name="username" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="email">Email</label>
+                            <input type="email" id="email" name="email" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="instrument">Instrument</label>
+                            <select id="instrument" name="instrument" required>
+                                <option value="">Select Instrument</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="password">Password</label>
+                            <input type="password" id="password" name="password">
+                            <small class="form-text text-muted">Leave blank to send verification email</small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Create Account</button>
+                    </form>
+                </div>
+                
+                <div class="students-list">
+                    <h4>Existing Student Accounts</h4>
+                    <div id="studentsList" class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Instrument</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="studentsTableBody">
+                                {% if students %}
+                                    {% for student in students %}
+                                    <tr data-id="{{ student.id }}">
+                                        <td>{{ student.username }}</td>
+                                        <td>{{ student.email }}</td>
+                                        <td>{{ student.instrument.name if student.instrument else 'Not set' }}</td>
+                                        <td class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-primary reset-password-student" data-id="{{ student.id }}">
+                                                <i class="fas fa-key"></i> Reset Password
+                                            </button>
+                                            <button class="btn btn-sm btn-danger delete-student" data-id="{{ student.id }}">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="4" class="text-center">No student accounts found</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Admin Section (Only visible to admin users) -->
+            <div class="settings-card admin-section" id="adminSection" {% if current_user.role == 'admin' %}style="display: block;"{% else %}style="display: none;"{% endif %}>
+                <h3>Staff Account Management</h3>
+                <p>Create and manage staff accounts for accessing the admin dashboard.</p>
+                
+                <div class="form-container">
+                    <h4>Create New Staff Account</h4>
+                    <form id="createStaffForm">
+                        <div class="form-group">
+                            <label for="staffUsername">Full Name</label>
+                            <input type="text" id="staffUsername" name="staffUsername" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="staffEmail">Email</label>
+                            <input type="email" id="staffEmail" name="staffEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="staffPassword">Password</label>
+                            <input type="password" id="staffPassword" name="staffPassword">
+                            <small class="form-text text-muted">Leave blank to send verification email</small>
+                        </div>
+                        <input type="hidden" id="staffRole" value="staff">
+                        <button type="submit" class="btn btn-primary">Create Staff Account</button>
+                    </form>
+                </div>
+
+                <div class="staff-list">
+                    <h4>Existing Staff Accounts</h4>
+                    <div id="staffList" class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="staffTableBody">
+                                {% if staff_users %}
+                                    {% for user in staff_users %}
+                                    <tr data-id="{{ user.id }}">
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-primary reset-password-staff" data-id="{{ user.id }}">
+                                                <i class="fas fa-key"></i> Reset Password
+                                            </button>
+                                            <button class="btn btn-sm btn-danger delete-staff" data-id="{{ user.id }}">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">No staff accounts found</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+                <h3 class="mt-4">Admin Account Management</h3>
+                <p>Create and manage admin accounts for full system access.</p>
+                
+                <div class="form-container">
+                    <h4>Create New Admin Account</h4>
+                    <form id="createAdminForm">
+                        <div class="form-group">
+                            <label for="adminUsername">Full Name</label>
+                            <input type="text" id="adminUsername" name="adminUsername" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminEmail">Email</label>
+                            <input type="email" id="adminEmail" name="adminEmail" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="adminPassword">Password</label>
+                            <input type="password" id="adminPassword" name="adminPassword">
+                            <small class="form-text text-muted">Leave blank to send verification email</small>
+                        </div>
+                        <input type="hidden" id="adminRole" value="admin">
+                        <button type="submit" class="btn btn-primary">Create Admin Account</button>
+                    </form>
+                </div>
+                
+                
+                <div class="admin-list">
+                    <h4>Existing Admin Accounts</h4>
+                    <div id="adminList" class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Full Name</th>
+                                    <th>Email</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminTableBody">
+                                {% if admin_users %}
+                                    {% for user in admin_users %}
+                                    <tr data-id="{{ user.id }}">
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td class="d-flex gap-2">
+                                            <button class="btn btn-sm btn-primary reset-password-admin" data-id="{{ user.id }}">
+                                                <i class="fas fa-key"></i> Reset Password
+                                            </button>
+                                            <button class="btn btn-sm btn-danger delete-admin" data-id="{{ user.id }}">
+                                                <i class="fas fa-trash"></i> Delete
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                {% else %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">No admin accounts found</td>
+                                    </tr>
+                                {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirm Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmButton">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/settings.js') }}"></script>
+{% endblock %} 

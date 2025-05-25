@@ -1,0 +1,382 @@
+{% extends "base.html" %}
+
+{% block title %}Room Management{% endblock %}
+
+{% block head %}
+{{ super() }}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/rooms.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="rooms-management-container">
+    <div class="rooms-header">
+        <h1>Room Management</h1>
+        <div class="header-actions">
+            <div class="date-selector">
+                <label for="bookingDate">View Bookings for:</label>
+                <input type="date" id="bookingDate" class="form-control" onchange="loadBookings()">
+            </div>
+            <button class="add-room-btn" onclick="showAddRoomModal()">
+                <i class="fas fa-plus"></i>
+                Add New Room
+            </button>
+        </div>
+    </div>
+
+    <div class="rooms-card">
+        <div class="rooms-table-container">
+            <table class="rooms-table">
+                <thead>
+                    <tr>
+                        <th>Room Name</th>
+                        <th>Capacity</th>
+                        <th>Description</th>
+                        <th>Bookings</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="roomsTableBody">
+                    <!-- Rooms will be loaded here dynamically -->
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Details Modal -->
+<div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-labelledby="bookingDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookingDetailsModalLabel">Room Bookings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="booking-details-container">
+                    <h6 class="room-name"></h6>
+                    <div class="booking-timeline">
+                        <!-- Bookings will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Room Modal -->
+<div class="modal fade" id="addRoomModal" tabindex="-1" aria-labelledby="addRoomModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addRoomModalLabel">Add New Room</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addRoomForm">
+                    <div class="mb-3">
+                        <label for="roomName" class="form-label">Room Name</label>
+                        <input type="text" class="form-control" id="roomName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="capacity" class="form-label">Capacity</label>
+                        <input type="number" class="form-control" id="capacity" min="1" value="6" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addRoom()">Add Room</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Room Modal -->
+<div class="modal fade" id="editRoomModal" tabindex="-1" aria-labelledby="editRoomModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editRoomModalLabel">Edit Room</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editRoomForm">
+                    <input type="hidden" id="editRoomId">
+                    <div class="mb-3">
+                        <label for="editRoomName" class="form-label">Room Name</label>
+                        <input type="text" class="form-control" id="editRoomName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCapacity" class="form-label">Capacity</label>
+                        <input type="number" class="form-control" id="editCapacity" min="1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateRoom()">Save Changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+{{ super() }}
+<script>
+let rooms = [];
+let selectedDate = new Date().toISOString().split('T')[0];
+
+// Set the date input to today's date and add event listener
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('bookingDate');
+    dateInput.value = selectedDate;
+    dateInput.addEventListener('change', loadBookings);
+    loadRooms(); // Load rooms when page loads
+});
+
+function loadRooms() {
+    fetch('/api/rooms')
+        .then(response => response.json())
+        .then(data => {
+            rooms = data;
+            displayRooms();
+            loadBookings(); // Load bookings after rooms are displayed
+        })
+        .catch(error => {
+            console.error('Error loading rooms:', error);
+            showToast('Error loading rooms', 'error');
+        });
+}
+
+function loadBookings() {
+    selectedDate = document.getElementById('bookingDate').value;
+    if (!selectedDate) return;
+
+    rooms.forEach(room => {
+        const bookingsCell = document.querySelector(`#bookings-${room.name}`);
+        if (bookingsCell) {
+            bookingsCell.innerHTML = '<div class="loading">Loading bookings...</div>';
+            
+            fetch(`/api/room-bookings/${encodeURIComponent(room.name)}?date=${selectedDate}`)
+                .then(response => response.json())
+                .then(data => {
+                    updateRoomBookings(room.name, data.bookings || []);
+                })
+                .catch(error => {
+                    console.error('Error loading bookings:', error);
+                    updateRoomBookings(room.name, []);
+                });
+        }
+    });
+}
+
+function updateRoomBookings(roomName, bookings) {
+    const bookingsCell = document.querySelector(`#bookings-${roomName}`);
+    if (!bookingsCell) return;
+
+    if (bookings.length > 0) {
+        const bookingsList = document.createElement('ul');
+        bookingsList.className = 'booked-students-list';
+        
+        bookings.forEach(booking => {
+            const listItem = document.createElement('li');
+            listItem.className = 'booking-item';
+            listItem.innerHTML = `
+                <div class="booking-info">
+                    <strong>${booking.name}</strong>
+                    <span class="booking-time">${booking.time}</span>
+                    ${booking.instrument ? `<span class="booking-instrument">${booking.instrument}</span>` : ''}
+                </div>
+            `;
+            bookingsList.appendChild(listItem);
+        });
+        
+        bookingsCell.innerHTML = '';
+        bookingsCell.appendChild(bookingsList);
+    } else {
+        bookingsCell.innerHTML = '<div class="no-bookings">No bookings for this date</div>';
+    }
+}
+
+function displayRooms() {
+    const tbody = document.getElementById('roomsTableBody');
+    tbody.innerHTML = '';
+    
+    rooms.forEach(room => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>${room.name}</td>
+            <td>${room.capacity}</td>
+            <td>${room.description || '-'}</td>
+            <td id="bookings-${room.name}" class="bookings-cell" onclick="showBookingDetails('${room.name}')">
+                <div class="loading">Loading bookings...</div>
+            </td>
+            <td>
+                <button class="btn btn-primary btn-sm" onclick="showEditRoomModal(${room.id})">
+                    <i class="fas fa-edit"></i>
+                    Edit
+                </button>
+                <button class="btn btn-danger btn-sm" onclick="deleteRoom(${room.id})">
+                    <i class="fas fa-trash"></i>
+                    Delete
+                </button>
+            </td>
+        `;
+        tbody.appendChild(tr);
+    });
+}
+
+function showBookingDetails(roomName) {
+    const modal = new bootstrap.Modal(document.getElementById('bookingDetailsModal'));
+    const modalTitle = document.querySelector('#bookingDetailsModal .room-name');
+    const timeline = document.querySelector('#bookingDetailsModal .booking-timeline');
+    
+    modalTitle.textContent = `Bookings for ${roomName} - ${selectedDate}`;
+    timeline.innerHTML = '<div class="loading">Loading bookings...</div>';
+    
+    modal.show();
+    
+    fetch(`/api/room-bookings/${encodeURIComponent(roomName)}?date=${selectedDate}`)
+        .then(response => response.json())
+        .then(data => {
+            if (data.bookings && data.bookings.length > 0) {
+                timeline.innerHTML = data.bookings.map(booking => `
+                    <div class="booking-slot">
+                        <div class="booking-time">${booking.time}</div>
+                        <div class="booking-info">
+                            <strong>${booking.name}</strong>
+                            <div class="booking-details">
+                                ${booking.instrument ? `<span class="instrument">${booking.instrument}</span>` : ''}
+                                <span class="duration">${booking.duration || '1 hour'}</span>
+                            </div>
+                        </div>
+                    </div>
+                `).join('');
+            } else {
+                timeline.innerHTML = '<div class="no-bookings">No bookings for this date</div>';
+            }
+        })
+        .catch(error => {
+            console.error('Error loading booking details:', error);
+            timeline.innerHTML = '<div class="error">Error loading bookings</div>';
+        });
+}
+
+function showAddRoomModal() {
+    document.getElementById('roomName').value = '';
+    document.getElementById('capacity').value = '6';
+    document.getElementById('description').value = '';
+    new bootstrap.Modal(document.getElementById('addRoomModal')).show();
+}
+
+function addRoom() {
+    const roomData = {
+        name: document.getElementById('roomName').value,
+        capacity: parseInt(document.getElementById('capacity').value),
+        description: document.getElementById('description').value
+    };
+    
+    fetch('/api/rooms', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(roomData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        bootstrap.Modal.getInstance(document.getElementById('addRoomModal')).hide();
+        loadRooms();
+        showToast('Room added successfully', 'success');
+    })
+    .catch(error => {
+        console.error('Error adding room:', error);
+        showToast(error.message || 'Error adding room', 'error');
+    });
+}
+
+function showEditRoomModal(roomId) {
+    const room = rooms.find(r => r.id === roomId);
+    if (room) {
+        document.getElementById('editRoomId').value = room.id;
+        document.getElementById('editRoomName').value = room.name;
+        document.getElementById('editCapacity').value = room.capacity;
+        document.getElementById('editDescription').value = room.description || '';
+        new bootstrap.Modal(document.getElementById('editRoomModal')).show();
+    }
+}
+
+function updateRoom() {
+    const roomId = document.getElementById('editRoomId').value;
+    const roomData = {
+        name: document.getElementById('editRoomName').value,
+        capacity: parseInt(document.getElementById('editCapacity').value),
+        description: document.getElementById('editDescription').value
+    };
+    
+    fetch(`/api/rooms/${roomId}`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(roomData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            throw new Error(data.error);
+        }
+        bootstrap.Modal.getInstance(document.getElementById('editRoomModal')).hide();
+        loadRooms();
+        showToast('Room updated successfully', 'success');
+    })
+    .catch(error => {
+        console.error('Error updating room:', error);
+        showToast(error.message || 'Error updating room', 'error');
+    });
+}
+
+function deleteRoom(roomId) {
+    if (confirm('Are you sure you want to delete this room?')) {
+        fetch(`/api/rooms/${roomId}`, {
+            method: 'DELETE'
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.error) {
+                throw new Error(data.error);
+            }
+            loadRooms();
+            showToast('Room deleted successfully', 'success');
+        })
+        .catch(error => {
+            console.error('Error deleting room:', error);
+            showToast(error.message || 'Error deleting room', 'error');
+        });
+    }
+}
+
+function showToast(message, type = 'success') {
+    const toast = document.createElement('div');
+    toast.className = `toast ${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    
+    setTimeout(() => {
+        toast.remove();
+    }, 3000);
+}
+</script>
+{% endblock %} 

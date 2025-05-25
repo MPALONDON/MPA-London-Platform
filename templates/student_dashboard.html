@@ -1,0 +1,157 @@
+{% extends "base.html" %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/student-dashboard.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="student-dashboard" data-user-id="{{ session['user']['id'] }}">
+    <div class="dashboard-header">
+        <div class="welcome-section">
+            <h1>Welcome, {{ session['user']['username'] }}!</h1>
+            <p class="welcome-message">Track your sessions and access your learning materials</p>
+        </div>
+        <div class="quick-stats">
+            <div class="stat-card">
+                <i class="fas fa-calendar-check"></i>
+                <div class="stat-info">
+                    <span class="stat-value" id="upcomingSessionsCount">0</span>
+                    <span class="stat-label">Upcoming Sessions</span>
+                </div>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-book"></i>
+                <div class="stat-info">
+                    <span class="stat-value" id="materialsCount">0</span>
+                    <span class="stat-label">Available Materials</span>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="dashboard-grid">
+        <!-- Calendar Section -->
+        <div class="dashboard-card calendar-card">
+            <div class="card-header">
+                <h3><i class="fas fa-calendar-alt"></i> Calendar</h3>
+                <div class="calendar-nav">
+                    <button id="prevMonth" class="btn btn-sm"><i class="fas fa-chevron-left"></i></button>
+                    <h3 id="currentMonth">September 2023</h3>
+                    <button id="nextMonth" class="btn btn-sm"><i class="fas fa-chevron-right"></i></button>
+                </div>
+            </div>
+            <div class="calendar-grid">
+                <div class="calendar-days">
+                    <div>Sun</div>
+                    <div>Mon</div>
+                    <div>Tue</div>
+                    <div>Wed</div>
+                    <div>Thu</div>
+                    <div>Fri</div>
+                    <div>Sat</div>
+                </div>
+                <div class="calendar-dates" id="calendarDates">
+                    <!-- Calendar dates will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sessions Section - Now spans full width -->
+        <div class="dashboard-card sessions-card full-width">
+            <div class="card-header">
+                <h3><i class="fas fa-clock"></i> <span id="sessionsTitle">Today's Sessions</span></h3>
+            </div>
+            <div class="card-body">
+                <div id="sessionsList" class="sessions-list">
+                    <!-- Sessions will be populated by JavaScript -->
+                    <div class="no-data">
+                        <i class="fas fa-calendar-times"></i>
+                        <p>No sessions scheduled for today.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Materials Section - Now outside the dashboard-grid -->
+    <div class="dashboard-card materials-card full-width">
+        <div class="card-header">
+            <h3><i class="fas fa-book"></i> Your Materials</h3>
+            <div class="materials-filter">
+                <input type="text" id="materialSearch" placeholder="Search materials..." class="form-control">
+                <select id="materialCategory" class="form-control">
+                    <option value="">All Categories</option>
+                </select>
+            </div>
+        </div>
+        <div class="card-body">
+            <div id="materialsList" class="materials-list">
+                <!-- Allocated materials will be populated by JavaScript -->
+                <div class="no-data">
+                    <i class="fas fa-book-open"></i>
+                    <p>No materials allocated to you yet.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if individual_feedbacks and individual_feedbacks|length > 0 %}
+    <div class="card mb-4 mt-4">
+        <div class="card-body">
+            <h3 class="card-title">Individual Feedback</h3>
+            <ul class="list-group">
+                {% for fb in individual_feedbacks %}
+                <li class="list-group-item">
+                    <div><strong>{{ fb.created_at.strftime('%Y-%m-%d %H:%M') }}</strong> by {{ fb.author.username if fb.author else 'Unknown' }}</div>
+                    <div>{{ process_feedback_links(fb.content) }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+    {% if group_feedbacks and group_feedbacks|length > 0 %}
+    <div class="card mb-4 mt-4">
+        <div class="card-body">
+            <h3 class="card-title">Group Feedback</h3>
+            <ul class="list-group">
+                {% for fb in group_feedbacks %}
+                <li class="list-group-item">
+                    <div><strong>{{ fb.created_at.strftime('%Y-%m-%d %H:%M') }}</strong> by {{ fb.author.username if fb.author else 'Unknown' }} for group: {{ fb.group.name }}</div>
+                    <div>{{ process_feedback_links(fb.content) }}</div>
+                </li>
+                {% endfor %}
+            </ul>
+        </div>
+    </div>
+    {% endif %}
+</div>
+
+<!-- Session Details Modal -->
+<div class="modal fade" id="sessionModal" tabindex="-1" aria-labelledby="sessionModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="sessionModalLabel">Session Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="sessionDetails">
+                    <!-- Session details will be loaded here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="addToCalendar">Add to Calendar</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/student-dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/student-material.js') }}"></script>
+{% endblock %} 

@@ -1,0 +1,130 @@
+{% extends "base.html" %}
+
+{% block title %}Contact Us{% endblock %}
+
+{% block head %}
+<style>
+    .contact-hero {
+        height: 40vh;
+        background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)),
+                    url("{{ url_for('static', filename='images/contact-hero.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #fff;
+        margin-top: 60px;
+    }
+
+    .contact-content {
+        max-width: 800px;
+        padding: 0 1rem;
+    }
+
+    .contact-content h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .contact-content p {
+        font-size: 1.2rem;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="contact-hero">
+    <div class="contact-content">
+        <h1>Contact Us</h1>
+        <p>Get in touch with us to start your musical journey</p>
+    </div>
+</section>
+
+<section class="contact-section">
+    <div class="contact-grid">
+        <div class="contact-info">
+            <h2>Get in Touch</h2>
+            <p>Have questions about our courses or want to enroll? We're here to help!</p>
+            
+            <div class="contact-item">
+                <i class="fas fa-map-marker-alt"></i>
+                <div>
+                    <h3>Address</h3>
+                    <p>30 Commerce Rd, Brentford, London</p>
+                </div>
+            </div>
+            
+            <div class="contact-item">
+                <i class="fas fa-phone"></i>
+                <div>
+                    <h3>Phone</h3>
+                    <p>+44 7472555229</p>
+                </div>
+            </div>
+            
+            <div class="contact-item">
+                <i class="fas fa-envelope"></i>
+                <div>
+                    <h3>Email</h3>
+                    <p>info@mpalondon.co.uk</p>
+                </div>
+            </div>
+            
+            <div class="contact-item">
+                <i class="fas fa-clock"></i>
+                <div>
+                    <h3>Opening Hours</h3>
+                    <p>Monday - Friday: 9:00 AM - 9:30 PM</p>
+                    <p>Saturday: 9:00 AM - 9:30 PM</p>
+                    <p>Sunday: 9:00 AM - 9:30 PM</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="contact-form-container">
+            <h2>Send us a Message</h2>
+            <form action="{{ url_for('contact') }}" method="POST" class="contact-form">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="subject">Subject</label>
+                    <input type="text" id="subject" name="subject" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Message</label>
+                    <textarea id="message" name="message" rows="5" required></textarea>
+                </div>
+                
+                <button type="submit" class="submit-button">Submit</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section class="map-section">
+    <div class="map-container">
+        <iframe 
+            src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d2484.1632876466347!2d-0.31243312302040046!3d51.48774597169256!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x48760dc2b5277dad%3A0x36059d532d6fc5bd!2s30%20Commerce%20Rd%2C%20Brentford%20TW8%208LE!5e0!3m2!1sen!2suk!4v1709856433411!5m2!1sen!2suk"
+            width="100%" 
+            height="450" 
+            style="border:0;" 
+            allowfullscreen="" 
+            loading="lazy" 
+            referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+    </div>
+</section>
+{% endblock %} 

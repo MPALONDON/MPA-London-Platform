@@ -1,0 +1,826 @@
+{% extends "base.html" %}
+
+{% block title %}Band Classes - Music Performance Academy{% endblock %}
+
+{% block head %}
+<style>
+    .page-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url("{{ url_for('static', filename='images/band.jpg') }}");
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 100px 0;
+        text-align: center;
+        margin-bottom: 50px;
+    }
+    
+    .page-header h1 {
+        font-size: 3rem;
+        margin-bottom: 1rem;
+    }
+    
+    .content {
+        padding: 50px 0;
+    }
+    
+    .schedule-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 40px;
+        margin-bottom: 30px;
+        height: 100%;
+    }
+    
+    .schedule-card h4 {
+        font-size: 1.8rem;
+        color: #333;
+        margin-bottom: 30px;
+        padding-bottom: 15px;
+        border-bottom: 2px solid var(--primary-color);
+    }
+    
+    .class-slot {
+        margin-bottom: 40px;
+        padding-bottom: 20px;
+        border-bottom: 1px solid #eee;
+    }
+    
+    .class-slot:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+    
+    .class-slot h5 {
+        font-size: 1.4rem;
+        color: var(--primary-color);
+        margin-bottom: 20px;
+        padding-left: 15px;
+        border-left: 4px solid var(--primary-color);
+    }
+    
+    .class-structure {
+        margin-left: 20px;
+    }
+    
+    .time-slot {
+        display: flex;
+        align-items: center;
+        margin-bottom: 15px;
+        background-color: #f8f9fa;
+        padding: 10px 15px;
+        border-radius: 6px;
+    }
+    
+    .time {
+        background-color: var(--primary-color);
+        color: white;
+        padding: 5px 12px;
+        border-radius: 4px;
+        margin-right: 15px;
+        font-weight: 600;
+        min-width: 120px;
+        text-align: center;
+    }
+    
+    .activity {
+        font-weight: 600;
+        color: #333;
+    }
+    
+    .class-structure p {
+        margin-bottom: 20px;
+        color: #666;
+        line-height: 1.6;
+    }
+    
+    .pricing-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        text-align: center;
+    }
+    
+    .price {
+        font-size: 2rem;
+        font-weight: 600;
+        color: #2a5298;
+        margin: 1rem 0;
+    }
+    
+    .price-period {
+        display: block;
+        font-size: 0.9rem;
+        color: #666;
+        font-weight: normal;
+    }
+    
+    .klarna-info {
+        background-color: #fff;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 15px;
+        border: 1px solid #f0f0f0;
+    }
+    
+    .klarna-info p {
+        margin-bottom: 10px;
+        color: #666;
+        font-weight: 500;
+    }
+    
+    .klarna-info ul {
+        list-style: none;
+        padding: 0;
+        margin: 0 auto;
+        text-align: center;
+    }
+    
+    .klarna-info li {
+        color: #666;
+        margin-bottom: 5px;
+        display: inline-block;
+    }
+    
+    .klarna-info li:not(:last-child):after {
+        content: "•";
+        color: #666;
+        margin: 0 5px;
+    }
+    
+    .trust-badges {
+        background-color: #f8f9fa;
+        padding: 15px;
+        border-radius: 8px;
+        margin-top: 20px;
+        border: 1px solid #f0f0f0;
+    }
+    
+    .trust-badges p {
+        color: #2c3e50;
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+    
+    .badges-grid {
+        display: flex;
+        justify-content: center;
+        gap: 20px;
+    }
+    
+    .badges-grid span {
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        color: #28a745;
+    }
+    
+    .features-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+    }
+    
+    .features-card ul {
+        list-style: none;
+        padding: 0;
+    }
+    
+    .features-card li {
+        margin-bottom: 10px;
+        padding-left: 25px;
+        position: relative;
+    }
+    
+    .features-card li:before {
+        content: "✓";
+        color: var(--primary-color);
+        position: absolute;
+        left: 0;
+        font-weight: bold;
+    }
+    
+    .feature-card, .testimonial-card {
+        background-color: #fff;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        height: 100%;
+        transition: transform 0.3s ease;
+    }
+    
+    .feature-card:hover, .testimonial-card:hover {
+        transform: translateY(-10px);
+    }
+    
+    .feature-card h3, .testimonial-card h3 {
+        color: var(--primary-color);
+        margin-bottom: 1rem;
+    }
+    
+    .testimonial-card {
+        text-align: center;
+        padding: 40px 30px;
+    }
+    
+    .testimonial-card p {
+        font-style: italic;
+        margin-bottom: 1.5rem;
+    }
+    
+    .student-name {
+        font-weight: 600;
+        color: var(--primary-color);
+    }
+    
+    .cta-section {
+        padding: 100px 0;
+        background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.1;
+        z-index: 0;
+    }
+    
+    .cta-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .cta-section h2 {
+        color: #2c3e50;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .cta-section p {
+        color: #34495e;
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+    }
+    
+    .cta-section .btn {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+    }
+    
+    .cta-section .btn-primary {
+        background-color: #2c3e50;
+        color: white;
+        border: none;
+    }
+    
+    .cta-section .btn-primary:hover {
+        background-color: #34495e;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .cta-section .btn-secondary {
+        background-color: transparent;
+        color: #2c3e50;
+        border: 2px solid #2c3e50;
+    }
+    
+    .cta-section .btn-secondary:hover {
+        background-color: rgba(44, 62, 80, 0.05);
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .cta-section {
+            padding: 60px 0;
+        }
+        
+        .cta-section h2 {
+            font-size: 2rem;
+        }
+        
+        .cta-buttons {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .cta-section .btn {
+            width: 100%;
+        }
+    }
+
+    .contact-form-section {
+        padding: 80px 0;
+        background-color: #ffffff !important;
+    }
+    
+    .contact-form {
+        background-color: white;
+        padding: 30px;
+        border-radius: 8px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-label {
+        font-weight: 600;
+        color: #333;
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-control {
+        border: 1px solid #ddd;
+        padding: 0.75rem;
+        border-radius: 4px;
+        transition: border-color 0.3s ease;
+    }
+    
+    .form-control:focus {
+        border-color: var(--primary-color);
+        box-shadow: 0 0 0 0.2rem rgba(var(--primary-color-rgb), 0.25);
+    }
+    
+    .form-control[readonly] {
+        background-color: #f8f9fa;
+    }
+    
+    .contact-form .btn-primary {
+        padding: 0.75rem 2rem;
+        font-size: 1.1rem;
+    }
+    
+    @media (max-width: 768px) {
+        .contact-form-section {
+            padding: 60px 0;
+        }
+    }
+
+    .term-table-section {
+        padding: 80px 0;
+        background-color: #ffffff !important;
+    }
+
+    .term-table-section h2 {
+        color: var(--primary-color);
+        margin-bottom: 2rem;
+    }
+
+    .table {
+        background-color: white;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .table thead th {
+        background-color: var(--primary-color);
+        color: white;
+        border: none;
+        padding: 1rem;
+        font-weight: 600;
+    }
+
+    .table tbody td {
+        padding: 1rem;
+        vertical-align: middle;
+        border-color: #dee2e6;
+    }
+
+    .table tbody tr:hover {
+        background-color: rgba(var(--primary-color-rgb), 0.05);
+    }
+
+    @media (max-width: 768px) {
+        .term-table-section {
+            padding: 60px 0;
+        }
+    }
+
+    .bg-cream {
+        background-color: #f5e6d3;
+    }
+    
+    .bg-white {
+        background-color: #ffffff;
+    }
+
+    .program-features {
+        padding: 80px 0;
+        background-color: #ffffff !important;
+    }
+
+    .btn-primary {
+        background-color: #dc3545;
+        color: white;
+        border: none;
+        transition: background 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+    
+    .btn-primary:hover {
+        background-color: #b52a37;
+        color: #fff;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        text-decoration: none;
+    }
+    
+    .scroll-to-form {
+        display: inline-block;
+        padding: 12px;
+        font-weight: 500;
+        margin-top: 1rem;
+    }
+    
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header band-header">
+    <div class="container">
+        <h1>Band Classes</h1>
+        <p>Experience the thrill of playing in a real band with our structured group sessions</p>
+    </div>
+</div>
+
+<div class="bg-white">
+    <section class="content">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <h2>Our Band Class Structure</h2>
+                    <p>At Music Performance Academy, we offer a comprehensive band class program designed to take you from beginner to advanced levels. Our structured approach combines focused instrument-specific training with full band experience, giving you the best of both worlds.</p>
+                    
+                    <div class="content-section mt-4">
+                        <h3>Song Selection & Preparation</h3>
+                        <p>We carefully curate song lists for each level before the term begins, designed to challenge and expand your musical horizons. These selections may include technically demanding pieces or songs outside your usual style, but we provide the list in advance so you can:</p>
+                        <ul>
+                            <li>Practice challenging sections independently</li>
+                            <li>Get additional support from our 1-2-1 teachers if needed</li>
+                            <li>Familiarize yourself with the material</li>
+                        </ul>
+                        <p>All students are encouraged to try playing the songs beforehand, allowing us to dive straight into full band rehearsals and focus on performance dynamics and group interaction.</p>
+                    </div>
+
+                    <div class="content-section mt-4">
+                        <h3>Performance & Commitment</h3>
+                        <p>Each term culminates in an exciting live performance, giving you the opportunity to showcase your progress and celebrate your achievements with friends and family.</p>
+                        <p>To ensure the best experience for everyone, we ask that students commit to attending at least 80% of the sessions. Your regular participation is crucial for the group's development and success.</p>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="pricing-card">
+                        <h3>Band Class</h3>
+                        <div class="price">
+                            {% set price = get_price('band_class') %}
+                            {% if price is number and price != price|int %}
+                                £{{ "%.2f"|format(price) }}
+                            {% else %}
+                                £{{ price }}
+                            {% endif %}
+                            <span class="price-period">per term</span>
+                        </div>
+                        <p>Join our weekly band classes and learn to play in a group setting</p>
+                        <div class="klarna-info">
+                            <p><i class="fas fa-credit-card"></i> Available with Klarna:</p>
+                            <ul>
+                                <li>Pay now</li>
+                                <li>Pay in 30 days</li>
+                                <li>3 interest-free payments of £{{ (price / 3)|round(2) }}</li>
+                            </ul>
+                        </div>
+                        <div class="trust-badges">
+                            <p><i class="fas fa-shield-alt"></i> All tutors are:</p>
+                            <div class="badges-grid">
+                                <span><i class="fas fa-check-circle"></i>
+                                    DBS Checked
+                                </span>
+                                <span><i class="fas fa-check-circle"></i>
+                                    Safeguarding Certified
+                                </span>
+                            </div>
+                        </div>
+                        <a href="#contact-form-section" class="btn btn-primary scroll-to-form" style="margin-top: 20px;">Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="bg-cream">
+    <section class="content">
+        <div class="container">
+            <div class="row mt-5">
+                <div class="col-12 text-center">
+                    <h2 class="mb-4">Class Schedule</h2>
+                </div>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="schedule-card">
+                        <h4>Weekday Evening Sessions - Adults Only (4:30pm - 9:30pm)</h4>
+                        <div class="class-slot">
+                            <h5>Beginners Band (4:30pm - 6:00pm)</h5>
+                            <div class="class-structure">
+                                <div class="time-slot">
+                                    <span class="time">4:30pm - 5:00pm</span>
+                                    <span class="activity">Instrument Breakout Sessions</span>
+                                </div>
+                                <p>Participants divide into instrument-specific groups (drums, bass, guitar, and vocals) for focused practice with dedicated specialist teachers.</p>
+                                <div class="time-slot">
+                                    <span class="time">5:00pm - 6:00pm</span>
+                                    <span class="activity">Full Band Rehearsal</span>
+                                </div>
+                                <p>All groups come together to play through songs as a full band, using professional-grade live equipment to experience authentic band performance.</p>
+                            </div>
+                        </div>
+
+                        <div class="class-slot">
+                            <h5>Intermediate Band (6:15pm - 7:45pm)</h5>
+                            <div class="class-structure">
+                                <div class="time-slot">
+                                    <span class="time">6:15pm - 6:45pm</span>
+                                    <span class="activity">Instrument Breakout Sessions</span>
+                                </div>
+                                <p>Advanced technique workshops and song preparation with specialist teachers.</p>
+                                <div class="time-slot">
+                                    <span class="time">6:45pm - 7:45pm</span>
+                                    <span class="activity">Full Band Rehearsal</span>
+                                </div>
+                                <p>Workshop songs with greater complexity and tighter performance expectations, preparing you for advanced playing.</p>
+                            </div>
+                        </div>
+
+                        <div class="class-slot">
+                            <h5>Advanced Band (8:00pm - 9:30pm)</h5>
+                            <div class="class-structure">
+                                <div class="time-slot">
+                                    <span class="time">8:00pm - 9:30pm</span>
+                                    <span class="activity">Full Band Rehearsal</span>
+                                </div>
+                                <p>Intensive small group sessions focused on high-level performance and musical excellence. No instrument-specific guidance - pure band experience.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="schedule-card">
+                        <h4>Weekend Band Classes (9:00am - 5:30pm)</h4>
+                        <div class="class-slot">
+                            <h5>All Ages Welcome</h5>
+                            <div class="class-structure">
+                                <p>Our weekend band classes are designed for musicians of all ages and skill levels. Students are placed in appropriate groups based on their experience and musical compatibility. Timeslots are allocated by our instructors to ensure the best possible group dynamics and learning experience.</p>
+                                
+                                <div class="class-slot">
+                                    <h5>Group 1 (9:00am - 10:30am)</h5>
+                                    <div class="class-structure">
+                                        <div class="time-slot">
+                                            <span class="time">9:00am - 9:30am</span>
+                                            <span class="activity">Instrument Breakout Sessions</span>
+                                        </div>
+                                        <p>Participants divide into instrument-specific groups (drums, bass, guitar, and vocals) for focused practice with dedicated specialist teachers.</p>
+                                        <div class="time-slot">
+                                            <span class="time">9:30am - 10:30am</span>
+                                            <span class="activity">Full Band Rehearsal</span>
+                                        </div>
+                                        <p>All groups come together to play through songs as a full band, using professional-grade live equipment to experience authentic band performance.</p>
+                                    </div>
+                                </div>
+
+                                <div class="class-slot">
+                                    <h5>Group 2 (10:45am - 12:15pm)</h5>
+                                    <div class="class-structure">
+                                        <div class="time-slot">
+                                            <span class="time">10:45am - 11:15am</span>
+                                            <span class="activity">Instrument Breakout Sessions</span>
+                                        </div>
+                                        <p>Participants divide into instrument-specific groups for focused practice with dedicated specialist teachers.</p>
+                                        <div class="time-slot">
+                                            <span class="time">11:15am - 12:15pm</span>
+                                            <span class="activity">Full Band Rehearsal</span>
+                                        </div>
+                                        <p>All groups come together for full band rehearsal and performance practice.</p>
+                                    </div>
+                                </div>
+
+                                <div class="class-slot">
+                                    <h5>Group 3 (12:30pm - 2:00pm)</h5>
+                                    <div class="class-structure">
+                                        <div class="time-slot">
+                                            <span class="time">12:30pm - 1:00pm</span>
+                                            <span class="activity">Instrument Breakout Sessions</span>
+                                        </div>
+                                        <p>Participants divide into instrument-specific groups for focused practice with dedicated specialist teachers.</p>
+                                        <div class="time-slot">
+                                            <span class="time">1:00pm - 2:00pm</span>
+                                            <span class="activity">Full Band Rehearsal</span>
+                                        </div>
+                                        <p>All groups come together for full band rehearsal and performance practice.</p>
+                                    </div>
+                                </div>
+
+                                <div class="class-slot">
+                                    <h5>Group 4 (2:15pm - 3:45pm)</h5>
+                                    <div class="class-structure">
+                                        <div class="time-slot">
+                                            <span class="time">2:15pm - 2:45pm</span>
+                                            <span class="activity">Instrument Breakout Sessions</span>
+                                        </div>
+                                        <p>Participants divide into instrument-specific groups for focused practice with dedicated specialist teachers.</p>
+                                        <div class="time-slot">
+                                            <span class="time">2:45pm - 3:45pm</span>
+                                            <span class="activity">Full Band Rehearsal</span>
+                                        </div>
+                                        <p>All groups come together for full band rehearsal and performance practice.</p>
+                                    </div>
+                                </div>
+
+                                <div class="class-slot">
+                                    <h5>Adults Group (4:00pm - 5:30pm)</h5>
+                                    <div class="class-structure">
+                                        <div class="time-slot">
+                                            <span class="time">4:00pm - 4:30pm</span>
+                                            <span class="activity">Instrument Breakout Sessions</span>
+                                        </div>
+                                        <p>Participants divide into instrument-specific groups for focused practice with dedicated specialist teachers.</p>
+                                        <div class="time-slot">
+                                            <span class="time">4:30pm - 5:30pm</span>
+                                            <span class="activity">Full Band Rehearsal</span>
+                                        </div>
+                                        <p>All groups come together for full band rehearsal and performance practice.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="bg-white">
+    <section class="term-table-section">
+        <div class="container">
+            <h2 class="text-center mb-4">Term Dates</h2>
+            <div class="table-responsive">
+                <table class="table table-bordered">
+                    <thead>
+                        <tr>
+                            <th>Term</th>
+                            <th>Start Date</th>
+                            <th>End Date</th>
+                            <th>Duration</th>
+                            <th>Half Term Break</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for term in terms %}
+                        <tr>
+                            <td>{{ term.name }}</td>
+                            <td>{{ term.start_date.strftime('%d %B %Y') }}</td>
+                            <td>{{ term.end_date.strftime('%d %B %Y') }}</td>
+                            <td>{{ term.duration_weeks }} weeks</td>
+                            <td>
+                                {% if term.has_break %}
+                                    {{ term.break_start_date.strftime('%d %B %Y') }} - {{ term.break_end_date.strftime('%d %B %Y') }}
+                                {% else %}
+                                    No break
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="bg-white">
+    <div class="program-features mt-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Why Choose Our Band Classes?</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <h3>Structured Learning</h3>
+                        <p>Our unique combination of instrument-specific training and full band experience ensures comprehensive musical development.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <h3>Professional Environment</h3>
+                        <p>Experience authentic band performance with professional-grade equipment and expert guidance.</p>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="feature-card">
+                        <h3>Progressive Development</h3>
+                        <p>Move through our carefully designed levels, from beginner to advanced, at your own pace.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white">
+    <div class="student-success mt-5">
+        <div class="container">
+            <h2 class="text-center mb-4">Student Success Stories</h2>
+            <div class="row">
+                <div class="col-md-4 mb-4">
+                    <div class="testimonial-card">
+                        <p>"The structured approach helped me progress from complete beginner to playing in a band within months."</p>
+                        <div class="student-name">- James, Beginner Band</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="testimonial-card">
+                        <p>"The combination of instrument-specific training and full band experience is perfect for developing all aspects of musicianship."</p>
+                        <div class="student-name">- Sarah, Intermediate Band</div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-4">
+                    <div class="testimonial-card">
+                        <p>"The advanced band class has taken my playing to a whole new level. The focus on performance and musicality is exceptional."</p>
+                        <div class="student-name">- David, Advanced Band</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="bg-white">
+    <section class="contact-form-section">
+        <div class="container">
+            <h2 class="text-center mb-4">Have Questions About Band Classes?</h2>
+            <p class="text-center mb-5">Fill out the form below and we'll get back to you as soon as possible.</p>
+            
+            <div class="row justify-content-center">
+                <div class="col-md-8">
+                    <form action="{{ url_for('contact') }}" method="POST" class="contact-form">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="name" class="form-label">Name</label>
+                                <input type="text" class="form-control" id="name" name="name" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="subject" class="form-label">Subject</label>
+                            <input type="text" class="form-control" id="subject" name="subject" value="Band Classes Inquiry" readonly>
+                        </div>
+                        <div class="mb-3">
+                            <label for="message" class="form-label">Message</label>
+                            <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="btn btn-primary">Send Message</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<div class="bg-cream">
+    <section class="cta-section">
+        <div class="container">
+            <div class="cta-content">
+                <h2>Ready to Join the Band?</h2>
+                <p>Take the first step towards becoming part of our musical community. Our expert instructors are ready to guide you on this exciting musical journey.</p>
+                <div class="cta-buttons">
+                    <a href="#contact-form-section" class="btn btn-primary scroll-to-form">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %} 

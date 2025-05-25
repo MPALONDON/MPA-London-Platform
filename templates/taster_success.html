@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Taster Session Requested - Music Performance Academy{% endblock %}
+
+{% block content %}
+<section class="success-hero">
+    <div class="success-content">
+        <h1>Taster Session Requested!</h1>
+        <p>Thank you for your interest in our music programs. We'll contact you shortly to schedule your free taster session.</p>
+    </div>
+</section>
+
+<section class="success-section">
+    <div class="success-container">
+        <div class="success-message">
+            <i class="fas fa-check-circle success-icon"></i>
+            <h2>Your request has been received</h2>
+            <p>We're excited to have you join us for a free taster session! Our team will review your information and contact you within 24-48 hours to confirm your appointment.</p>
+            <div class="success-actions">
+                <a href="{{ url_for('lessons') }}" class="btn btn-primary">Explore Our Lessons</a>
+                <a href="{{ url_for('home') }}" class="btn btn-secondary">Return Home</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

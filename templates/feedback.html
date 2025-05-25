@@ -1,0 +1,227 @@
+{% extends "base.html" %}
+{% block title %}Feedback{% endblock %}
+{% block content %}
+<div class="container mt-5" style="margin-top: 6rem !important; margin-bottom: 4rem !important;">
+    <h1>Feedback for Students & Groups</h1>
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4 class="card-title">Write Feedback</h4>
+            <form id="feedbackForm">
+                <div class="mb-3">
+                    <label for="feedbackType" class="form-label">Feedback For</label>
+                    <select id="feedbackType" class="form-control" required>
+                        <option value="student">Student</option>
+                        <option value="group">Group</option>
+                    </select>
+                </div>
+                <div class="mb-3" id="studentSelectDiv">
+                    <label for="studentSelect" class="form-label">Select Student</label>
+                    <select id="studentSelect" class="form-control">
+                        <option value="">-- Select a student --</option>
+                        {% for student in students %}
+                        <option value="{{ student.id }}">{{ student.username }} ({{ student.email }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3" id="groupSelectDiv" style="display:none;">
+                    <label for="groupSelect" class="form-label">Select Group</label>
+                    <select id="groupSelect" class="form-control">
+                        <option value="">-- Select a group --</option>
+                        {% for group in groups %}
+                        <option value="{{ group.id }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="feedbackContent" class="form-label">Feedback</label>
+                    <textarea id="feedbackContent" class="form-control" rows="3" required placeholder="Write your feedback here. You can include links like [text](url) or paste URLs directly."></textarea>
+                    <div class="form-text">💡 You can add links using [text](url) format or paste URLs directly. Example: [Practice video](https://youtube.com/watch?v=abc123)</div>
+                </div>
+                <button type="submit" class="btn btn-primary">Submit Feedback</button>
+                <div id="feedbackSuccess" class="text-success mt-2" style="display:none;">Feedback submitted!</div>
+            </form>
+        </div>
+    </div>
+    <div class="card">
+        <div class="card-body">
+            <h4 class="card-title">All Feedback</h4>
+            <div class="row mb-3">
+                <div class="col-md-3">
+                    <label for="filterType" class="form-label">Filter by Type</label>
+                    <select id="filterType" class="form-control">
+                        <option value="all">All Feedback</option>
+                        <option value="individual">Individual</option>
+                        <option value="group">Group</option>
+                    </select>
+                </div>
+                <div class="col-md-3" id="filterStudentDiv">
+                    <label for="filterStudent" class="form-label">Select Student</label>
+                    <select id="filterStudent" class="form-control">
+                        <option value="all">All Students</option>
+                        {% for student in students %}
+                        <option value="{{ student.id }}">{{ student.username }} ({{ student.email }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="col-md-3" id="filterGroupDiv" style="display:none;">
+                    <label for="filterGroup" class="form-label">Select Group</label>
+                    <select id="filterGroup" class="form-control">
+                        <option value="all">All Groups</option>
+                        {% for group in groups %}
+                        <option value="{{ group.id }}">{{ group.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div id="feedbackLists">
+                <div id="individualFeedbackSection">
+                    <h5 class="mt-4">Individual Feedback</h5>
+                    {% for student in students %}
+                        <div class="student-feedback-list" data-student-id="{{ student.id }}">
+                            <h6 class="mt-3">{{ student.username }} ({{ student.email }})</h6>
+                            <ul class="list-group mb-3">
+                            {% for fb in feedback_by_student.get(student.id, []) %}
+                                <li class="list-group-item" id="feedback-{{ fb.id }}">
+                                    <div><strong>{{ fb.created_at.strftime('%Y-%m-%d %H:%M') }}</strong> by {{ fb.author_username }}</div>
+                                    <div>{{ process_feedback_links(fb.content) }}</div>
+                                    {% if session['user']['role'] == 'admin' or session['user']['id'] == fb.author_id %}
+                                    <button class="btn btn-danger btn-sm mt-2 delete-feedback-btn" data-feedback-id="{{ fb.id }}">Delete</button>
+                                    {% endif %}
+                                </li>
+                            {% else %}
+                                <li class="list-group-item text-muted">No feedback yet.</li>
+                            {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+                <div id="groupFeedbackSection">
+                    <h5 class="mt-4">Group Feedback</h5>
+                    {% for group in groups %}
+                        <div class="group-feedback-list" data-group-id="{{ group.id }}">
+                            <h6 class="mt-3">{{ group.name }}</h6>
+                            <ul class="list-group mb-3">
+                            {% for fb in feedback_by_group.get(group.id, []) %}
+                                <li class="list-group-item" id="feedback-{{ fb.id }}">
+                                    <div><strong>{{ fb.created_at.strftime('%Y-%m-%d %H:%M') }}</strong> by {{ fb.author_username }}</div>
+                                    <div>{{ process_feedback_links(fb.content) }}</div>
+                                    {% if session['user']['role'] == 'admin' or session['user']['id'] == fb.author_id %}
+                                    <button class="btn btn-danger btn-sm mt-2 delete-feedback-btn" data-feedback-id="{{ fb.id }}">Delete</button>
+                                    {% endif %}
+                                </li>
+                            {% else %}
+                                <li class="list-group-item text-muted">No feedback yet.</li>
+                            {% endfor %}
+                            </ul>
+                        </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+document.getElementById('feedbackType').addEventListener('change', function() {
+    if (this.value === 'student') {
+        document.getElementById('studentSelectDiv').style.display = '';
+        document.getElementById('groupSelectDiv').style.display = 'none';
+    } else {
+        document.getElementById('studentSelectDiv').style.display = 'none';
+        document.getElementById('groupSelectDiv').style.display = '';
+    }
+});
+document.getElementById('feedbackForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const type = document.getElementById('feedbackType').value;
+    const studentId = document.getElementById('studentSelect').value;
+    const groupId = document.getElementById('groupSelect').value;
+    const content = document.getElementById('feedbackContent').value;
+    const successMsg = document.getElementById('feedbackSuccess');
+    let payload = { content };
+    if (type === 'student') payload.student_id = studentId;
+    else payload.group_id = groupId;
+    if ((!payload.student_id && !payload.group_id) || !content) return;
+    const res = await fetch('/api/feedback', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+    });
+    if (res.ok) {
+        successMsg.style.display = 'block';
+        setTimeout(() => location.reload(), 1000);
+    }
+});
+document.querySelectorAll('.delete-feedback-btn').forEach(btn => {
+    btn.addEventListener('click', async function() {
+        if (!confirm('Are you sure you want to delete this feedback?')) return;
+        const feedbackId = this.getAttribute('data-feedback-id');
+        const res = await fetch(`/api/feedback/${feedbackId}`, { method: 'DELETE' });
+        if (res.ok) {
+            document.getElementById(`feedback-${feedbackId}`).remove();
+        } else {
+            alert('Failed to delete feedback.');
+        }
+    });
+});
+
+// Filtering logic
+const filterType = document.getElementById('filterType');
+const filterStudent = document.getElementById('filterStudent');
+const filterGroup = document.getElementById('filterGroup');
+const filterStudentDiv = document.getElementById('filterStudentDiv');
+const filterGroupDiv = document.getElementById('filterGroupDiv');
+const individualSection = document.getElementById('individualFeedbackSection');
+const groupSection = document.getElementById('groupFeedbackSection');
+
+function updateFilters() {
+    const type = filterType.value;
+    if (type === 'all') {
+        filterStudentDiv.style.display = '';
+        filterGroupDiv.style.display = '';
+        individualSection.style.display = '';
+        groupSection.style.display = '';
+    } else if (type === 'individual') {
+        filterStudentDiv.style.display = '';
+        filterGroupDiv.style.display = 'none';
+        individualSection.style.display = '';
+        groupSection.style.display = 'none';
+    } else if (type === 'group') {
+        filterStudentDiv.style.display = 'none';
+        filterGroupDiv.style.display = '';
+        individualSection.style.display = 'none';
+        groupSection.style.display = '';
+    }
+    updateFeedbackLists();
+}
+
+function updateFeedbackLists() {
+    // Individual feedback
+    const selectedStudent = filterStudent.value;
+    document.querySelectorAll('.student-feedback-list').forEach(div => {
+        if (filterType.value !== 'group' && (selectedStudent === 'all' || div.getAttribute('data-student-id') === selectedStudent)) {
+            div.style.display = '';
+        } else {
+            div.style.display = 'none';
+        }
+    });
+    // Group feedback
+    const selectedGroup = filterGroup.value;
+    document.querySelectorAll('.group-feedback-list').forEach(div => {
+        if (filterType.value !== 'individual' && (selectedGroup === 'all' || div.getAttribute('data-group-id') === selectedGroup)) {
+            div.style.display = '';
+        } else {
+            div.style.display = 'none';
+        }
+    });
+}
+
+filterType.addEventListener('change', updateFilters);
+filterStudent.addEventListener('change', updateFeedbackLists);
+filterGroup.addEventListener('change', updateFeedbackLists);
+
+// Initialize filters
+updateFilters();
+</script>
+{% endblock %} 

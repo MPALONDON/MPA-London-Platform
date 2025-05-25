@@ -1,0 +1,2481 @@
+{% extends "base.html" %}
+
+{% block title %}Music Performance Academy - Home{% endblock %}
+
+{% block head %}
+<style>
+    /* Existing styles */
+    .extra-curricular {
+        background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+        padding: 80px 0;
+        position: relative;
+    }
+
+    .extra-curricular .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .extra-curricular h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #2c3e50;
+    }
+
+    .extra-curricular .section-intro {
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto 40px;
+        color: #666;
+    }
+
+    .extra-curricular-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+    }
+
+    .extra-curricular-card {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        padding: 40px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+        backdrop-filter: blur(5px);
+    }
+
+    .extra-curricular-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .extra-curricular-icon {
+        font-size: 2.5rem;
+        color: #3498db;
+        margin-bottom: 20px;
+    }
+
+    .extra-curricular-card h3 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+
+    .extra-curricular-features {
+        list-style: none;
+        padding: 0;
+        margin: 20px 0;
+        text-align: left;
+    }
+
+    .extra-curricular-features li {
+        margin-bottom: 10px;
+        color: #666;
+    }
+
+    .extra-curricular-features i {
+        color: #3498db;
+        margin-right: 10px;
+    }
+
+    .extra-curricular-btn {
+        display: inline-block;
+        background: #3498db;
+        color: white;
+        padding: 12px 30px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-weight: bold;
+        transition: all 0.3s ease;
+        margin-top: 20px;
+    }
+
+    .extra-curricular-btn:hover {
+        background: #2980b9;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        .extra-curricular-card {
+            padding: 30px;
+        }
+    }
+
+    .cta-section {
+        background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
+        padding: 100px 0;
+        position: relative;
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.1;
+        z-index: 0;
+    }
+    
+    .cta-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .cta-section h2 {
+        color: #2c3e50;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .cta-section p {
+        color: #34495e;
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+    }
+    
+    .cta-section .btn {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+    }
+    
+    .cta-section .btn-primary {
+        background-color: #2c3e50;
+        color: white;
+        border: none;
+    }
+    
+    .cta-section .btn-primary:hover {
+        background-color: #34495e;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .cta-section .btn-secondary {
+        background-color: transparent;
+        color: #2c3e50;
+        border: 2px solid #2c3e50;
+    }
+    
+    .cta-section .btn-secondary:hover {
+        background-color: rgba(44, 62, 80, 0.05);
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .cta-section {
+            padding: 60px 0;
+        }
+        
+        .cta-section h2 {
+            font-size: 2rem;
+        }
+        
+        .cta-buttons {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .cta-section .btn {
+            width: 100%;
+        }
+    }
+
+    /* Student Portal Benefits Section Styles */
+    .student-portal-benefits {
+        background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+        padding: 100px 0;
+        color: #2c3e50;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .student-portal-benefits::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.1;
+        z-index: 0;
+    }
+
+    .benefits-content {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+        position: relative;
+        z-index: 1;
+    }
+
+    .benefits-text h2 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+        font-size: 2.5rem;
+        font-weight: 700;
+    }
+
+    .highlight-different {
+        position: relative;
+        display: inline-block;
+        color: #2c3e50;
+        z-index: 1;
+    }
+
+    .highlight-different::before {
+        content: '';
+        position: absolute;
+        top: 15%;
+        left: -3px;
+        right: -3px;
+        bottom: 15%;
+        background: #ffeb3b;
+        opacity: 0.7;
+        z-index: -1;
+        transform: rotate(-1deg) skew(-2deg);
+        border-radius: 3px;
+        box-shadow: 
+            inset 0 0 0 1px rgba(255, 193, 7, 0.3),
+            0 0 0 1px rgba(255, 193, 7, 0.1);
+    }
+
+    .highlight-different::after {
+        content: '';
+        position: absolute;
+        top: 20%;
+        left: -2px;
+        right: -2px;
+        bottom: 20%;
+        background: linear-gradient(45deg, 
+            rgba(255, 235, 59, 0.4) 0%, 
+            rgba(255, 235, 59, 0.6) 25%, 
+            rgba(255, 235, 59, 0.5) 50%, 
+            rgba(255, 235, 59, 0.7) 75%, 
+            rgba(255, 235, 59, 0.4) 100%);
+        z-index: -1;
+        transform: rotate(0.5deg) skew(1deg);
+        border-radius: 2px;
+        clip-path: polygon(
+            2% 0%, 
+            98% 5%, 
+            100% 95%, 
+            3% 100%, 
+            0% 8%
+        );
+    }
+
+    .benefits-text .section-intro {
+        color: #34495e;
+        font-size: 1.2rem;
+        margin-bottom: 40px;
+        line-height: 1.6;
+    }
+
+    .benefits-list {
+        display: grid;
+        gap: 30px;
+    }
+
+    .benefit-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 20px;
+        background: rgba(255, 255, 255, 0.9);
+        padding: 25px;
+        border-radius: 15px;
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(44, 62, 80, 0.1);
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .benefit-item:hover {
+        background: rgba(255, 255, 255, 1);
+        transform: translateY(-5px);
+        box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+
+    .benefit-icon {
+        background: #2c3e50;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .benefit-icon i {
+        font-size: 1.2rem;
+        color: white;
+    }
+
+    .benefit-content h4 {
+        color: #2c3e50;
+        margin-bottom: 8px;
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+
+    .benefit-content p {
+        color: #34495e;
+        margin: 0;
+        line-height: 1.5;
+    }
+
+    /* Portal Mockup Styles */
+    .benefits-visual {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 40px;
+        flex-wrap: wrap;
+    }
+
+    .portal-mockup {
+        perspective: 1000px;
+    }
+
+    .phone-mockup {
+        perspective: 1000px;
+    }
+
+    .device-frame {
+        width: 360px;
+        height: 270px;
+        background: linear-gradient(145deg, #3a3a3c, #1d1d1f);
+        border-radius: 25px;
+        padding: 12px;
+        box-shadow: 
+            0 25px 60px rgba(0, 0, 0, 0.5),
+            0 10px 25px rgba(0, 0, 0, 0.3),
+            0 3px 8px rgba(0, 0, 0, 0.2),
+            inset 0 2px 0 rgba(255, 255, 255, 0.15),
+            inset 0 -2px 0 rgba(0, 0, 0, 0.4),
+            inset 2px 0 0 rgba(255, 255, 255, 0.05),
+            inset -2px 0 0 rgba(0, 0, 0, 0.2);
+        transform: rotateY(-15deg) rotateX(5deg);
+        transition: all 0.4s ease;
+        position: relative;
+        border: 1px solid #1d1d1f;
+    }
+
+    .device-frame::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        right: 2px;
+        bottom: 2px;
+        background: linear-gradient(145deg, transparent, rgba(0, 0, 0, 0.1));
+        border-radius: 23px;
+        pointer-events: none;
+    }
+
+    /* iPad camera positioned correctly for landscape */
+    .device-frame::before {
+        content: '';
+        position: absolute;
+        top: 15px;
+        right: 15px;
+        width: 8px;
+        height: 8px;
+        background: radial-gradient(circle, #000 30%, #1a1a1a 70%);
+        border-radius: 50%;
+        box-shadow: 
+            inset 0 1px 2px rgba(0, 0, 0, 0.6),
+            0 0 0 1px rgba(255, 255, 255, 0.1);
+        z-index: 1;
+    }
+
+    .device-frame:hover {
+        transform: rotateY(-8deg) rotateX(2deg);
+        box-shadow: 
+            0 35px 80px rgba(0, 0, 0, 0.6),
+            0 15px 35px rgba(0, 0, 0, 0.4),
+            0 5px 12px rgba(0, 0, 0, 0.25),
+            inset 0 2px 0 rgba(255, 255, 255, 0.2),
+            inset 0 -2px 0 rgba(0, 0, 0, 0.5),
+            inset 2px 0 0 rgba(255, 255, 255, 0.08),
+            inset -2px 0 0 rgba(0, 0, 0, 0.3);
+    }
+
+    /* iPhone Styles */
+    .phone-frame {
+        width: 180px;
+        height: 360px;
+        background: linear-gradient(145deg, #3a3a3c, #1d1d1f);
+        border-radius: 35px;
+        padding: 8px;
+        box-shadow: 
+            0 25px 60px rgba(0, 0, 0, 0.5),
+            0 10px 25px rgba(0, 0, 0, 0.3),
+            0 3px 8px rgba(0, 0, 0, 0.2),
+            inset 0 2px 0 rgba(255, 255, 255, 0.15),
+            inset 0 -2px 0 rgba(0, 0, 0, 0.4),
+            inset 2px 0 0 rgba(255, 255, 255, 0.05),
+            inset -2px 0 0 rgba(0, 0, 0, 0.2);
+        transform: rotateY(15deg) rotateX(5deg);
+        transition: all 0.4s ease;
+        position: relative;
+        border: 1px solid #1d1d1f;
+    }
+
+    .phone-frame::after {
+        content: '';
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        right: 2px;
+        bottom: 2px;
+        background: linear-gradient(145deg, transparent, rgba(0, 0, 0, 0.1));
+        border-radius: 33px;
+        pointer-events: none;
+    }
+
+    /* iPhone camera module (top center for portrait) */
+    .phone-frame::before {
+        content: '';
+        position: absolute;
+        top: 12px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 50px;
+        height: 25px;
+        background: #000;
+        border-radius: 15px;
+        box-shadow: 
+            inset 0 2px 4px rgba(0, 0, 0, 0.8),
+            0 0 0 1px rgba(255, 255, 255, 0.05);
+        z-index: 1;
+    }
+
+    .phone-frame:hover {
+        transform: rotateY(10deg) rotateX(2deg);
+        box-shadow: 
+            0 35px 80px rgba(0, 0, 0, 0.6),
+            0 15px 35px rgba(0, 0, 0, 0.4),
+            0 5px 12px rgba(0, 0, 0, 0.25),
+            inset 0 2px 0 rgba(255, 255, 255, 0.2),
+            inset 0 -2px 0 rgba(0, 0, 0, 0.5),
+            inset 2px 0 0 rgba(255, 255, 255, 0.08),
+            inset -2px 0 0 rgba(0, 0, 0, 0.3);
+    }
+
+    .screen-content {
+        width: 100%;
+        height: 100%;
+        background: #000;
+        border-radius: 18px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: row;
+        box-shadow: 
+            inset 0 0 0 2px rgba(255, 255, 255, 0.1),
+            inset 0 3px 6px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+
+    /* Realistic screen glass effect */
+    .screen-content::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.15) 0%, 
+            transparent 30%, 
+            transparent 70%, 
+            rgba(255, 255, 255, 0.05) 100%);
+        border-radius: 18px;
+        pointer-events: none;
+        z-index: 10;
+    }
+
+    /* iPhone Screen Styles */
+    .phone-screen {
+        width: 100%;
+        height: 100%;
+        background: #000;
+        border-radius: 28px;
+        overflow: hidden;
+        display: flex;
+        flex-direction: column;
+        box-shadow: 
+            inset 0 0 0 2px rgba(255, 255, 255, 0.1),
+            inset 0 3px 6px rgba(0, 0, 0, 0.3);
+        position: relative;
+    }
+
+    .phone-screen::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: linear-gradient(135deg, 
+            rgba(255, 255, 255, 0.12) 0%, 
+            transparent 25%, 
+            transparent 75%, 
+            rgba(255, 255, 255, 0.03) 100%);
+        border-radius: 28px;
+        pointer-events: none;
+        z-index: 10;
+    }
+
+
+
+    .phone-notch {
+        position: absolute;
+        top: 0;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 60px;
+        height: 20px;
+        background: #000;
+        border-radius: 0 0 15px 15px;
+        z-index: 3;
+    }
+
+    /* iPhone Main Content */
+    .phone-content {
+        flex: 1;
+        background: #f2f2f7;
+        padding: 25px 15px 15px 15px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .phone-app-header {
+        background: white;
+        padding: 12px;
+        border-radius: 15px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    }
+
+    .phone-app-header h6 {
+        margin: 0 0 5px 0;
+        font-size: 0.9rem;
+        color: #1c1c1e;
+        font-weight: 600;
+    }
+
+    .phone-app-header p {
+        margin: 0;
+        font-size: 0.7rem;
+        color: #8e8e93;
+    }
+
+    .phone-stats {
+        display: flex;
+        gap: 10px;
+        margin-bottom: 15px;
+    }
+
+    .phone-stat-card {
+        flex: 1;
+        background: white;
+        padding: 10px;
+        border-radius: 12px;
+        text-align: center;
+        box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .phone-stat-card h6 {
+        margin: 0 0 3px 0;
+        font-size: 0.9rem;
+        color: #007AFF;
+        font-weight: 700;
+    }
+
+    .phone-stat-card p {
+        margin: 0;
+        font-size: 0.6rem;
+        color: #8e8e93;
+    }
+
+    .phone-bottom-nav {
+        background: white;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: space-around;
+        border-top: 1px solid #e5e5ea;
+        position: relative;
+        z-index: 2;
+    }
+
+    .phone-nav-item {
+        font-size: 0.6rem;
+        color: #8e8e93;
+        text-align: center;
+    }
+
+    .phone-nav-item.active {
+        color: #007AFF;
+    }
+
+    /* iPad-style sidebar navigation */
+    .portal-sidebar {
+        width: 100px;
+        background: linear-gradient(180deg, #1c1c1e 0%, #2c2c2e 100%);
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        z-index: 2;
+    }
+
+    .portal-header {
+        padding: 12px 8px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    }
+
+    .portal-logo {
+        width: 16px;
+        height: 16px;
+        background: #007AFF;
+        border-radius: 4px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+    }
+
+    .portal-logo::before {
+        content: '♪';
+        color: white;
+        font-size: 10px;
+        font-weight: bold;
+    }
+
+    .portal-header h5 {
+        margin: 0;
+        font-size: 0.6rem;
+        font-weight: 600;
+        color: white;
+        text-align: center;
+        line-height: 1.2;
+    }
+
+    .portal-nav {
+        display: flex;
+        flex-direction: column;
+        flex: 1;
+        padding: 8px 0;
+    }
+
+    .nav-item {
+        padding: 10px 8px;
+        font-size: 0.55rem;
+        color: rgba(255, 255, 255, 0.7);
+        text-align: center;
+        transition: all 0.2s ease;
+        border-radius: 8px;
+        margin: 2px 6px;
+    }
+
+    .nav-item:hover {
+        background: rgba(255, 255, 255, 0.1);
+        color: white;
+    }
+
+    .nav-item.active {
+        background: #007AFF;
+        color: white;
+        font-weight: 600;
+    }
+
+    .portal-content {
+        flex: 1;
+        background: #f2f2f7;
+        display: flex;
+        flex-direction: column;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* iPad-style main content area */
+    .portal-main {
+        flex: 1;
+        padding: 12px;
+        background: #f2f2f7;
+    }
+
+    .portal-welcome {
+        background: white;
+        padding: 12px;
+        margin-bottom: 12px;
+        border-radius: 10px;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .portal-welcome h6 {
+        margin: 0 0 4px 0;
+        font-size: 0.8rem;
+        color: #1c1c1e;
+        font-weight: 600;
+    }
+
+    .portal-welcome p {
+        margin: 0;
+        font-size: 0.6rem;
+        color: #8e8e93;
+    }
+
+    .progress-card {
+        background: white;
+        padding: 15px;
+        border-radius: 10px;
+        margin-bottom: 15px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    }
+
+    .progress-card h6 {
+        margin: 0 0 10px 0;
+        font-size: 0.9rem;
+        color: #333;
+    }
+
+    .progress-bar {
+        width: 100%;
+        height: 8px;
+        background: #e9ecef;
+        border-radius: 4px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        width: 75%;
+        height: 100%;
+        background: linear-gradient(90deg, #2c3e50, #34495e);
+        border-radius: 4px;
+    }
+
+    .materials-preview {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+
+    .material-item {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: white;
+        padding: 10px;
+        border-radius: 8px;
+        font-size: 0.8rem;
+        color: #333;
+        box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    .material-item i {
+        color: #2c3e50;
+        font-size: 0.9rem;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 992px) {
+        .benefits-content {
+            grid-template-columns: 1fr;
+            gap: 50px;
+        }
+
+        .benefits-text {
+            text-align: center;
+        }
+
+        .benefits-visual {
+            gap: 20px;
+        }
+
+        .device-frame {
+            transform: none;
+            width: 300px;
+            height: 225px;
+        }
+
+        .phone-frame {
+            transform: none;
+            width: 140px;
+            height: 280px;
+        }
+
+        .portal-sidebar {
+            width: 75px;
+        }
+
+        .portal-header h5 {
+            font-size: 0.5rem;
+        }
+
+        .nav-item {
+            font-size: 0.5rem;
+            padding: 8px 4px;
+        }
+
+        .phone-content {
+            padding: 10px;
+        }
+
+        .phone-app-header h6 {
+            font-size: 0.7rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .student-portal-benefits {
+            padding: 60px 0;
+        }
+
+        .benefits-text h2 {
+            font-size: 2rem;
+        }
+
+        .benefit-item {
+            padding: 20px;
+        }
+
+        .benefits-visual {
+            flex-direction: column;
+            gap: 30px;
+        }
+
+        .device-frame {
+            width: 260px;
+            height: 195px;
+            padding: 10px;
+        }
+
+        .phone-frame {
+            width: 120px;
+            height: 240px;
+            padding: 6px;
+        }
+
+        .portal-sidebar {
+            width: 65px;
+        }
+
+        .portal-header {
+            padding: 8px 4px;
+        }
+
+        .portal-header h5 {
+            font-size: 0.45rem;
+        }
+
+        .nav-item {
+            font-size: 0.45rem;
+            padding: 6px 3px;
+        }
+
+        .portal-main {
+            padding: 8px;
+        }
+
+        .phone-content {
+            padding: 8px;
+        }
+
+        .phone-app-header {
+            padding: 8px;
+            margin-bottom: 10px;
+        }
+
+        .phone-app-header h6 {
+            font-size: 0.6rem;
+        }
+
+        .phone-stat-card {
+            padding: 6px;
+        }
+
+        .portal-content {
+            padding: 15px;
+        }
+    }
+
+    /* Newsletter Section Styles */
+    .newsletter-section {
+        padding: 4rem 0;
+        background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+        position: relative;
+        overflow: hidden;
+        border-top: 2px solid rgba(44, 62, 80, 0.2);
+        box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .newsletter-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.1;
+        z-index: 0;
+    }
+
+    .newsletter-content {
+        position: relative;
+        z-index: 1;
+        max-width: 600px;
+        margin: 0 auto;
+        text-align: center;
+    }
+
+    .newsletter-content h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+        color: #2c3e50;
+    }
+
+    .newsletter-content p {
+        font-size: 1.1rem;
+        color: #34495e;
+        margin-bottom: 2rem;
+    }
+
+    .newsletter-form {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .newsletter-form .form-group {
+        display: flex;
+        gap: 1rem;
+    }
+
+    .newsletter-form input[type="email"] {
+        flex: 1;
+        padding: 0.75rem 1rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    .newsletter-form button {
+        padding: 0.75rem 1.5rem;
+        background-color: #2c3e50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+    .newsletter-form button:hover {
+        background-color: #34495e;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .newsletter-message {
+        margin-top: 1rem;
+        padding: 0.75rem;
+        border-radius: 4px;
+        display: none;
+    }
+
+    .newsletter-message.success {
+        background-color: #d4edda;
+        color: #155724;
+        display: block;
+    }
+
+    .newsletter-message.error {
+        background-color: #f8d7da;
+        color: #721c24;
+        display: block;
+    }
+
+    .unsubscribe-text {
+        margin-top: 1rem;
+        color: #666;
+    }
+
+    .unsubscribe-text a {
+        color: #2c3e50;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .unsubscribe-text a:hover {
+        text-decoration: underline;
+    }
+
+    @media (max-width: 768px) {
+        .newsletter-form .form-group {
+            flex-direction: column;
+        }
+        
+        .newsletter-form button {
+            width: 100%;
+        }
+    }
+
+    /* Main content sections with alternating background colors */
+    .enhance-section {
+        background-color: #ffffff;
+        padding: 80px 0;
+        position: relative;
+    }
+
+    .course-highlights {
+        background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+        padding: 80px 0;
+        position: relative;
+    }
+
+    .course-highlights .container {
+        max-width: 1600px;
+        margin: 0 auto;
+        padding: 0 40px;
+    }
+
+    .course-highlights .course-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(250px, 1fr));
+        gap: 30px;
+        margin-top: 40px;
+    }
+
+    @media (max-width: 1400px) {
+        .course-highlights .container {
+            max-width: 1200px;
+        }
+    }
+
+    @media (max-width: 1200px) {
+        .course-highlights .course-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @media (max-width: 768px) {
+        .course-highlights .course-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .about-section {
+        background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+        padding: 80px 0;
+        position: relative;
+    }
+
+    .team-section {
+        background-color: #ffffff;
+        padding: 80px 0;
+        position: relative;
+    }
+
+    .values-section {
+        background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+        padding: 80px 0;
+        position: relative;
+    }
+
+    .testimonials-section {
+        background-color: #ffffff;
+        padding: 80px 0;
+        position: relative;
+    }
+
+    .course-card, .extra-curricular-card, .stat-card, .team-member, .value-card, .testimonial-card {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+    }
+
+    /* Text colors for main content sections only */
+    .extra-curricular h2,
+    .course-highlights h2,
+    .about-section h2,
+    .team-section h2,
+    .values-section h2,
+    .testimonials-section h2,
+    .extra-curricular h3,
+    .course-highlights h3,
+    .about-section h3,
+    .team-section h3,
+    .values-section h3,
+    .testimonials-section h3,
+    .extra-curricular h4,
+    .course-highlights h4,
+    .about-section h4,
+    .team-section h4,
+    .values-section h4,
+    .testimonials-section h4 {
+        color: #2c3e50;
+    }
+
+    .extra-curricular p,
+    .course-highlights p,
+    .about-section p,
+    .team-section p,
+    .values-section p,
+    .testimonials-section p,
+    .extra-curricular li,
+    .course-highlights li,
+    .about-section li,
+    .team-section li,
+    .values-section li,
+    .testimonials-section li {
+        color: #34495e;
+    }
+
+    /* Button styles for main content sections only */
+    .extra-curricular .btn-primary,
+    .course-highlights .btn-primary,
+    .about-section .btn-primary,
+    .team-section .btn-primary,
+    .values-section .btn-primary,
+    .testimonials-section .btn-primary,
+    .course-btn,
+    .extra-curricular-btn {
+        background-color: #2c3e50;
+        color: white;
+    }
+
+    .extra-curricular .btn-primary:hover,
+    .course-highlights .btn-primary:hover,
+    .about-section .btn-primary:hover,
+    .team-section .btn-primary:hover,
+    .values-section .btn-primary:hover,
+    .testimonials-section .btn-primary:hover,
+    .course-btn:hover,
+    .extra-curricular-btn:hover {
+        background-color: #34495e;
+    }
+
+    .extra-curricular .btn-secondary,
+    .course-highlights .btn-secondary,
+    .about-section .btn-secondary,
+    .team-section .btn-secondary,
+    .values-section .btn-secondary,
+    .testimonials-section .btn-secondary {
+        background-color: transparent;
+        color: #2c3e50;
+        border: 2px solid #2c3e50;
+    }
+
+    .extra-curricular .btn-secondary:hover,
+    .course-highlights .btn-secondary:hover,
+    .about-section .btn-secondary:hover,
+    .team-section .btn-secondary:hover,
+    .values-section .btn-secondary:hover,
+    .testimonials-section .btn-secondary:hover {
+        background-color: rgba(44, 62, 80, 0.05);
+    }
+
+
+    .features {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        gap: 30px;
+        padding: 80px 20px;
+        background-color: #ffffff;
+    }
+
+    .feature-card {
+        background: rgba(255, 255, 255, 0.9);
+        border-radius: 15px;
+        padding: 40px;
+        text-align: center;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-card i {
+        font-size: 2.5rem;
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+
+    .feature-card h3 {
+        color: #2c3e50;
+        margin-bottom: 20px;
+    }
+
+    .feature-card p {
+        color: #34495e;
+    }
+
+    /* Enhance section specific styles */
+    .enhance-section .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .enhance-section h2 {
+        text-align: center;
+        margin-bottom: 20px;
+    }
+
+    .enhance-section .section-intro {
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto 40px;
+        color: #666;
+    }
+
+    .enhance-section .course-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        margin-top: 40px;
+    }
+
+    @media (max-width: 768px) {
+        .enhance-section .course-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    /* Hero Section Styles */
+    .hero {
+        position: relative;
+        height: 90vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+        color: #fff;
+        overflow: hidden;
+    }
+
+    .video-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        z-index: -1;
+    }
+
+    .video-background img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+    }
+
+    .video-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.5));
+    }
+
+    .hero-content {
+        max-width: 800px;
+        padding: 0 20px;
+        z-index: 1;
+    }
+
+    .hero h1 {
+        font-size: 3.2rem;
+        margin-bottom: 1.5rem;
+        font-weight: 600;
+        letter-spacing: -0.5px;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero p {
+        font-size: 1.3rem;
+        margin-bottom: 2.5rem;
+        line-height: 1.6;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 1.5rem;
+        justify-content: center;
+    }
+
+    .hero .btn {
+        padding: 1rem 2.5rem;
+        font-size: 1.1rem;
+        font-weight: 500;
+        border-radius: 4px;
+        transition: all 0.3s ease;
+    }
+
+    .hero .btn-primary {
+        background-color: #2c3e50;
+        color: white;
+        border: none;
+    }
+
+    .hero .btn-primary:hover {
+        background-color: #34495e;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .hero .btn-secondary {
+        background-color: transparent;
+        color: white;
+        border: 2px solid white;
+    }
+
+    .hero .btn-secondary:hover {
+        background-color: white;
+        color: #2c3e50;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(255, 255, 255, 0.2);
+    }
+
+    @media (max-width: 768px) {
+        .hero {
+            height: 80vh;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+        }
+
+        .hero p {
+            font-size: 1.1rem;
+        }
+
+        .hero-buttons {
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .hero .btn {
+            width: 100%;
+        }
+    }
+
+    /* Hand-drawn circle highlight */
+    .highlight-circle {
+        position: relative;
+        display: inline-block;
+        color: #2c3e50;
+        font-weight: bold;
+    }
+
+    .highlight-circle::before {
+        content: '';
+        position: absolute;
+        top: -8px;
+        left: -8px;
+        right: -8px;
+        bottom: -8px;
+        border: 3px solid #e74c3c;
+        border-radius: 50%;
+        opacity: 0.8;
+        transform: rotate(-3deg);
+        background: rgba(231, 76, 60, 0.1);
+    }
+
+    .highlight-circle::after {
+        content: '';
+        position: absolute;
+        top: -6px;
+        left: -6px;
+        right: -6px;
+        bottom: -6px;
+        border: 2px solid #e74c3c;
+        border-radius: 50%;
+        opacity: 0.4;
+        transform: rotate(2deg);
+        border-style: dashed;
+        border-width: 2px;
+        border-spacing: 3px;
+    }
+
+    @keyframes wiggle {
+        0%, 100% { transform: rotate(-3deg); }
+        50% { transform: rotate(1deg); }
+    }
+
+    /* Hand-drawn underline */
+    .highlight-underline {
+        position: relative;
+        display: inline-block;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .highlight-underline::after {
+        content: '';
+        position: absolute;
+        bottom: -4px;
+        left: -3px;
+        right: -3px;
+        height: 6px;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            rgba(52, 152, 219, 0.7) 10%, 
+            rgba(52, 152, 219, 0.9) 50%, 
+            rgba(52, 152, 219, 0.7) 90%, 
+            transparent 100%);
+        transform: rotate(-1deg) scaleY(0.8);
+        border-radius: 50% 50% 60% 40%;
+        filter: blur(0.3px);
+    }
+
+    .highlight-underline::before {
+        content: '';
+        position: absolute;
+        bottom: -2px;
+        left: -2px;
+        right: -2px;
+        height: 3px;
+        background: linear-gradient(90deg, 
+            transparent 0%, 
+            #3498db 15%, 
+            #2980b9 85%, 
+            transparent 100%);
+        transform: rotate(0.5deg);
+        border-radius: 50% 40% 50% 60%;
+        opacity: 0.9;
+    }
+
+    /* Marker-style highlight */
+    .highlight-marker {
+        position: relative;
+        display: inline-block;
+        color: #2c3e50;
+        font-weight: bold;
+        background: linear-gradient(
+            110deg,
+            rgba(255, 107, 107, 0.3) 0%,
+            rgba(255, 107, 107, 0.6) 25%,
+            rgba(255, 107, 107, 0.4) 50%,
+            rgba(255, 107, 107, 0.7) 75%,
+            rgba(255, 107, 107, 0.3) 100%
+        );
+        padding: 2px 4px;
+        border-radius: 2px;
+        transform: rotate(-0.5deg);
+        box-shadow: 0 0 0 1px rgba(255, 107, 107, 0.2);
+    }
+
+    .highlight-marker::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(255, 107, 107, 0.2);
+        transform: rotate(1deg);
+        border-radius: 3px;
+        z-index: -1;
+    }
+
+    /* Speech bubble highlight */
+    .highlight-bubble {
+        position: relative;
+        display: inline-block;
+        background: #f39c12;
+        color: white;
+        padding: 4px 8px;
+        border-radius: 15px;
+        font-weight: bold;
+        transform: rotate(-1deg);
+        box-shadow: 0 3px 8px rgba(243, 156, 18, 0.4);
+    }
+
+    .highlight-bubble::before {
+        content: '';
+        position: absolute;
+        bottom: -6px;
+        left: 15px;
+        width: 0;
+        height: 0;
+        border-left: 8px solid transparent;
+        border-right: 8px solid transparent;
+        border-top: 8px solid #f39c12;
+        transform: rotate(15deg);
+    }
+
+    /* Arrow pointing highlight */
+    .highlight-arrow {
+        position: relative;
+        display: inline-block;
+        color: #2c3e50;
+        font-weight: bold;
+        background: rgba(155, 89, 182, 0.2);
+        padding: 2px 6px;
+        border-radius: 4px;
+    }
+
+    .highlight-arrow::after {
+        content: '→';
+        position: absolute;
+        top: -20px;
+        left: 50%;
+        transform: translateX(-50%) rotate(-15deg);
+        color: #9b59b6;
+        font-size: 1.2rem;
+        font-weight: bold;
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+    }
+
+    .highlight-arrow::before {
+        content: '';
+        position: absolute;
+        top: -8px;
+        left: 50%;
+        transform: translateX(-50%);
+        width: 2px;
+        height: 15px;
+        background: #9b59b6;
+        border-radius: 1px;
+        transform: translateX(-50%) rotate(-15deg);
+    }
+
+    /* About Section Grid Layout */
+    .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 20px;
+    }
+
+    .about-text h2 {
+        /* Removed custom styling to revert to original layout */
+    }
+
+    .about-text p {
+        /* Removed custom styling to revert to original layout */
+    }
+
+    /* New Visual Showcase Styles */
+    .about-visual {
+        display: flex;
+        justify-content: center;
+        align-items: start;
+    }
+
+    .collaborative-showcase {
+        background: rgba(255, 255, 255, 0.95);
+        border-radius: 20px;
+        padding: 30px;
+        box-shadow: 0 15px 40px rgba(0, 0, 0, 0.1);
+        backdrop-filter: blur(10px);
+        border: 1px solid rgba(44, 62, 80, 0.1);
+        max-width: 450px;
+        width: 100%;
+    }
+
+    .showcase-header {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+
+    .showcase-header h3 {
+        color: #2c3e50;
+        font-size: 1.6rem;
+        margin-bottom: 8px;
+    }
+
+    .showcase-header p {
+        color: #34495e;
+        font-style: italic;
+        margin: 0;
+        font-size: 0.9rem;
+    }
+
+    .experience-flow {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 25px;
+    }
+
+    .flow-step {
+        background: rgba(44, 62, 80, 0.05);
+        border-radius: 12px;
+        padding: 15px 8px;
+        text-align: center;
+        flex: 1;
+        transition: all 0.3s ease;
+        border: 2px solid transparent;
+    }
+
+    .flow-step:hover {
+        background: rgba(44, 62, 80, 0.08);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 25px rgba(0, 0, 0, 0.1);
+    }
+
+    .highlight-step {
+        background: linear-gradient(135deg, rgba(52, 152, 219, 0.1), rgba(44, 62, 80, 0.1));
+        border-color: rgba(52, 152, 219, 0.3);
+    }
+
+    .highlight-step:hover {
+        background: linear-gradient(135deg, rgba(52, 152, 219, 0.15), rgba(44, 62, 80, 0.15));
+        border-color: rgba(52, 152, 219, 0.4);
+    }
+
+    .step-icon {
+        background: #2c3e50;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 10px;
+        transition: all 0.3s ease;
+    }
+
+    .highlight-step .step-icon {
+        background: linear-gradient(135deg, #3498db, #2c3e50);
+        box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+    }
+
+    .step-icon i {
+        color: white;
+        font-size: 1rem;
+    }
+
+    .flow-step h4 {
+        color: #2c3e50;
+        margin-bottom: 5px;
+        font-size: 0.9rem;
+        line-height: 1.2;
+    }
+
+    .flow-step p {
+        color: #34495e;
+        margin: 0;
+        font-size: 0.75rem;
+        line-height: 1.3;
+    }
+
+    .flow-arrow {
+        color: #3498db;
+        font-size: 1.2rem;
+        opacity: 0.7;
+        flex-shrink: 0;
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    @keyframes pulse {
+        0%, 100% { opacity: 0.7; transform: scale(1); }
+        50% { opacity: 1; transform: scale(1.1); }
+    }
+
+    .showcase-features {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .feature-highlight {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        background: rgba(52, 152, 219, 0.05);
+        padding: 12px;
+        border-radius: 8px;
+        transition: all 0.3s ease;
+        border: 1px solid rgba(52, 152, 219, 0.1);
+    }
+
+    .feature-highlight:hover {
+        background: rgba(52, 152, 219, 0.1);
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    .feature-icon {
+        background: #3498db;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .feature-icon i {
+        color: white;
+        font-size: 0.8rem;
+    }
+
+    .feature-highlight span {
+        color: #2c3e50;
+        font-size: 0.8rem;
+        font-weight: 500;
+        line-height: 1.2;
+    }
+
+    @media (max-width: 992px) {
+        .about-grid {
+            grid-template-columns: 1fr;
+            gap: 40px;
+        }
+
+        .about-text {
+            text-align: center;
+        }
+
+        .collaborative-showcase {
+            max-width: 600px;
+        }
+
+        .experience-flow {
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .flow-step {
+            padding: 20px;
+        }
+
+        .step-icon {
+            width: 50px;
+            height: 50px;
+        }
+
+        .step-icon i {
+            font-size: 1.2rem;
+        }
+
+        .flow-step h4 {
+            font-size: 1.1rem;
+        }
+
+        .flow-step p {
+            font-size: 0.9rem;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .collaborative-showcase {
+            padding: 20px;
+            margin: 0 10px;
+        }
+
+        .showcase-header h3 {
+            font-size: 1.4rem;
+        }
+
+        .showcase-features {
+            grid-template-columns: 1fr;
+            gap: 10px;
+        }
+
+        .about-text h2 {
+            font-size: 2rem;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<section class="hero">
+    <div class="video-background">
+        <img src="{{ url_for('static', filename='images/hero-classroom.jpg') }}" alt="Music Performance Academy" style="width: 100%; height: 100%; object-fit: cover;">
+        <div class="video-overlay"></div>
+    </div>
+    <div class="hero-content">
+        <h1>Music Performance Academy</h1>
+        <p>Where passion meets excellence in music</p>
+        <div class="hero-buttons">
+            <a href="{{ url_for('lessons') }}" class="btn btn-primary">View Our Lessons</a>
+            <a href="{{ url_for('taster') }}" class="btn btn-secondary">Book a Free Session</a>
+        </div>
+    </div>
+</section>
+
+<section class="features">
+    <div class="feature-card">
+        <i class="fas fa-guitar"></i>
+        <h3><span class="highlight-marker">Expert</span> Instructors</h3>
+        <p>Learn from experienced musicians who are passionate about teaching</p>
+    </div>
+    <div class="feature-card">
+        <i class="fas fa-users"></i>
+        <h3>Small Group Classes</h3>
+        <p>Benefit from <span class="highlight-underline">personalized</span> attention in our small group settings</p>
+    </div>
+    <div class="feature-card">
+        <i class="fas fa-music"></i>
+        <h3>Performance Opportunities</h3>
+        <p>Showcase your skills in our <span class="highlight-arrow">regular</span> jam nights and showcases</p>
+    </div>
+    <div class="feature-card">
+        <i class="fas fa-certificate"></i>
+        <h3>Certified Programs</h3>
+        <p>Follow structured programs designed to help you progress <span class="highlight-underline">effectively</span></p>
+    </div>
+</section>
+
+<!-- Course Highlights Section -->
+<section class="course-highlights">
+    <div class="container">
+        <h2>Our Lessons</h2>
+        <p class="section-intro">Discover our <span class="highlight-marker">specialized</span> music programs designed to help you develop your skills and passion for music.</p>
+        
+        <div class="course-grid">
+            <div class="course-card guitar-card">
+                <div class="course-icon">
+                    <i class="fas fa-guitar"></i>
+                </div>
+                <h3>Guitar</h3>
+                <p>Master the art of guitar playing with our comprehensive program. From basic chords to advanced techniques, learn everything you need to become a skilled guitarist.</p>
+                <ul class="course-features">
+                    <li><i class="fas fa-check"></i> Basic to advanced techniques</li>
+                    <li><i class="fas fa-check"></i> Music theory fundamentals</li>
+                    <li><i class="fas fa-check"></i> Performance skills</li>
+                </ul>
+                <a href="{{ url_for('guitar') }}" class="course-btn">Learn More</a>
+            </div>
+            
+            <div class="course-card bass-card">
+                <div class="course-icon">
+                    <i class="fas fa-guitar"></i>
+                </div>
+                <h3>Bass</h3>
+                <p>Master the foundation of rhythm and groove with our comprehensive bass program.</p>
+                <ul class="course-features">
+                    <li><i class="fas fa-check"></i> Basic to advanced techniques</li>
+                    <li><i class="fas fa-check"></i> Music theory fundamentals</li>
+                    <li><i class="fas fa-check"></i> Performance skills</li>
+                </ul>
+                <a href="{{ url_for('bassguitar') }}" class="course-btn">Learn More</a>
+            </div>
+            
+            <div class="course-card drum-card">
+                <div class="course-icon">
+                    <i class="fas fa-drum"></i>
+                </div>
+                <h3>Drums</h3>
+                <p>Develop rhythm, timing, and coordination with our specialized drums and percussion program. Perfect for beginners and experienced drummers alike.</p>
+                <ul class="course-features">
+                    <li><i class="fas fa-check"></i> Professional drum kits</li>
+                    <li><i class="fas fa-check"></i> Various percussion instruments</li>
+                    <li><i class="fas fa-check"></i> Focus on groove and timing</li>
+                </ul>
+                <a href="{{ url_for('drums') }}" class="course-btn">Learn More</a>
+            </div>
+            
+            <div class="course-card vocals-card">
+                <div class="course-icon">
+                    <i class="fas fa-microphone"></i>
+                </div>
+                <h3>Vocals</h3>
+                <p>Discover your voice and develop your singing skills with our comprehensive vocals program. Perfect for beginners and experienced vocalists alike.</p>
+                <ul class="course-features">
+                    <li><i class="fas fa-check"></i> Vocal technique mastery</li>
+                    <li><i class="fas fa-check"></i> Performance skills</li>
+                    <li><i class="fas fa-check"></i> Ensemble singing</li>
+                </ul>
+                <a href="{{ url_for('vocals') }}" class="course-btn">Learn More</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Extra Curricular Section -->
+<section class="enhance-section">
+    <div class="container">
+        <h2>Enhance Your Experience</h2>
+        <p class="section-intro">Take your musical journey further with our <span class="highlight-marker">exciting</span> extra-curricular activities</p>
+        
+        <div class="course-grid">
+            <div class="course-card">
+                <div class="course-icon">
+                    <i class="fas fa-music"></i>
+                </div>
+                <h3>Weekly Jam Nights</h3>
+                <p>Join our <span class="highlight-marker">vibrant community</span> of musicians for our weekly jam sessions. It's the perfect opportunity to play with other musicians in a supportive environment and develop your improvisation skills.</p>
+                <ul class="course-features">
+                    <li><i class="fas fa-check"></i> Play with other musicians</li>
+                    <li><i class="fas fa-check"></i> Develop improvisation skills</li>
+                    <li><i class="fas fa-check"></i> Build performance confidence</li>
+                </ul>
+                <a href="{{ url_for('weekly_jam') }}" class="course-btn">Join Our Jam Nights</a>
+            </div>
+
+            <div class="course-card">
+                <div class="course-icon">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3>Band Classes</h3>
+                <p>Experience the thrill of playing in a band! Our band classes bring musicians together to create, <span class="highlight-underline">collaborate</span>, and perform as a group.</p>
+                <ul class="course-features">
+                    <li><i class="fas fa-check"></i> Collaborative learning</li>
+                    <li><i class="fas fa-check"></i> Performance opportunities</li>
+                    <li><i class="fas fa-check"></i> Team building</li>
+                </ul>
+                <a href="{{ url_for('band_classes') }}" class="course-btn">Learn More</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- About Section -->
+<section class="about-section">
+    <div class="about-grid">
+        <div class="about-text">
+            <h2>Our Story</h2>
+            <p>Music Performance Academy emerged from a <span class="highlight-underline">shared vision</span> among passionate musicians who believed in the transformative power of collaborative music-making. We set out to create something <span class="highlight-circle">different</span> from traditional music education.</p>
+            <p>Our journey has been guided by the belief that music is not just about individual mastery, but about the <span class="highlight-arrow">connections</span> we forge through shared experiences.</p>
+            <p>While traditional music education often isolates students in individual practice rooms, we've built an environment where musicians learn together, grow together, and create together. Our students don't just learn to play instruments—they learn to listen, respond, and harmonize with others, developing skills that extend far beyond the stage.</p>
+            <p>Today, we offer a diverse range of memberships designed to nurture both individual talent and collective creativity. Our commitment remains unwavering: to provide an <span class="highlight-marker">inclusive</span> space where music lovers can discover their voice, find their rhythm, and experience the profound joy of making music with others.</p>
+        </div>
+        <div class="about-visual">
+            <div class="collaborative-showcase">
+                <div class="showcase-header">
+                    <h3>The <span class="highlight-marker">MPA Experience</span></h3>
+                    <p>Where individual talent meets collaborative magic</p>
+                </div>
+                
+                <div class="experience-flow">
+                    <div class="flow-step">
+                        <div class="step-icon">
+                            <i class="fas fa-user-music"></i>
+                        </div>
+                        <h4>Individual Growth</h4>
+                        <p>Develop your technique with personalized guidance</p>
+                    </div>
+                    
+                    <div class="flow-arrow">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    
+                    <div class="flow-step">
+                        <div class="step-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4>Collaborative Learning</h4>
+                        <p>Learn to play, listen, and respond with others</p>
+                    </div>
+                    
+                    <div class="flow-arrow">
+                        <i class="fas fa-equals"></i>
+                    </div>
+                    
+                    <div class="flow-step highlight-step">
+                        <div class="step-icon">
+                            <i class="fas fa-star"></i>
+                        </div>
+                        <h4>Creative Excellence</h4>
+                        <p>Create something greater than the sum of its parts</p>
+                    </div>
+                </div>
+                
+                <div class="showcase-features">
+                    <div class="feature-highlight">
+                        <div class="feature-icon">
+                            <i class="fas fa-guitar"></i>
+                        </div>
+                        <span>Multi-instrument mastery</span>
+                    </div>
+                    <div class="feature-highlight">
+                        <div class="feature-icon">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <span>Passion-driven learning</span>
+                    </div>
+                    <div class="feature-highlight">
+                        <div class="feature-icon">
+                            <i class="fas fa-microphone-alt"></i>
+                        </div>
+                        <span>Performance opportunities</span>
+                    </div>
+                    <div class="feature-highlight">
+                        <div class="feature-icon">
+                            <i class="fas fa-handshake"></i>
+                        </div>
+                        <span>Collaborative community</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Team Section -->
+<section class="team-section">
+    <div class="container">
+        <h2>Our Team</h2>
+        <p class="team-intro">At Music Performance Academy, we are privileged to have a team of <span class="highlight-marker">dedicated musicians</span> whose diverse backgrounds and extensive experience enrich our collaborative music-making environment.</p>
+        
+        <div class="team-grid">
+            <div class="team-member">
+                <div class="team-member-image">
+                    <img src="{{ url_for('static', filename='images/team/bello-pluto.jpg') }}" alt="Bello-Pluto Salvatore">
+                </div>
+                <div class="team-member-info">
+                    <h3>Bello-Pluto Salvatore</h3>
+                    <p class="team-member-role">Guitar & Bass Instructor</p>
+                    <p>Bello-Pluto Salvatore is a <span class="highlight-underline">seasoned musician</span> specializing in guitar and bass. Holding a degree in Music Performance, he has been actively involved in the music scene for over a decade. His approach emphasizes building a strong technical foundation while nurturing expressive musicality. Bello-Pluto works with musicians of all ages and skill levels, tailoring sessions to individual interests and goals. Beyond teaching, he continues to perform, bringing real-world experience to our collaborative environment.</p>
+                </div>
+            </div>
+            
+            <div class="team-member">
+                <div class="team-member-image">
+                    <img src="{{ url_for('static', filename='images/team/pavels.jpg') }}" alt="Pavels Vasjukovs">
+                </div>
+                <div class="team-member-info">
+                    <h3>Pavels Vasjukovs</h3>
+                    <p class="team-member-role">Guitar & Bass Instructor</p>
+                    <p>Pavels Vasjukovs brings a <span class="highlight-underline">wealth of experience</span> as a guitarist and bassist. With years of performance and teaching under his belt, he specializes in various genres, including rock, jazz, and classical. Pavels believes in a collaborative approach, focusing on making sessions both enjoyable and educational. He encourages musicians to explore <span class="highlight-marker">different styles</span> and develop their unique sound. His performances across Europe have enriched our environment, providing insights into the professional music world.</p>
+                </div>
+            </div>
+            
+            <div class="team-member">
+                <div class="team-member-image">
+                    <img src="{{ url_for('static', filename='images/team/peter.jpg') }}" alt="Peter Krieg">
+                </div>
+                <div class="team-member-info">
+                    <h3>Peter Krieg</h3>
+                    <p class="team-member-role">Drummer & Instructor</p>
+                    <p>Peter Krieg is an accomplished drummer with a passion for <span class="highlight-arrow">rhythm and groove</span>. His extensive experience includes writing and performing music across Europe, collaborating with various artists and ensembles. Peter's approach is rooted in developing solid timing and coordination, essential for any drummer. He works with musicians ranging from beginners to advanced players, aiming to instill confidence and proficiency. Peter also offers workshops and masterclasses, sharing his expertise and inspiring the next generation of collaborative musicians.</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="team-footer">
+            <p>Together, our musicians create a <span class="highlight-different">dynamic collaborative</span> environment, combining technical expertise with a passion for music. We are committed to guiding you on your musical journey, fostering both skill development and a lifelong appreciation for the transformative power of making music with others.</p>
+        </div>
+    </div>
+</section>
+
+<!-- Values Section -->
+<section class="values-section">
+    <div class="container">
+        <h2>Our Values</h2>
+        <div class="values-grid">
+            <div class="value-card">
+                <i class="fas fa-music"></i>
+                <h3><span class="highlight-underline">Excellence</span></h3>
+                <p>We strive for excellence in everything we do, from individual practice to collaborative performance, ensuring our musicians receive the highest quality experience.</p>
+            </div>
+            <div class="value-card">
+                <i class="fas fa-users"></i>
+                <h3>Community</h3>
+                <p>We foster a <span class="highlight-marker">supportive environment</span> where musicians can learn, grow, and create together, building lasting connections through shared musical experiences.</p>
+            </div>
+            <div class="value-card">
+                <i class="fas fa-heart"></i>
+                <h3><span class="highlight-different">Passion</span></h3>
+                <p>Our love for music drives us to inspire and nurture the same passion in everyone who joins our collaborative music-making community.</p>
+            </div>
+            <div class="value-card">
+                <i class="fas fa-star"></i>
+                <h3>Innovation</h3>
+                <p>We embrace new approaches and techniques to create an environment where musicians can explore, experiment, and discover their <span class="highlight-underline">unique voice</span>.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Testimonials Section -->
+<section class="testimonials-section">
+    <div class="container">
+        <h2>What Our Students Say</h2>
+        <p class="section-intro">Hear from our students about their <span class="highlight-arrow">experiences</span> at Music Performance Academy</p>
+        
+        <div class="testimonials-grid">
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>"The <span class="highlight-marker">collaborative approach</span> at Music Performance Academy has transformed my musical journey. I've learned more in six months than I did in two years of private lessons elsewhere."</p>
+                </div>
+                <div class="testimonial-author">
+                    <div class="author-info">
+                        <h4>Sarah Johnson</h4>
+                        <p>Guitar Student</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>"The band classes are <span class="highlight-marker">incredible</span>! Playing with other musicians has helped me develop my timing and listening skills. The instructors are supportive and knowledgeable."</p>
+                </div>
+                <div class="testimonial-author">
+                    <div class="author-info">
+                        <h4>Michael Chen</h4>
+                        <p>Bass Guitar Student</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="testimonial-card">
+                <div class="testimonial-content">
+                    <p>"I've always wanted to learn drums, and Music Performance Academy made it possible. The structured approach and regular performance opportunities have boosted my <span class="highlight-underline">confidence tremendously</span>."</p>
+                </div>
+                <div class="testimonial-author">
+                    <div class="author-info">
+                        <h4>Emma Rodriguez</h4>
+                        <p>Drum Student</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Student Portal Benefits Section -->
+<section class="student-portal-benefits">
+    <div class="container">
+        <div class="benefits-content">
+            <div class="benefits-text">
+                <h2>What Makes MPA London <span class="highlight-different">Different</span></h2>
+                <p class="section-intro">Experience the future of collaborative music-making with our comprehensive digital platform designed to support your musical journey and connect you with our <span class="highlight-marker">vibrant community</span>.</p>
+                
+                <div class="benefits-list">
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>Secure Student Portal</h4>
+                            <p>Access your personal learning hub with exclusive downloadable resources, practice materials, and progress tracking.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-headphones"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>Customized Practice Tracks</h4>
+                            <p>Receive <span class="highlight-circle">personalized</span> play-along tracks and isolated instrument versions tailored to your skill level and musical preferences.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-file-download"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>Comprehensive Resources</h4>
+                            <p>Download tablatures, chord charts, sheet music, and lyrics for all your lesson material and favorite songs.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-comments"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>24/7 Support System</h4>
+                            <p>Connect with your instructor anytime through our secure messaging system for help with practice and questions.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-chart-line"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>Personal Progress Reviews</h4>
+                            <p>Receive detailed individual assessments and goal-setting sessions with your tutor at the end of each term.</p>
+                        </div>
+                    </div>
+                    
+                    <div class="benefit-item">
+                        <div class="benefit-icon">
+                            <i class="fas fa-microphone-alt"></i>
+                        </div>
+                        <div class="benefit-content">
+                            <h4>Live Performance Opportunities</h4>
+                            <p>Showcase your skills at our spectacular end-of-term concerts at professional music venues across London.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="benefits-visual">
+                <div class="portal-mockup">
+                    <div class="device-frame">
+                        <div class="screen-content">
+                            <div class="portal-sidebar">
+                                <div class="portal-header">
+                                    <div class="portal-logo"></div>
+                                    <h5>MPA Portal</h5>
+                                </div>
+                                <div class="portal-nav">
+                                    <div class="nav-item active">Dashboard</div>
+                                    <div class="nav-item">Materials</div>
+                                    <div class="nav-item">Sessions</div>
+                                    <div class="nav-item">Messages</div>
+                                </div>
+                            </div>
+                            <div class="portal-content">
+                                <div class="portal-main">
+                                    <div class="portal-welcome">
+                                        <h6>Welcome back, Sarah!</h6>
+                                        <p>3 new practice materials available</p>
+                                    </div>
+                                    <div class="progress-card">
+                                        <h6>Your Progress</h6>
+                                        <div class="progress-bar">
+                                            <div class="progress-fill"></div>
+                                        </div>
+                                    </div>
+                                    <div class="materials-preview">
+                                        <div class="material-item">
+                                            <i class="fas fa-music"></i>
+                                            <span>Practice Track - Song 1</span>
+                                        </div>
+                                        <div class="material-item">
+                                            <i class="fas fa-file-alt"></i>
+                                            <span>Chord Chart - Lesson 3</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="phone-mockup">
+                    <div class="phone-frame">
+                        <div class="phone-screen">
+                            <div class="phone-notch"></div>
+                            <div class="phone-content">
+                                <div class="phone-app-header">
+                                    <h6>MPA Mobile</h6>
+                                    <p>Your music journey on the go</p>
+                                </div>
+                                <div class="phone-stats">
+                                    <div class="phone-stat-card">
+                                        <h6>75%</h6>
+                                        <p>Progress</p>
+                                    </div>
+                                    <div class="phone-stat-card">
+                                        <h6>3</h6>
+                                        <p>New Materials</p>
+                                    </div>
+                                </div>
+                                <div class="progress-card">
+                                    <h6>Next Session</h6>
+                                    <div class="materials-preview">
+                                        <div class="material-item">
+                                            <i class="fas fa-calendar"></i>
+                                            <span>Guitar - Tomorrow 3pm</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="phone-bottom-nav">
+                                <div class="phone-nav-item active">Home</div>
+                                <div class="phone-nav-item">Practice</div>
+                                <div class="phone-nav-item">Sessions</div>
+                                <div class="phone-nav-item">Profile</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Start Your <span class="highlight-marker">Musical Journey</span>?</h2>
+            <p>Join us today and experience the joy of making music together</p>
+            <div class="cta-buttons">
+                <a href="{{ url_for('contact') }}" class="btn btn-primary">Get Started</a>
+                <a href="{{ url_for('taster') }}" class="btn btn-secondary">Free Taster Session</a>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Newsletter Section -->
+<section id="newsletter-section" class="newsletter-section">
+    <div class="container">
+        <div class="newsletter-content">
+            <h2>Stay Updated with Our Latest News</h2>
+            <p>Subscribe to our newsletter for updates on new courses, events, and special offers</p>
+            <form id="newsletter-form" class="newsletter-form">
+                <div class="form-group">
+                    <input type="email" id="newsletter-email" name="email" placeholder="Enter your email address" required>
+                    <button type="submit" class="btn btn-primary">Subscribe</button>
+                </div>
+                <div id="newsletter-message" class="newsletter-message"></div>
+            </form>
+            <p class="unsubscribe-text">Want to unsubscribe? <a href="#" id="unsubscribe-link">Click here</a></p>
+            <form id="unsubscribe-form" class="newsletter-form" style="display: none;">
+                <div class="form-group">
+                    <input type="email" id="unsubscribe-email" name="email" placeholder="Enter your email address" required>
+                    <button type="submit" class="btn btn-secondary">Unsubscribe</button>
+                </div>
+                <div id="unsubscribe-message" class="newsletter-message"></div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Newsletter subscription handling
+    document.addEventListener('DOMContentLoaded', function() {
+        const newsletterForm = document.querySelector('#newsletter-form');
+        const unsubscribeForm = document.querySelector('#unsubscribe-form');
+        const unsubscribeLink = document.querySelector('#unsubscribe-link');
+        const messageDiv = document.querySelector('#newsletter-message');
+        const unsubscribeMessageDiv = document.querySelector('#unsubscribe-message');
+
+        // Toggle unsubscribe form visibility
+        if (unsubscribeLink) {
+            unsubscribeLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                newsletterForm.style.display = 'none';
+                unsubscribeForm.style.display = 'block';
+            });
+        }
+
+        if (newsletterForm) {
+            newsletterForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const emailInput = newsletterForm.querySelector('input[type="email"]');
+                const email = emailInput.value.trim();
+
+                if (!email) {
+                    showMessage('Please enter your email address', 'error', messageDiv);
+                    return;
+                }
+
+                if (!isValidEmail(email)) {
+                    showMessage('Please enter a valid email address', 'error', messageDiv);
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/newsletter/subscribe', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showMessage(data.message || 'Thank you for subscribing to our newsletter!', 'success', messageDiv);
+                        emailInput.value = '';
+                    } else {
+                        showMessage(data.error || 'An error occurred. Please try again.', 'error', messageDiv);
+                    }
+                } catch (error) {
+                    showMessage('An error occurred. Please try again.', 'error', messageDiv);
+                }
+            });
+        }
+
+        if (unsubscribeForm) {
+            unsubscribeForm.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const emailInput = unsubscribeForm.querySelector('input[type="email"]');
+                const email = emailInput.value.trim();
+
+                if (!email) {
+                    showMessage('Please enter your email address', 'error', unsubscribeMessageDiv);
+                    return;
+                }
+
+                if (!isValidEmail(email)) {
+                    showMessage('Please enter a valid email address', 'error', unsubscribeMessageDiv);
+                    return;
+                }
+
+                try {
+                    const response = await fetch('/api/newsletter/unsubscribe', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ email })
+                    });
+
+                    const data = await response.json();
+
+                    if (response.ok) {
+                        showMessage(data.message || 'You have been unsubscribed from our newsletter.', 'success', unsubscribeMessageDiv);
+                        emailInput.value = '';
+                        // Hide unsubscribe form and show subscribe form after successful unsubscribe
+                        setTimeout(() => {
+                            unsubscribeForm.style.display = 'none';
+                            newsletterForm.style.display = 'block';
+                        }, 3000);
+                    } else {
+                        showMessage(data.error || 'An error occurred. Please try again.', 'error', unsubscribeMessageDiv);
+                    }
+                } catch (error) {
+                    showMessage('An error occurred. Please try again.', 'error', unsubscribeMessageDiv);
+                }
+            });
+        }
+
+        function showMessage(message, type, targetDiv) {
+            targetDiv.textContent = message;
+            targetDiv.className = `newsletter-message ${type}`;
+            targetDiv.style.display = 'block';
+            setTimeout(() => {
+                targetDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        function isValidEmail(email) {
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return emailRegex.test(email);
+        }
+    });
+</script>
+{% endblock %} 

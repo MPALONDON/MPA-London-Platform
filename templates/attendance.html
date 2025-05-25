@@ -1,0 +1,270 @@
+{% extends "base.html" %}
+
+{% block title %}Session Attendance - Music Performance Academy{% endblock %}
+
+{% block head %}
+<style>
+    .attendance-container {
+        max-width: 800px;
+        margin: 0 auto;
+        padding: 1rem;
+    }
+    
+    .attendance-header {
+        margin-bottom: 2rem;
+    }
+    
+    .attendance-form {
+        background: white;
+        border-radius: 8px;
+        padding: 1.5rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .student-row {
+        display: flex;
+        align-items: center;
+        padding: 0.75rem 0;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .student-row:last-child {
+        border-bottom: none;
+    }
+    
+    .student-name {
+        flex: 1;
+        font-weight: 500;
+    }
+    
+    .attendance-options {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        flex-wrap: wrap;
+    }
+    
+    .attendance-options label {
+        margin-bottom: 0;
+        padding: 0.5rem 0.75rem;
+        border-radius: 4px;
+        cursor: pointer;
+        transition: all 0.2s ease;
+    }
+    
+    .attendance-options input[type="radio"] {
+        margin-right: 0.25rem;
+    }
+    
+    .option-present {
+        background-color: #e6f5e6;
+    }
+    
+    .option-present:hover {
+        background-color: #c8e6c9;
+    }
+    
+    .option-absent {
+        background-color: #ffebee;
+    }
+    
+    .option-absent:hover {
+        background-color: #ffcdd2;
+    }
+    
+    .option-late {
+        background-color: #fff8e1;
+    }
+    
+    .option-late:hover {
+        background-color: #ffecb3;
+    }
+    
+    .option-excused {
+        background-color: #e1f5fe;
+    }
+    
+    .option-excused:hover {
+        background-color: #b3e5fc;
+    }
+    
+    .notes-field {
+        margin-top: 0.5rem;
+    }
+    
+    .attendance-actions {
+        margin-top: 1.5rem;
+        display: flex;
+        justify-content: space-between;
+    }
+    
+    .session-details {
+        margin-bottom: 1.5rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 6px;
+    }
+    
+    .attendance-summary {
+        margin-top: 1.5rem;
+        padding: 1rem;
+        background-color: #f8f9fa;
+        border-radius: 6px;
+    }
+    
+    @media (max-width: 768px) {
+        .student-row {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+        
+        .attendance-options {
+            width: 100%;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="attendance-container">
+    <div class="attendance-header">
+        <h1>Session Attendance</h1>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary mb-3">
+            <i class="fas fa-arrow-left"></i> Back to Dashboard
+        </a>
+        
+        <div class="session-details">
+            <h3>{{ class_session.title }}</h3>
+            {% if class_session.group %}
+            <p><strong>Group:</strong> {{ class_session.group.name }}</p>
+            {% endif %}
+            <p><strong>Date:</strong> {{ class_session.date }}</p>
+            <p><strong>Time:</strong> {{ class_session.time }}</p>
+            <p><strong>Duration:</strong> {{ class_session.duration }} minutes</p>
+            {% if room_name %}
+            <p><strong>Room:</strong> {{ room_name }}</p>
+            {% endif %}
+            {% if class_session.instrument %}
+            <p><strong>Instrument:</strong> {{ class_session.instrument.name }}</p>
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="attendance-form">
+        <h3>Student Attendance</h3>
+        {% if not students %}
+            <div class="alert alert-info">No students found for this session.</div>
+        {% else %}
+            <form id="attendanceForm" method="post" action="{{ url_for('record_attendance_form', session_id=class_session.id) }}">
+                {% for student in students %}
+                <div class="student-row">
+                    <div class="student-name">{{ student.username }}</div>
+                    <div class="attendance-options">
+                        {% set existing_record = attendance_records.get(student.id) %}
+                        <label class="option-present">
+                            <input type="radio" name="status_{{ student.id }}" value="present" 
+                                {% if existing_record and existing_record.status == 'present' %}checked{% endif %}>
+                            Present
+                        </label>
+                        <label class="option-absent">
+                            <input type="radio" name="status_{{ student.id }}" value="absent" 
+                                {% if existing_record and existing_record.status == 'absent' %}checked{% endif %}>
+                            Absent
+                        </label>
+                        <label class="option-late">
+                            <input type="radio" name="status_{{ student.id }}" value="late" 
+                                {% if existing_record and existing_record.status == 'late' %}checked{% endif %}>
+                            Late
+                        </label>
+                        <label class="option-excused">
+                            <input type="radio" name="status_{{ student.id }}" value="excused" 
+                                {% if existing_record and existing_record.status == 'excused' %}checked{% endif %}>
+                            Excused
+                        </label>
+                    </div>
+                    <div class="notes-field">
+                        <input type="text" class="form-control" name="notes_{{ student.id }}" placeholder="Notes (optional)" 
+                            value="{{ existing_record.notes if existing_record and existing_record.notes else '' }}">
+                    </div>
+                </div>
+                {% endfor %}
+                
+                <div class="attendance-actions">
+                    <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">Cancel</a>
+                    <button type="submit" class="btn btn-primary">Save Attendance</button>
+                </div>
+            </form>
+            
+            {% if attendance_records %}
+            <div class="attendance-summary">
+                <h4>Attendance Summary</h4>
+                <p><strong>Present:</strong> {{ attendance_records.values()|selectattr('status', 'eq', 'present')|list|length }}</p>
+                <p><strong>Absent:</strong> {{ attendance_records.values()|selectattr('status', 'eq', 'absent')|list|length }}</p>
+                <p><strong>Late:</strong> {{ attendance_records.values()|selectattr('status', 'eq', 'late')|list|length }}</p>
+                <p><strong>Excused:</strong> {{ attendance_records.values()|selectattr('status', 'eq', 'excused')|list|length }}</p>
+                <p><strong>Not recorded:</strong> {{ students|length - attendance_records|length }}</p>
+            </div>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('attendanceForm');
+    
+    if (form) {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            // Collect form data
+            const formData = new FormData(form);
+            const attendanceData = [];
+            
+            // Process each student's attendance
+            {% for student in students %}
+            (function() {
+                const studentId = {{ student.id }};
+                const statusInput = document.querySelector(`input[name="status_${studentId}"]:checked`);
+                const statusValue = statusInput ? statusInput.value : null;
+                const notesInput = document.querySelector(`input[name="notes_${studentId}"]`);
+                const notesValue = notesInput ? notesInput.value : '';
+                
+                if (statusValue) {
+                    attendanceData.push({
+                        student_id: studentId,
+                        status: statusValue,
+                        notes: notesValue
+                    });
+                }
+            })();
+            {% endfor %}
+            
+            // Send data via AJAX
+            fetch('{{ url_for("record_bulk_attendance", session_id=class_session.id) }}', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(attendanceData)
+            })
+            .then(response => {
+                if (!response.ok) {
+                    return response.json().then(err => Promise.reject(err));
+                }
+                return response.json();
+            })
+            .then(data => {
+                alert('Attendance recorded successfully!');
+                location.reload();
+            })
+            .catch(error => {
+                console.error('Error recording attendance:', error);
+                alert('Error recording attendance. Please try again.');
+            });
+        });
+    }
+});
+</script>
+{% endblock %} 

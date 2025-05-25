@@ -1,0 +1,167 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Manage Prices</h2>
+    
+    <!-- Add/Edit Price Form -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5 class="card-title">Add/Edit Price</h5>
+            <form method="POST">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="service_type">Service Type</label>
+                            <select class="form-control" id="service_type" name="service_type" required>
+                                <option value="">Select a service type</option>
+                                <option value="band_class">Band Class</option>
+                                <option value="private_lesson">Private Lesson</option>
+                                <option value="group_lesson">Group Lesson</option>
+                                <option value="workshop">Workshop</option>
+                                <option value="masterclass">Masterclass</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="pounds">Pounds (£)</label>
+                            <input type="number" class="form-control" id="pounds" name="pounds" min="0" required>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="pence">Pence (optional)</label>
+                            <input type="number" class="form-control" id="pence" name="pence" min="0" max="99">
+                            <small class="form-text text-muted">Leave empty for whole pounds only</small>
+                        </div>
+                    </div>
+                </div>
+                <button type="submit" class="btn btn-primary mt-3">Save Price</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Current Prices Table -->
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Current Prices</h5>
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>Service Type</th>
+                            <th>Price</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for price in prices %}
+                        <tr>
+                            <td>{{ price.service_type|replace('_', ' ')|title }}</td>
+                            <td>
+                                {% if price.pence is not none %}
+                                    £{{ price.pounds }}.{{ price.pence|string|pad(2, '0') }}
+                                {% else %}
+                                    £{{ price.pounds }}
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-primary edit-price" 
+                                        data-id="{{ price.id }}"
+                                        data-service-type="{{ price.service_type }}"
+                                        data-pounds="{{ price.pounds }}"
+                                        data-pence="{{ price.pence }}">
+                                    Edit
+                                </button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Price Modal -->
+<div class="modal fade" id="editPriceModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Edit Price</h5>
+                <button type="button" class="close" data-dismiss="modal">
+                    <span>&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <form id="editPriceForm">
+                    <input type="hidden" id="edit_price_id">
+                    <div class="form-group">
+                        <label for="edit_service_type">Service Type</label>
+                        <input type="text" class="form-control" id="edit_service_type" readonly>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_pounds">Pounds (£)</label>
+                        <input type="number" class="form-control" id="edit_pounds" min="0" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="edit_pence">Pence (optional)</label>
+                        <input type="number" class="form-control" id="edit_pence" min="0" max="99">
+                        <small class="form-text text-muted">Leave empty for whole pounds only</small>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary" id="saveEditPrice">Save changes</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+$(document).ready(function() {
+    // Handle edit button click
+    $('.edit-price').click(function() {
+        const id = $(this).data('id');
+        const serviceType = $(this).data('service-type');
+        const pounds = $(this).data('pounds');
+        const pence = $(this).data('pence');
+        
+        $('#edit_price_id').val(id);
+        $('#edit_service_type').val(serviceType);
+        $('#edit_pounds').val(pounds);
+        $('#edit_pence').val(pence);
+        
+        $('#editPriceModal').modal('show');
+    });
+    
+    // Handle save edit
+    $('#saveEditPrice').click(function() {
+        const id = $('#edit_price_id').val();
+        const pounds = $('#edit_pounds').val();
+        const pence = $('#edit_pence').val();
+        
+        $.ajax({
+            url: `/api/prices/${id}`,
+            method: 'PUT',
+            contentType: 'application/json',
+            data: JSON.stringify({
+                pounds: parseInt(pounds),
+                pence: pence ? parseInt(pence) : null
+            }),
+            success: function(response) {
+                location.reload();
+            },
+            error: function(xhr) {
+                alert('Error updating price: ' + xhr.responseJSON.error);
+            }
+        });
+    });
+});
+</script>
+{% endblock %} 

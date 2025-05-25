@@ -1,0 +1,228 @@
+{% extends "base.html" %}
+
+{% block title %}Piano & Keyboard Lessons - Music School{% endblock %}
+
+{% block body_class %}piano-page{% endblock %}
+
+{% block head %}
+<style>
+    .page-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url('https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 8rem 0 4rem;
+        text-align: center;
+        position: relative;
+        margin-top: 70px;
+    }
+
+    .page-header h1 {
+        font-size: 3.5rem;
+        margin-bottom: 1rem;
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+    }
+
+    .page-header p {
+        font-size: 1.5rem;
+        max-width: 800px;
+        margin: 0 auto;
+        text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+    }
+
+    .coming-soon-banner {
+        background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+        color: white;
+        padding: 2rem;
+        text-align: center;
+        margin-bottom: 3rem;
+    }
+
+    .coming-soon-banner h2 {
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .coming-soon-banner p {
+        font-size: 1.2rem;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        gap: 2rem;
+        padding: 3rem 0;
+    }
+
+    .feature-card {
+        background: white;
+        border-radius: 10px;
+        padding: 2rem;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        transition: transform 0.3s ease;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-5px);
+    }
+
+    .feature-card i {
+        font-size: 3rem;
+        color: #3498db;
+        margin-bottom: 1rem;
+    }
+
+    .feature-card h3 {
+        font-size: 1.5rem;
+        margin-bottom: 1rem;
+        color: #2c3e50;
+    }
+
+    .feature-card p {
+        color: #666;
+        line-height: 1.6;
+    }
+
+    .notify-section {
+        background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+        padding: 4rem 0;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .notify-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.1;
+        z-index: 0;
+    }
+
+    .notify-section .container {
+        position: relative;
+        z-index: 1;
+    }
+
+    .notify-section h2 {
+        font-size: 2rem;
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+    }
+
+    .notify-section p {
+        font-size: 1.1rem;
+        color: #34495e;
+        max-width: 600px;
+        margin: 0 auto 2rem;
+    }
+
+    .notify-form {
+        max-width: 500px;
+        margin: 0 auto;
+        display: flex;
+        gap: 1rem;
+    }
+
+    .notify-form input {
+        flex: 1;
+        padding: 0.8rem;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        font-size: 1rem;
+    }
+
+    .notify-form button {
+        background: #2c3e50;
+        color: white;
+        border: none;
+        padding: 0.8rem 1.5rem;
+        border-radius: 4px;
+        cursor: pointer;
+        font-size: 1rem;
+        transition: all 0.3s ease;
+    }
+
+    .notify-form button:hover {
+        background: #34495e;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        .page-header {
+            padding: 6rem 0 3rem;
+        }
+
+        .page-header h1 {
+            font-size: 2.5rem;
+        }
+
+        .page-header p {
+            font-size: 1.2rem;
+        }
+
+        .coming-soon-banner h2 {
+            font-size: 2rem;
+        }
+
+        .notify-form {
+            flex-direction: column;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>Piano & Keyboard Lessons</h1>
+        <p>Master the art of piano playing with our comprehensive lessons</p>
+    </div>
+</div>
+
+<div class="coming-soon-banner">
+    <div class="container">
+        <h2>Coming Soon!</h2>
+        <p>We're excited to announce that our Piano & Keyboard program is currently in development. Stay tuned for an amazing learning experience!</p>
+    </div>
+</div>
+
+<section class="features-grid">
+    <div class="container">
+        <div class="feature-card">
+            <i class="fas fa-piano"></i>
+            <h3>Classical Piano</h3>
+            <p>Learn classical piano techniques, music theory, and masterpieces from renowned composers.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-piano"></i>
+            <h3>Modern Keyboard</h3>
+            <p>Explore contemporary styles, digital keyboard features, and modern music production.</p>
+        </div>
+        <div class="feature-card">
+            <i class="fas fa-music"></i>
+            <h3>Music Theory</h3>
+            <p>Develop a strong foundation in music theory, composition, and improvisation skills.</p>
+        </div>
+    </div>
+</section>
+
+<section class="notify-section">
+    <div class="container">
+        <h2>Be the First to Know</h2>
+        <p>Sign up to receive updates about our Piano & Keyboard program launch and exclusive early access opportunities.</p>
+        <form class="notify-form">
+            <input type="email" placeholder="Enter your email address" required>
+            <button type="submit">Notify Me</button>
+        </form>
+    </div>
+</section>
+{% endblock %} 

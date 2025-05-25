@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block title %}Message Sent - Music Performance Academy{% endblock %}
+
+{% block content %}
+<section class="success-hero">
+    <div class="success-content">
+        <h1>Message Sent Successfully!</h1>
+        <p>Thank you for contacting us. We'll get back to you as soon as possible.</p>
+    </div>
+</section>
+
+<section class="success-section">
+    <div class="success-container">
+        <div class="success-message">
+            <i class="fas fa-check-circle success-icon"></i>
+            <h2>Your message has been sent</h2>
+            <p>We appreciate you taking the time to reach out to us. Our team will review your message and respond within 24-48 hours.</p>
+            <div class="success-actions">
+                <a href="{{ url_for('home') }}" class="btn btn-primary">Return to Home</a>
+                <a href="{{ url_for('contact') }}" class="btn btn-secondary">Send Another Message</a>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %} 

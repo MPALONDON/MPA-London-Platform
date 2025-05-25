@@ -1,0 +1,156 @@
+{% extends "base.html" %}
+
+{% block title %}Newsletter Management{% endblock %}
+
+{% block content %}
+<div class="container mt-5 pt-4 mb-5">
+    <h1>Newsletter Management</h1>
+    
+    {% with messages = get_flashed_messages() %}
+        {% if messages %}
+            {% for message in messages %}
+                <div class="alert alert-info">
+                    {{ message }}
+                </div>
+            {% endfor %}
+        {% endif %}
+    {% endwith %}
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="card-title">Current Subscribers</h5>
+                    <p class="card-text">Active subscribers: {{ active_subscribers }}</p>
+                </div>
+                <button type="button" class="btn btn-secondary" data-bs-toggle="modal" data-bs-target="#subscribersModal">
+                    <i class="fas fa-users"></i> View Subscribers
+                </button>
+            </div>
+        </div>
+    </div>
+    
+    <div class="card">
+        <div class="card-body">
+            <h5 class="card-title">Send Newsletter</h5>
+            <form method="POST" enctype="multipart/form-data">
+                <div class="mb-3">
+                    <label for="subject" class="form-label">Subject</label>
+                    <input type="text" class="form-control" id="subject" name="subject" required>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="content" class="form-label">Content</label>
+                    <textarea class="form-control" id="content" name="content" rows="10" required></textarea>
+                </div>
+                
+                <div class="mb-3">
+                    <label for="attachment" class="form-label">Attachment (Optional)</label>
+                    <input type="file" class="form-control" id="attachment" name="attachment">
+                    <div class="form-text">You can attach one file to your newsletter.</div>
+                </div>
+                
+                <button type="submit" class="btn btn-primary" onclick="return confirm('Are you sure you want to send this newsletter to all active subscribers?')">
+                    Send Newsletter
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Subscribers Modal -->
+<div class="modal fade" id="subscribersModal" tabindex="-1" aria-labelledby="subscribersModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="subscribersModalLabel">Newsletter Subscribers</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="table-responsive">
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Email</th>
+                                <th>Date Subscribed</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="subscribersTableBody">
+                            {% for subscriber in subscribers %}
+                            <tr>
+                                <td>{{ subscriber.email }}</td>
+                                <td>{{ subscriber.date_subscribed.strftime('%Y-%m-%d %H:%M') }}</td>
+                                <td>
+                                    {% if subscriber.is_active %}
+                                    <span class="badge bg-success">Active</span>
+                                    {% else %}
+                                    <span class="badge bg-danger">Inactive</span>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .container {
+        max-width: 800px;
+        margin-top: 2rem !important;
+        margin-bottom: 3rem !important;
+    }
+    
+    .card {
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    }
+    
+    .card-title {
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+    }
+    
+    .form-label {
+        font-weight: 500;
+        color: #34495e;
+    }
+
+    .alert {
+        border-radius: 4px;
+        margin-bottom: 1rem;
+    }
+    
+    .modal-content {
+        border-radius: 8px;
+    }
+    
+    .modal-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #dee2e6;
+    }
+    
+    .table th {
+        background-color: #f8f9fa;
+    }
+    
+    .badge {
+        padding: 0.5em 0.75em;
+    }
+</style>
+
+<script>
+    // Add confirmation before sending
+    document.querySelector('form').addEventListener('submit', function(e) {
+        if (!confirm('Are you sure you want to send this newsletter to all active subscribers?')) {
+            e.preventDefault();
+        }
+    });
+</script>
+{% endblock %} 

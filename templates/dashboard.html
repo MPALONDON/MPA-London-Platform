@@ -1,0 +1,3971 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Music Performance Academy{% endblock %}
+
+{% block head %}
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+<style>
+    .dashboard-container {
+        width: 100%;
+        max-width: 100%;
+        padding: 1rem;
+        overflow-x: hidden;
+    }
+
+    .dashboard-tabs {
+        display: flex;
+        gap: 0.5rem;
+        margin: 1rem 0;
+        border-bottom: 1px solid #ddd;
+        padding-bottom: 0.5rem;
+        flex-wrap: wrap;
+    }
+
+    .tab-button {
+        padding: 0.5rem 1rem;
+        border: none;
+        background: none;
+        cursor: pointer;
+        font-size: 0.9rem;
+        color: #666;
+        border-bottom: 2px solid transparent;
+        transition: all 0.3s ease;
+        white-space: nowrap;
+    }
+
+    .tab-button:hover {
+        color: #333;
+    }
+
+    .tab-button.active {
+        color: #007bff;
+        border-bottom: 2px solid #007bff;
+    }
+
+    .tab-content {
+        display: none;
+    }
+
+    .tab-content.active {
+        display: block;
+    }
+    
+    /* CSS for the schedule tab layout */
+    #schedule-tab.active {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        width: 100%;
+    }
+    
+    .calendar-container {
+        width: 100%;
+        min-width: unset;
+    }
+    
+    .schedule-panel {
+        width: 100%;
+        min-width: unset;
+    }
+    
+    /* Make calendar bigger */
+    .calendar-grid {
+        width: 100%;
+    }
+    
+    /* Calendar header styles */
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px;
+        margin-bottom: 10px;
+    }
+    
+    .calendar-header button {
+        padding: 5px 15px;
+        font-size: 16px;
+    }
+    
+    .calendar-header h3 {
+        margin: 0;
+        font-size: 20px;
+        font-weight: 500;
+    }
+    
+    /* Calendar days and dates styles */
+    .calendar-days div, .calendar-dates div {
+        padding: 10px;
+        text-align: center;
+    }
+    
+    /* Fix calendar date sizing issues */
+    .calendar-dates div {
+        min-height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    /* Ensure calendar maintains size when clicked */
+    .calendar-dates div.selected {
+        background-color: #e6f2ff;
+        border: 1px solid #007bff;
+    }
+    
+    /* Fix for materials tab layout */
+    #materials-tab.active {
+        display: block;
+        width: 100%;
+    }
+    
+    #materials-tab.active .materials-section {
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+    
+    /* Materials Management Layout */
+    .materials-management-container {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        width: 100%;
+    }
+    
+    .materials-left-column {
+        width: 100%;
+    }
+    
+    .materials-right-column {
+        width: 100%;
+    }
+    
+    /* Make materials section wider */
+    .materials-section {
+        width: 100%;
+        max-width: 100%;
+        margin: 0 auto;
+    }
+    
+    .materials-card {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 20px;
+        margin-bottom: 20px;
+        height: 100%;
+        width: 100%;
+    }
+    
+    /* Make drop zone a symmetrical square */
+    .drop-zone {
+        width: 100%;
+        max-width: 500px;
+        aspect-ratio: 1 / 1;
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 20px;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+    
+    .drop-zone:hover, .drop-zone.dragover {
+        border-color: #007bff;
+        background-color: #e6f2ff;
+    }
+    
+    .drop-zone-content {
+        text-align: center;
+        padding: 20px;
+    }
+    
+    .drop-zone-content i {
+        font-size: 48px;
+        color: #6c757d;
+        margin-bottom: 15px;
+    }
+    
+    /* Make materials grid items smaller */
+    .materials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+        gap: 10px;
+        margin-top: 15px;
+    }
+    
+    .material-item {
+        background: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        padding: 10px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        transition: all 0.2s ease;
+        position: relative;
+        min-height: 120px;
+    }
+    
+    .material-item:hover {
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transform: translateY(-2px);
+    }
+    
+    .material-item .material-icon {
+        font-size: 24px;
+        margin-bottom: 8px;
+        color: #6c757d;
+    }
+    
+    .material-item .material-title {
+        font-size: 14px;
+        font-weight: 500;
+        margin-bottom: 5px;
+        word-break: break-word;
+        max-height: 40px;
+        overflow: hidden;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+    }
+    
+    .material-item .material-category {
+        font-size: 12px;
+        color: #6c757d;
+        margin-top: auto;
+    }
+    
+    .material-item .material-checkbox {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+    }
+    
+    /* Fix for allocations tab layout */
+    #allocations-tab.active {
+        display: block;
+        width: 100%;
+    }
+    
+    #allocations-tab.active .allocation-card {
+        width: 100%;
+        margin-bottom: 2rem;
+    }
+    
+    /* Fix for groups tab layout */
+    #groups-tab.active {
+        display: block;
+        width: 100%;
+    }
+    
+    /* Add spacing between groups sections */
+    .groups-list-section {
+        margin-top: 2rem;
+    }
+    
+    /* Modern Groups Management Styles */
+    .groups-modern-container {
+        padding: 2rem;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+        min-height: 600px;
+    }
+
+    .groups-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 2rem;
+        padding-bottom: 1.5rem;
+        border-bottom: 2px solid #f1f3f4;
+    }
+
+    .groups-header-left h2 {
+        font-size: 1.75rem;
+        color: #2c3e50;
+        margin: 0 0 0.5rem 0;
+        font-weight: 600;
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .groups-header-left h2 i {
+        color: #4CAF50;
+        font-size: 1.5rem;
+    }
+
+    .groups-header-left p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 1rem;
+    }
+
+    .groups-header-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    #createNewGroupBtn {
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        color: white;
+        font-weight: 500;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        transition: all 0.3s ease;
+        box-shadow: 0 2px 4px rgba(76, 175, 80, 0.2);
+    }
+
+    #createNewGroupBtn:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(76, 175, 80, 0.3);
+    }
+
+    /* Search Bar */
+    .groups-search-bar {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        gap: 1rem;
+    }
+
+    .search-input-wrapper {
+        position: relative;
+        flex: 1;
+        max-width: 400px;
+    }
+
+    .search-input-wrapper i {
+        position: absolute;
+        left: 1rem;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #6c757d;
+        z-index: 2;
+    }
+
+    .search-input-wrapper .form-control {
+        padding-left: 3rem;
+        border-radius: 25px;
+        border: 2px solid #e9ecef;
+        background: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+
+    .search-input-wrapper .form-control:focus {
+        border-color: #4CAF50;
+        background: white;
+        box-shadow: 0 0 0 3px rgba(76, 175, 80, 0.1);
+    }
+
+    .groups-count-badge {
+        background: linear-gradient(135deg, #6c757d 0%, #5a6268 100%);
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 20px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+
+    /* Create Group Form Modal */
+    .create-group-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1050;
+        animation: fadeIn 0.3s ease;
+    }
+
+    .group-form-container {
+        background: white;
+        border-radius: 12px;
+        padding: 2rem;
+        max-width: 500px;
+        width: 90%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease;
+    }
+
+    .group-form-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+    
+    .group-form-header h3 {
+        margin: 0;
+        color: #2c3e50;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .btn-close-form {
+        background: none;
+        border: none;
+        color: #6c757d;
+        font-size: 1.25rem;
+        padding: 0.5rem;
+        border-radius: 50%;
+        transition: all 0.2s ease;
+    }
+
+    .btn-close-form:hover {
+        background: #f8f9fa;
+        color: #dc3545;
+    }
+
+    .form-row {
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+    }
+
+    .form-actions {
+        display: flex;
+        justify-content: flex-end;
+        gap: 1rem;
+        margin-top: 1.5rem;
+        padding-top: 1rem;
+        border-top: 1px solid #e9ecef;
+    }
+    
+    /* Groups Grid */
+    .groups-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1.5rem;
+        min-height: 300px;
+    }
+    
+    .group-card {
+        background: white;
+        border: 2px solid #e9ecef;
+        border-radius: 12px;
+        padding: 1.5rem;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .group-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 4px;
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+    }
+
+    .group-card:hover {
+        border-color: #4CAF50;
+        transform: translateY(-2px);
+        box-shadow: 0 8px 25px rgba(76, 175, 80, 0.15);
+    }
+
+    .group-card-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 1rem;
+    }
+
+    .group-card-title {
+        font-size: 1.25rem;
+        font-weight: 600;
+        color: #2c3e50;
+        margin: 0;
+        line-height: 1.3;
+    }
+
+    .group-card-icon {
+        color: #4CAF50;
+        font-size: 1.5rem;
+        opacity: 0.7;
+    }
+
+    .group-card-description {
+        color: #6c757d;
+        margin-bottom: 1rem;
+        line-height: 1.5;
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .group-card-stats {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-top: auto;
+        padding-top: 1rem;
+        border-top: 1px solid #f1f3f4;
+    }
+
+    .group-stat {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+
+    .group-stat i {
+        color: #4CAF50;
+    }
+
+    /* No Groups Placeholder */
+    .no-groups-placeholder {
+        grid-column: 1 / -1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 300px;
+    }
+
+    .placeholder-content {
+        text-align: center;
+        color: #6c757d;
+    }
+
+    .placeholder-content i {
+        color: #dee2e6;
+        margin-bottom: 1rem;
+    }
+
+    .placeholder-content h3 {
+        color: #6c757d;
+        margin-bottom: 0.5rem;
+    }
+
+    .placeholder-content p {
+        margin-bottom: 1.5rem;
+        max-width: 400px;
+    }
+
+    /* Group Details Modal */
+    .group-details-modal {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 1055;
+        animation: fadeIn 0.3s ease;
+    }
+    
+    .group-details-content {
+        background: white;
+        border-radius: 12px;
+        max-width: 800px;
+        width: 95%;
+        max-height: 90vh;
+        overflow-y: auto;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+        animation: slideUp 0.3s ease;
+    }
+
+    .group-details-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        padding: 2rem 2rem 1.5rem;
+        border-bottom: 2px solid #f1f3f4;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+
+    .group-info h3 {
+        margin: 0 0 0.5rem 0;
+        color: #2c3e50;
+        font-size: 1.5rem;
+        font-weight: 600;
+    }
+
+    .group-description {
+        margin: 0;
+        color: #6c757d;
+        line-height: 1.5;
+    }
+
+    .group-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: flex-start;
+    }
+
+    /* Group Tabs */
+    .group-tabs-nav {
+        display: flex;
+        background: #f8f9fa;
+        padding: 0;
+        margin: 0;
+        border-bottom: 2px solid #e9ecef;
+    }
+
+    .group-tab-btn {
+        flex: 1;
+        padding: 1rem 1.5rem;
+        border: none;
+        background: none;
+        color: #6c757d;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        position: relative;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .group-tab-btn.active {
+        color: #4CAF50;
+        background: white;
+        border-bottom: 3px solid #4CAF50;
+    }
+
+    .group-tab-btn:hover:not(.active) {
+        background: #e9ecef;
+        color: #495057;
+    }
+
+    .tab-badge {
+        background: #e9ecef;
+        color: #6c757d;
+        padding: 0.25rem 0.5rem;
+        border-radius: 12px;
+        font-size: 0.75rem;
+        font-weight: 600;
+    }
+
+    .group-tab-btn.active .tab-badge {
+        background: #4CAF50;
+        color: white;
+    }
+
+    /* Tab Content */
+    .group-tab-content {
+        display: none;
+        padding: 2rem;
+    }
+
+    .group-tab-content.active {
+        display: block;
+    }
+
+    .tab-section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #e9ecef;
+    }
+
+    .tab-section-header h4 {
+        margin: 0;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .tab-actions {
+        display: flex;
+        gap: 1rem;
+        align-items: center;
+    }
+
+    .tab-actions .form-control {
+        min-width: 200px;
+    }
+
+    /* Members Grid */
+    .members-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+        gap: 1rem;
+    }
+
+    .member-card {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        transition: all 0.2s ease;
+    }
+
+    .member-card:hover {
+        border-color: #4CAF50;
+        transform: translateY(-1px);
+    }
+    
+    .member-info {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+    }
+
+    .member-avatar {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: linear-gradient(135deg, #4CAF50 0%, #45a049 100%);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-weight: 600;
+        font-size: 1rem;
+    }
+
+    .member-details h5 {
+        margin: 0;
+        color: #2c3e50;
+        font-size: 1rem;
+        font-weight: 600;
+    }
+
+    .member-details p {
+        margin: 0;
+        color: #6c757d;
+        font-size: 0.875rem;
+    }
+
+    /* Materials Grid */
+    .materials-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 1rem;
+    }
+
+    .material-card {
+        background: #f8f9fa;
+        border: 2px solid #e9ecef;
+        border-radius: 8px;
+        padding: 1rem;
+        transition: all 0.2s ease;
+    }
+
+    .material-card:hover {
+        border-color: #4CAF50;
+        transform: translateY(-1px);
+    }
+
+    /* Sessions Grid */
+    .sessions-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+        gap: 1rem;
+    }
+
+    /* Animations */
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+
+    @keyframes slideUp {
+        from { 
+            opacity: 0; 
+            transform: translateY(30px); 
+        }
+        to { 
+            opacity: 1; 
+            transform: translateY(0); 
+        }
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+        .materials-management-container {
+            flex-direction: column;
+        }
+        
+        .materials-left-column, .materials-right-column {
+            width: 100%;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .groups-modern-container {
+            padding: 1rem;
+        }
+
+        .groups-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .groups-search-bar {
+            flex-direction: column;
+            align-items: stretch;
+            gap: 1rem;
+        }
+
+        .search-input-wrapper {
+            max-width: none;
+        }
+
+        .groups-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .group-details-content {
+            width: 98%;
+            margin: 1rem;
+        }
+
+        .group-details-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+            padding: 1.5rem;
+        }
+
+        .group-actions {
+            width: 100%;
+            justify-content: flex-end;
+        }
+
+        .tab-section-header {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 1rem;
+        }
+
+        .tab-actions {
+            width: 100%;
+            flex-direction: column;
+        }
+
+        .tab-actions .form-control {
+            min-width: auto;
+        }
+
+        .members-grid, .materials-grid, .sessions-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .group-form-container {
+            width: 95%;
+            margin: 1rem;
+            padding: 1.5rem;
+        }
+    }
+
+    .jam-nights-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+    
+    .jam-nights-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+    
+    .jam-nights-header h2 {
+        color: #2c3e50;
+        font-size: 1.5rem;
+        margin: 0;
+    }
+    
+    #jamNightForm {
+        background: #f8f9fa;
+        padding: 1.5rem;
+        border-radius: 8px;
+        margin-bottom: 1.5rem;
+    }
+    
+    .jam-nights-list {
+        margin-top: 1.5rem;
+    }
+    
+    .jam-nights-list .table {
+        width: 100%;
+        margin-bottom: 0;
+    }
+    
+    .jam-nights-list .table th {
+        background: #f8f9fa;
+        color: #2c3e50;
+        font-weight: 600;
+    }
+    
+    .jam-nights-list .table td {
+        vertical-align: middle;
+    }
+    
+    .status-badge {
+        padding: 0.25rem 0.5rem;
+        border-radius: 4px;
+        font-size: 0.875rem;
+        font-weight: 500;
+    }
+    
+    .status-badge.active {
+        background: #d4edda;
+        color: #155724;
+    }
+    
+    .status-badge.inactive {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    /* Modern Room Management Styles */
+    .rooms-management-container {
+        padding: 2rem;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .rooms-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 2rem;
+        padding-bottom: 1rem;
+        border-bottom: 1px solid #eee;
+    }
+
+    .rooms-header h2 {
+        font-size: 1.75rem;
+        color: #2c3e50;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .add-room-btn {
+        background: #4CAF50;
+        color: white;
+        border: none;
+        padding: 0.75rem 1.5rem;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+
+    .add-room-btn:hover {
+        background: #43A047;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 8px rgba(76, 175, 80, 0.2);
+    }
+
+    .add-room-btn i {
+        font-size: 1rem;
+    }
+
+    .rooms-card {
+        background: #fff;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .rooms-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+    .rooms-table th {
+        background: #f8f9fa;
+        color: #2c3e50;
+        font-weight: 600;
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 2px solid #eee;
+    }
+
+    .rooms-table td {
+        padding: 1rem;
+        border-bottom: 1px solid #eee;
+        color: #444;
+        vertical-align: middle;
+    }
+
+    .rooms-table tr:last-child td {
+        border-bottom: none;
+    }
+
+    .rooms-table tr:hover {
+        background-color: #f8f9fa;
+    }
+
+    .rooms-table .btn {
+        padding: 0.5rem;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+        width: 2.5em;
+        height: 2.5em;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 0.5rem;
+    }
+
+    .rooms-table .btn-primary {
+        background: #0056b3;
+        border: none;
+    }
+
+    .rooms-table .btn-danger {
+        background: #dc3545;
+        border: none;
+    }
+
+    .rooms-table .btn-primary:hover {
+        background: #004494;
+        transform: translateY(-1px);
+    }
+
+    .rooms-table .btn-danger:hover {
+        background: #bb2d3b;
+        transform: translateY(-1px);
+    }
+
+    .rooms-table .btn i {
+        font-size: 0.875rem;
+        color: white;
+    }
+
+    /* Modal Styles */
+    .modal-content {
+        border-radius: 12px;
+        border: none;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    }
+
+    .modal-header {
+        background: #f8f9fa;
+        border-bottom: 1px solid #eee;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .modal-title {
+        color: #2c3e50;
+        font-weight: 600;
+    }
+
+    .modal-body {
+        padding: 1.5rem;
+    }
+
+    .modal-footer {
+        border-top: 1px solid #eee;
+        padding: 1.25rem 1.5rem;
+    }
+
+    .form-label {
+        color: #2c3e50;
+        font-weight: 500;
+        margin-bottom: 0.5rem;
+    }
+
+    .form-control {
+        border: 1px solid #dee2e6;
+        border-radius: 8px;
+        padding: 0.75rem;
+        transition: all 0.2s ease;
+    }
+
+    .form-control:focus {
+        border-color: #80bdff;
+        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+    }
+
+    .btn-close {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        padding: 0.5rem;
+        color: #6c757d;
+        opacity: 0.75;
+        transition: opacity 0.2s ease;
+    }
+
+    .btn-close:hover {
+        opacity: 1;
+    }
+
+    /* Toast Styles */
+    .toast-container {
+        z-index: 1060;
+    }
+
+    .toast {
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        border: none;
+    }
+
+    .toast.bg-success {
+        background: #4CAF50 !important;
+        color: white;
+    }
+
+    .toast.bg-danger {
+        background: #dc3545 !important;
+        color: white;
+    }
+
+    .toast .btn-close {
+        color: white;
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .rooms-management-container {
+            padding: 1rem;
+        }
+
+        .rooms-header {
+            flex-direction: column;
+            gap: 1rem;
+            align-items: flex-start;
+        }
+
+        .rooms-table {
+            display: block;
+            overflow-x: auto;
+        }
+    }
+
+    /* Calendar styles */
+    .calendar-date.has-sessions {
+        background-color: #e3f2fd;
+        font-weight: bold;
+    }
+    
+    .calendar-date.has-recurring-sessions {
+        background-color: #bbdefb;
+        position: relative;
+    }
+    
+    .calendar-date.has-recurring-sessions::after {
+        content: '↻';
+        position: absolute;
+        top: 2px;
+        right: 2px;
+        font-size: 12px;
+        color: #1976d2;
+    }
+    
+    .calendar-date.today {
+        border: 2px solid #2196f3;
+    }
+    
+    .calendar-date.selected {
+        background-color: #90caf9;
+    }
+    
+    .session-item.recurring {
+        border-left: 3px solid #1976d2;
+    }
+
+    /* Term Form Styles */
+    #termForm {
+        background: #fff;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 1.5rem;
+    }
+
+    #termForm .form-group {
+        margin-bottom: 1rem;
+    }
+
+    #termForm .btn-group {
+        gap: 0.5rem;
+    }
+
+    #termForm .btn-outline-primary {
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+        flex: 1;
+    }
+
+    #termForm .btn-outline-primary:hover {
+        background-color: #0d6efd;
+        color: white;
+    }
+
+    #termForm .form-check.form-switch {
+        padding: 0.5rem;
+        background: #f8f9fa;
+        border-radius: 6px;
+        margin: 0;
+    }
+
+    #termForm .form-check-input {
+        margin-right: 0.5rem;
+    }
+
+    #termForm .form-switch .form-check-input {
+        width: 2.5em;
+        margin-left: -0.5rem;
+    }
+
+    #termForm .form-switch .form-check-input:checked {
+        background-color: #0d6efd;
+        border-color: #0d6efd;
+    }
+
+    #breakDates {
+        background: #f8f9fa;
+        padding: 1rem;
+        border-radius: 6px;
+        margin-top: 0.5rem;
+    }
+
+    #breakDates .form-group:first-child {
+        margin-bottom: 1rem;
+    }
+
+    #termForm .form-actions {
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    #termForm .form-actions button {
+        padding: 0.5rem 1.5rem;
+    }
+
+    .term-actions {
+        display: flex;
+        gap: 0.5rem;
+        align-items: center;
+        margin-bottom: 1rem;
+    }
+    
+    .term-actions button {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .term-actions button.btn-success {
+        background-color: #28a745;
+        border: none;
+        color: white;
+    }
+
+    .term-actions button.btn-secondary {
+        background-color: #6c757d;
+        border: none;
+        color: white;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        transition: all 0.2s ease;
+    }
+
+    .term-actions button.btn-secondary:hover {
+        background-color: #5a6268;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .term-actions button:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .term-actions button.btn-success:hover {
+        background-color: #218838;
+    }
+
+    .term-actions button.btn-secondary:hover {
+        background-color: #5a6268;
+    }
+
+
+
+    /* Music AI Styles */
+    .music-ai-container {
+        padding: 2rem;
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
+    }
+
+    .music-ai-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+        gap: 2rem;
+        margin-bottom: 2rem;
+    }
+
+    .music-ai-card {
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+        border-radius: 12px;
+        padding: 1.5rem;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.07);
+        transition: all 0.3s ease;
+        border: 1px solid #e9ecef;
+    }
+
+    .music-ai-card:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+        border-color: #0d6efd;
+    }
+
+    .music-ai-card h3 {
+        color: #2c3e50;
+        margin-bottom: 1.5rem;
+        font-size: 1.25rem;
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .music-ai-card h3 i {
+        color: #0d6efd;
+        font-size: 1.1rem;
+    }
+
+    .upload-zone {
+        border: 2px dashed #ced4da;
+        border-radius: 8px;
+        padding: 2rem;
+        text-align: center;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        background: #fff;
+        margin-bottom: 1rem;
+    }
+
+    .upload-zone:hover {
+        border-color: #0d6efd;
+        background: #f8f9ff;
+    }
+
+    .upload-zone.dragover {
+        border-color: #0d6efd;
+        background: #e6f2ff;
+        transform: scale(1.02);
+    }
+
+    .upload-zone-content i {
+        font-size: 3rem;
+        color: #6c757d;
+        margin-bottom: 1rem;
+        display: block;
+    }
+
+    .upload-zone-content p {
+        margin: 0 0 0.5rem 0;
+        color: #495057;
+        font-weight: 500;
+    }
+
+    .jobs-list, .results-list {
+        max-height: 200px;
+        overflow-y: auto;
+        border: 1px solid #e9ecef;
+        border-radius: 6px;
+        padding: 1rem;
+        background: #fff;
+        margin-bottom: 1rem;
+    }
+
+    .job-item, .result-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 0.75rem;
+        border-bottom: 1px solid #f1f3f4;
+        margin-bottom: 0.5rem;
+    }
+
+    .job-item:last-child, .result-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+    }
+
+    .job-status {
+        padding: 0.25rem 0.75rem;
+        border-radius: 20px;
+        font-size: 0.75rem;
+        font-weight: 600;
+        text-transform: uppercase;
+    }
+
+    .job-status.processing {
+        background: #fff3cd;
+        color: #856404;
+    }
+
+    .job-status.completed {
+        background: #d4edda;
+        color: #155724;
+    }
+
+    .job-status.failed {
+        background: #f8d7da;
+        color: #721c24;
+    }
+
+    .music-ai-results-section {
+        background: #fff;
+        border-radius: 8px;
+        padding: 1.5rem;
+        margin-top: 2rem;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+        border: 1px solid #e9ecef;
+    }
+
+    .audio-player {
+        width: 100%;
+        margin: 1rem 0;
+        border-radius: 6px;
+        background: #f8f9fa;
+        padding: 0.5rem;
+    }
+
+    .download-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.5rem;
+        padding: 0.5rem 1rem;
+        background: #0d6efd;
+        color: white;
+        text-decoration: none;
+        border-radius: 6px;
+        transition: all 0.3s ease;
+        margin: 0.25rem;
+    }
+
+    .download-link:hover {
+        background: #0056b3;
+        color: white;
+        text-decoration: none;
+        transform: translateY(-1px);
+    }
+
+    .job-actions, .result-actions {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+    }
+
+    .result-actions {
+        flex-direction: column;
+        align-items: flex-end;
+        gap: 0.5rem;
+    }
+
+    .download-links {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.25rem;
+        margin-bottom: 0.5rem;
+    }
+
+    .btn-danger.btn-sm {
+        padding: 0.25rem 0.5rem;
+        font-size: 0.75rem;
+        border-radius: 4px;
+        border: none;
+        transition: all 0.2s ease;
+    }
+
+    .btn-danger.btn-sm:hover {
+        background-color: #c82333;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    @media (max-width: 768px) {
+        .job-item, .result-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.5rem;
+        }
+
+        .job-actions, .result-actions {
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .result-actions {
+            flex-direction: row;
+            align-items: center;
+        }
+    }
+
+
+
+
+
+    .cancel-button {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        padding: 0.5rem 1rem;
+        border-radius: 6px;
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .cancel-button:hover {
+        background-color: #5a6268;
+        transform: translateY(-1px);
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .term-dates-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .url-input-section {
+        width: 100%;
+        max-width: 100%;
+        padding: 1rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+        margin-top: 1rem;
+    }
+
+    .url-input-section .form-group {
+        width: 100%;
+        margin-bottom: 1rem;
+    }
+
+    .url-input-section input,
+    .url-input-section select {
+        width: 100%;
+        min-width: 200px;
+    }
+
+    @media (min-width: 992px) {
+        #schedule-tab.active {
+            flex-direction: row;
+        }
+        
+        .calendar-container {
+            width: 60%;
+            min-width: 500px;
+        }
+        
+        .schedule-panel {
+            width: 40%;
+            min-width: 400px;
+        }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+        .materials-management-container {
+            gap: 1rem;
+        }
+
+        .url-input-section {
+            padding: 0.75rem;
+        }
+
+        .url-input-section input,
+        .url-input-section select {
+            min-width: unset;
+        }
+
+        .schedule-panel {
+            margin-top: 1rem;
+        }
+    }
+
+    /* Materials Management Layout */
+    .materials-management-container {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        width: 100%;
+    }
+    
+    .materials-left-column {
+        width: 100%;
+    }
+    
+    .materials-right-column {
+        width: 100%;
+    }
+
+    .upload-section {
+        display: flex;
+        flex-direction: column;
+        gap: 1.5rem;
+        width: 100%;
+    }
+
+    .drop-zone {
+        width: 100%;
+        max-width: 400px;
+        aspect-ratio: 1 / 1;
+        border: 2px dashed #ccc;
+        border-radius: 8px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+    }
+
+    .url-input-section {
+        width: 100%;
+        max-width: 400px;
+        padding: 1.5rem;
+        background: #f8f9fa;
+        border-radius: 8px;
+    }
+
+    @media (min-width: 992px) {
+        .upload-section {
+            flex-direction: row;
+            align-items: flex-start;
+            justify-content: center;
+            gap: 2rem;
+        }
+
+        .drop-zone {
+            flex: 0 0 400px;
+        }
+
+        .url-input-section {
+            flex: 0 0 400px;
+            margin-left: 0;
+        }
+    }
+
+    @media (max-width: 768px) {
+        .materials-management-container {
+            gap: 1rem;
+        }
+
+        .upload-section {
+            gap: 1rem;
+        }
+
+        .url-input-section {
+            padding: 0.75rem;
+        }
+
+        .url-input-section input,
+        .url-input-section select {
+            min-width: unset;
+        }
+    }
+
+    .schedule-actions {
+        display: flex;
+        gap: 0.5rem;
+        width: 100%;
+    }
+
+    .schedule-actions button {
+        padding: 0.5rem 1rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+    }
+
+    .session-item {
+        display: flex;
+        flex-direction: column;
+        padding: 0.75rem;
+        background: white;
+        border-radius: 6px;
+        margin-bottom: 0.5rem;
+        position: relative;
+    }
+
+    .session-info {
+        padding-right: 120px;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .session-actions {
+        position: absolute;
+        top: 0.75rem;
+        right: 0.75rem;
+        display: flex;
+        gap: 0.5rem;
+    }
+
+    .session-actions button {
+        padding: 0.5rem;
+        min-width: 40px;
+        height: 40px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    @media (max-width: 768px) {
+        .schedule-panel {
+            margin-top: 1rem;
+            padding: 0.75rem;
+        }
+
+        .schedule-actions {
+            flex-direction: column;
+        }
+
+        .schedule-actions button {
+            width: 100%;
+            margin: 0;
+            padding: 0.75rem 1rem;
+        }
+
+        .session-item {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .session-info {
+            padding-right: 0;
+            width: 100%;
+        }
+
+        .session-actions {
+            position: static;
+            width: 100%;
+            justify-content: flex-end;
+        }
+
+        .session-actions button {
+            flex: 1;
+            max-width: 80px;
+        }
+    }
+
+    /* Add these styles in the existing <style> section */
+    .prices-management-container {
+        background: white;
+        border-radius: 12px;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        padding: 1.5rem;
+        margin-bottom: 2rem;
+    }
+
+    .prices-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 1.5rem;
+    }
+
+    .prices-header h2 {
+        color: #2c3e50;
+        font-size: 1.5rem;
+        margin: 0;
+    }
+
+    /* Material icons */
+    .material-item .material-icon {
+        width: 100%;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 10px;
+        height: 100px; /* Fixed height for all preview types */
+        overflow: hidden;
+    }
+    
+    .material-preview {
+        width: 100%;
+        object-fit: cover;
+        max-height: 100px;
+        margin-bottom: 0; /* Remove margin here */
+        border-radius: 4px;
+    }
+    
+    .centered-icon {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+        height: 100%;
+        background-color: #f8f9fa;
+        border-radius: 4px;
+    }
+    
+    .centered-icon i {
+        font-size: 2.5rem;
+        color: #6c757d;
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="dashboard-container" data-user-id="{{ session['user']['id'] }}">
+    <div class="dashboard-header">
+        <h1>Admin Dashboard</h1>
+        <p>Manage student schedules and materials</p>
+    </div>
+    
+    <!-- Tab Navigation -->
+    <div class="dashboard-tabs">
+        <button class="tab-button active" data-tab="schedule">Schedule</button>
+        <button class="tab-button" data-tab="rooms">Room Management</button>
+        <button class="tab-button" data-tab="materials">Materials</button>
+        <button class="tab-button" data-tab="allocations">Allocations</button>
+        <button class="tab-button" data-tab="groups">Groups</button>
+
+        <button class="tab-button" data-tab="music-ai">Music AI</button>
+        {% if session['user']['role'] == 'admin' %}
+        <button class="tab-button" data-tab="jam-nights">Jam Nights</button>
+        <button class="tab-button" data-tab="term-dates">Term Dates</button>
+        {% endif %}
+        {% if session['user']['role'] in ['admin', 'staff'] %}
+        <a href="{{ url_for('attendance_analytics') }}" class="tab-button">Attendance Analytics</a>
+        {% endif %}
+    </div>
+    
+    <div class="dashboard-content">
+        <!-- Schedule Management Tab -->
+        <div id="schedule-tab" class="tab-content active">
+            <div class="calendar-container">
+                <div class="calendar-header">
+                    <button id="prevMonthBtn" class="btn btn-outline-secondary">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <h3 id="currentMonthYear"></h3>
+                    <button id="nextMonthBtn" class="btn btn-outline-secondary">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
+                </div>
+                <div class="calendar-grid">
+                    <div class="calendar-days">
+                        <div>Sun</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+                    </div>
+                    <div class="calendar-dates" id="calendarDates">
+                        <!-- Calendar dates will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="schedule-panel">
+                <div class="schedule-header">
+                    <h2>Schedule Management</h2>
+                    <div class="schedule-actions">
+                        <button id="printScheduleBtn" class="btn btn-secondary">
+                            <i class="fas fa-print"></i> Print Schedule
+                        </button>
+                        <button id="addSessionBtn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Session
+                        </button>
+                        <button id="blockDateBtn" class="btn btn-warning">
+                            <i class="fas fa-ban"></i> Block Date
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Print Schedule Modal -->
+                <div id="printScheduleModal" class="modal fade" tabindex="-1">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">Print Schedule</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <form id="printScheduleForm">
+                                    <div class="form-group">
+                                        <label for="printStartDate">Start Date</label>
+                                        <input type="date" id="printStartDate" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="printEndDate">End Date</label>
+                                        <input type="date" id="printEndDate" class="form-control" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="printInstrument">Filter by Instrument</label>
+                                        <select id="printInstrument" class="form-control">
+                                            <option value="">All Instruments</option>
+                                        </select>
+                                    </div>
+                                </form>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                <button type="button" class="btn btn-primary" id="confirmPrintBtn">Print</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Session Form -->
+                <div id="sessionForm" style="display: none;">
+                    <form id="scheduleForm">
+                        <div class="form-group">
+                            <label for="sessionType">Session Type</label>
+                            <select id="sessionType" class="form-control" required>
+                                <option value="individual">Individual Session</option>
+                                <option value="group">Group Session</option>
+                                <option value="block">Block Date</option>
+                            </select>
+                        </div>
+                        
+                        <div id="individualFields">
+                            <div class="form-group">
+                                <label for="studentSelect">Student</label>
+                                <select id="studentSelect" class="form-control">
+                                    <option value="">Select a student</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="instrument">Instrument</label>
+                                <select id="instrument" class="form-control" required>
+                                    <option value="">Select Instrument</option>
+                                </select>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="roomSelect">Room</label>
+                                <select id="roomSelect" class="form-control" required>
+                                    <option value="">Select Room</option>
+                                </select>
+                            </div>
+                        </div>
+                        
+                        <div id="groupFields" style="display: none;">
+                            <div class="form-group">
+                                <label for="groupSelect">Group</label>
+                                <select id="groupSelect" class="form-control">
+                                    <option value="">Select a group</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="groupInstrument">Instrument (optional)</label>
+                                <select id="groupInstrument" class="form-control">
+                                    <option value="">No instrument</option>
+                                </select>
+                                <small class="form-text text-muted">Leave blank if not applicable</small>
+                            </div>
+                        </div>
+                        
+                        <div id="blockFields" style="display: none;">
+                            <div class="form-group">
+                                <label for="blockReason">Reason for Blocking</label>
+                                <input type="text" id="blockReason" class="form-control" placeholder="e.g., Bank Holiday, Maintenance">
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="blockInstruments">Affected Instruments</label>
+                                <select id="blockInstruments" class="form-control" multiple>
+                                </select>
+                                <small class="form-text text-muted">Hold Ctrl/Cmd to select multiple instruments</small>
+                            </div>
+                            
+                            <div class="form-group">
+                                <div class="form-check">
+                                    <input type="checkbox" id="isAllDay" class="form-check-input">
+                                    <label class="form-check-label" for="isAllDay">All Day</label>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="sessionDate">Date</label>
+                            <input type="date" id="sessionDate" class="form-control" required>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="sessionTime">Time</label>
+                            <select id="sessionTime" class="form-control" required>
+                                <option value="">Select Time</option>
+                                <!-- Time options will be populated by JavaScript -->
+                            </select>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="duration">Duration (minutes)</label>
+                            <select id="duration" class="form-control" required>
+                                <option value="15">15 minutes</option>
+                                <option value="30">30 minutes</option>
+                                <option value="45">45 minutes</option>
+                                <option value="60" selected>60 minutes</option>
+                                <option value="75">75 minutes</option>
+                                <option value="90">90 minutes</option>
+                                <option value="105">105 minutes</option>
+                                <option value="120">120 minutes</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <div class="form-check">
+                                <input type="checkbox" id="isRecurring" class="form-check-input">
+                                <label class="form-check-label" for="isRecurring">Make this a recurring session</label>
+                            </div>
+                        </div>
+
+                        <div id="recurringOptions" style="display: none;">
+                            <div class="form-group">
+                                <label for="recurrenceType">Repeat</label>
+                                <select id="recurrenceType" class="form-control">
+                                    <option value="weekly">Weekly</option>
+                                    <option value="biweekly">Every 2 weeks</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div>
+                            
+                            <div class="form-group">
+                                <label for="recurrenceEndDate">End Date</label>
+                                <input type="date" id="recurrenceEndDate" class="form-control">
+                            </div>
+                        </div>
+                        
+                        <div class="form-group">
+                            <label for="notes">Notes</label>
+                            <textarea id="notes" class="form-control" rows="3"></textarea>
+                        </div>
+                        
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Schedule Session</button>
+                            <button type="button" id="cancelSessionBtn" class="cancel-button">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <div id="selectedDateSessions">
+                    <h3>Selected Date Sessions</h3>
+                    <div class="sessions-filter">
+                        <select id="instrumentFilter" class="form-control">
+                            <option value="">All Instruments</option>
+                        </select>
+                    </div>
+                    <div id="sessionsList" class="sessions-list">
+                        <!-- Sessions will be populated by JavaScript -->
+                    </div>
+                </div>
+                
+                <div id="todaySessions">
+                    <h3>Today's Sessions</h3>
+                    <div id="todaySessionsList" class="sessions-list">
+                        <!-- Today's sessions will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Room Management Tab -->
+        <div class="tab-content" id="rooms-tab">
+            <div class="rooms-management-container">
+                <div class="rooms-header">
+                    <h2>Room Management</h2>
+                    <div class="header-actions">
+                        <div class="date-selector">
+                            <label for="bookingDate">View Bookings for:</label>
+                            <input type="date" id="bookingDate" class="form-control" onchange="loadBookings()">
+                        </div>
+                        <button class="add-room-btn" onclick="showAddRoomModal()">
+                            <i class="fas fa-plus"></i> Add New Room
+                        </button>
+                    </div>
+                </div>
+                <div class="rooms-card">
+                    <div class="rooms-table-container">
+                        <table class="rooms-table">
+                            <thead>
+                                <tr>
+                                    <th>Room Name</th>
+                                    <th>Capacity</th>
+                                    <th>Description</th>
+                                    <th>Bookings</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody id="roomsTableBody">
+                                <!-- Rooms will be loaded here dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Materials Management Tab -->
+        <div class="tab-content" id="materials-tab">
+            <div class="materials-management-container">
+                <!-- Materials Management Section -->
+                <div class="materials-left-column">
+                    <section class="materials-section">
+                        <div class="section-header">
+                            <h2>Materials Management</h2>
+                        </div>
+
+                        <!-- File Upload Section -->
+                        <div class="upload-section">
+                            <div id="dropZone" class="drop-zone">
+                                <div class="drop-zone-content">
+                                    <i class="fas fa-cloud-upload-alt"></i>
+                                    <p>Drag and drop files here or</p>
+                                    <button id="browseFilesBtn" class="btn btn-primary">Browse Files</button>
+                                    <input type="file" id="fileInput" multiple style="display: none;">
+                                </div>
+                            </div>
+
+                            <!-- Upload Progress Modal -->
+                            <div class="modal fade" id="uploadProgressModal" tabindex="-1" aria-labelledby="uploadProgressModalLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                        <div class="modal-header">
+                                            <h5 class="modal-title" id="uploadProgressModalLabel">Uploading Files</h5>
+                                        </div>
+                                        <div class="modal-body">
+                                            <div class="upload-progress-container">
+                                                <div class="progress mb-3">
+                                                    <div id="uploadProgressBar" class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                                                </div>
+                                                <div id="uploadStatus" class="text-center">
+                                                    Preparing upload...
+                                                </div>
+                                                <div id="uploadDetails" class="text-center text-muted small mt-2">
+                                                    Uploading file 1 of 1
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- URL Input Section -->
+                            <div class="url-input-section">
+                                <h3>Add YouTube or Spotify Link</h3>
+                                <div class="form-group">
+                                    <input type="text" id="materialUrl" class="form-control" placeholder="Enter YouTube or Spotify URL">
+                                </div>
+                                <div class="form-group">
+                                    <input type="text" id="materialTitle" class="form-control" placeholder="Enter material title">
+                                </div>
+                                <div class="form-group">
+                                    <select id="materialCategory" class="form-control">
+                                        <option value="">Select Category</option>
+                                        <option value="reference">Reference</option>
+                                        <option value="exercise">Exercise</option>
+                                        <option value="theory">Theory</option>
+                                        <option value="performance">Performance</option>
+                                    </select>
+                                </div>
+                                <button id="addUrlBtn" class="btn btn-primary" disabled>Add Link</button>
+                            </div>
+                        </div>
+                    </section>
+                </div>
+                
+                <!-- Your Materials Section -->
+                <div class="materials-right-column">
+                    <div class="materials-card">
+                        <h3>Your Materials</h3>
+                        <div class="materials-actions">
+                            <select id="filterInstrument" class="form-control" style="width: auto; margin-right: 10px;">
+                                <option value="">All Instruments</option>
+                            </select>
+                            <button id="deleteSelectedBtn" class="btn btn-danger" disabled>
+                                <i class="fas fa-trash"></i> Delete Selected
+                            </button>
+                        </div>
+                        <div id="materialsList" class="materials-grid">
+                            <!-- Materials will be loaded here -->
+                        </div>
+                        <div id="noMaterials" class="no-materials" style="display: none;">
+                            <p>No materials found. Upload a file or add a link to get started.</p>
+                        </div>
+                        <div id="materialsError" class="materials-error" style="display: none;">
+                            <p>Error loading materials. Please try again.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Allocate Materials Tab -->
+        <div class="tab-content" id="allocations-tab">
+            <div class="allocation-card">
+                <h2>Allocate Materials to Students or Groups</h2>
+                <div class="allocation-container">
+                    <div class="recipient-selection">
+                        <div class="selection-type">
+                            <label>Select Allocation Type:</label>
+                            <div class="btn-group" role="group">
+                                <input type="radio" class="btn-check" name="allocationType" id="studentType" value="student" checked>
+                                <label class="btn btn-outline-primary" for="studentType">Student</label>
+                                
+                                <input type="radio" class="btn-check" name="allocationType" id="groupType" value="group">
+                                <label class="btn btn-outline-primary" for="groupType">Group</label>
+                            </div>
+                        </div>
+                        
+                        <div class="student-selection" id="studentSelection">
+                            <label for="student-select">Select Student:</label>
+                            <select id="student-select" class="form-control">
+                                <option value="">-- Select a student --</option>
+                            </select>
+                        </div>
+                        
+                        <div class="group-selection" id="groupSelection" style="display: none;">
+                            <label for="group-select">Select Group:</label>
+                            <select id="group-select" class="form-control">
+                                <option value="">-- Select a group --</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="materials-selection">
+                        <h3>Available Materials</h3>
+                        <div class="materials-filter">
+                            <input type="text" id="material-search" placeholder="Search materials..." class="form-control">
+                            <select id="material-category-filter" class="form-control">
+                                <option value="">All Categories</option>
+                            </select>
+                        </div>
+                        <div class="materials-list-container">
+                            <div id="materials-checkboxes" class="materials-checkboxes">
+                                <!-- Materials will be loaded here -->
+                                <div class="no-materials-message">No materials available</div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="allocation-actions">
+                        <button id="allocate-materials-btn" class="btn btn-primary">Allocate Selected Materials</button>
+                    </div>
+                    
+                    <div class="allocated-materials-section">
+                        <h3>Currently Allocated Materials</h3>
+                        <div id="allocated-materials-list" class="allocated-materials-list">
+                            <div class="no-allocations-message">No materials allocated</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Groups Management Tab -->
+        <div class="tab-content" id="groups-tab">
+            <div class="groups-modern-container">
+                <!-- Header with Actions -->
+                <div class="groups-header">
+                    <div class="groups-header-left">
+                        <h2><i class="fas fa-users"></i> Groups Management</h2>
+                        <p class="text-muted">Create and manage student groups for band classes and ensemble sessions</p>
+                                </div>
+                    <div class="groups-header-actions">
+                        <button id="createNewGroupBtn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Create New Group
+                        </button>
+                                </div>
+                        </div>
+
+                <!-- Search and Filter Bar -->
+                <div class="groups-search-bar">
+                    <div class="search-input-wrapper">
+                        <i class="fas fa-search"></i>
+                        <input type="text" id="groupSearch" class="form-control" placeholder="Search groups by name or description...">
+                    </div>
+                    <div class="groups-stats">
+                        <span id="groupsCount" class="groups-count-badge">0 Groups</span>
+                    </div>
+                </div>
+                
+                <!-- Create Group Form (Hidden by default) -->
+                <div id="createGroupForm" class="create-group-modal" style="display: none;">
+                    <div class="group-form-container">
+                        <div class="group-form-header">
+                            <h3><i class="fas fa-plus-circle"></i> Create New Group</h3>
+                            <button type="button" class="btn-close-form" id="closeGroupForm">
+                                <i class="fas fa-times"></i>
+                            </button>
+                        </div>
+                        <form id="groupCreationForm">
+                            <div class="form-row">
+                        <div class="form-group">
+                                    <label for="groupName"><i class="fas fa-tag"></i> Group Name</label>
+                                    <input type="text" id="groupName" class="form-control" placeholder="e.g., Beginner Guitar Band, Advanced Ensemble" required>
+                        </div>
+                                <div class="form-group">
+                                    <label for="groupDescription"><i class="fas fa-align-left"></i> Description</label>
+                                    <textarea id="groupDescription" class="form-control" rows="3" placeholder="Describe the group's purpose, skill level, or any special notes..."></textarea>
+                                </div>
+                            </div>
+                            <div class="form-actions">
+                                <button type="button" class="btn btn-secondary" id="cancelGroupForm">Cancel</button>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="fas fa-save"></i> Create Group
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <!-- Groups Grid -->
+                <div id="groupsGrid" class="groups-grid">
+                            <!-- Groups will be loaded here -->
+                    <div class="no-groups-placeholder">
+                        <div class="placeholder-content">
+                            <i class="fas fa-users fa-3x"></i>
+                            <h3>No Groups Yet</h3>
+                            <p>Create your first group to start organizing students for band classes and ensemble sessions.</p>
+                            <button class="btn btn-primary" onclick="document.getElementById('createNewGroupBtn').click()">
+                                <i class="fas fa-plus"></i> Create First Group
+                            </button>
+                        </div>
+                        </div>
+                    </div>
+                    
+                <!-- Group Details Modal -->
+                <div id="groupDetailsModal" class="group-details-modal" style="display: none;">
+                    <div class="group-details-content">
+                        <div class="group-details-header">
+                            <div class="group-info">
+                            <h3 id="selectedGroupName">Group Name</h3>
+                                <p id="selectedGroupDescription" class="group-description"></p>
+                            </div>
+                            <div class="group-actions">
+                                <button id="editGroupBtn" class="btn btn-outline-primary">
+                                    <i class="fas fa-edit"></i> Edit
+                                </button>
+                                <button id="deleteGroupBtn" class="btn btn-outline-danger">
+                                    <i class="fas fa-trash"></i> Delete
+                                </button>
+                                <button id="closeGroupDetails" class="btn btn-secondary">
+                                    <i class="fas fa-times"></i> Close
+                            </button>
+                        </div>
+                        </div>
+
+                        <div class="group-details-tabs">
+                            <nav class="group-tabs-nav">
+                                <button class="group-tab-btn active" data-tab="members">
+                                    <i class="fas fa-user-friends"></i> Members
+                                    <span id="membersCount" class="tab-badge">0</span>
+                                </button>
+                                <button class="group-tab-btn" data-tab="materials">
+                                    <i class="fas fa-folder"></i> Materials
+                                    <span id="materialsCount" class="tab-badge">0</span>
+                                </button>
+                                <button class="group-tab-btn" data-tab="sessions">
+                                    <i class="fas fa-calendar-alt"></i> Sessions
+                                    <span id="sessionsCount" class="tab-badge">0</span>
+                                </button>
+                            </nav>
+                        
+                        <!-- Members Tab -->
+                            <div id="membersTabContent" class="group-tab-content active">
+                                <div class="tab-section-header">
+                                    <h4>Group Members</h4>
+                                    <div class="tab-actions">
+                                    <select id="studentSelectForGroup" class="form-control">
+                                            <option value="">-- Add a student --</option>
+                                    </select>
+                                        <button id="addMemberBtn" class="btn btn-primary">
+                                            <i class="fas fa-user-plus"></i> Add Member
+                                        </button>
+                                </div>
+                            </div>
+                                <div id="membersList" class="members-grid">
+                                <!-- Members will be loaded here -->
+                            </div>
+                        </div>
+                        
+                        <!-- Materials Tab -->
+                            <div id="materialsTabContent" class="group-tab-content">
+                                <div class="tab-section-header">
+                                    <h4>Allocated Materials</h4>
+                                    <div class="tab-actions">
+                                    <select id="materialSelectForGroup" class="form-control">
+                                            <option value="">-- Allocate a material --</option>
+                                    </select>
+                                        <button id="allocateMaterialBtn" class="btn btn-primary">
+                                            <i class="fas fa-plus"></i> Allocate Material
+                                        </button>
+                                </div>
+                            </div>
+                                <div id="groupMaterialsList" class="materials-grid">
+                                <!-- Allocated materials will be loaded here -->
+                            </div>
+                        </div>
+
+                            <!-- Sessions Tab -->
+                            <div id="sessionsTabContent" class="group-tab-content">
+                                <div class="tab-section-header">
+                                    <h4>Group Sessions</h4>
+                                    <div class="tab-actions">
+                                        <button id="scheduleSessionBtn" class="btn btn-primary">
+                                            <i class="fas fa-calendar-plus"></i> Schedule Session
+                                        </button>
+                                    </div>
+                                </div>
+                                <div id="groupSessionsList" class="sessions-grid">
+                                    <!-- Group sessions will be loaded here -->
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Jam Night Management Tab -->
+        <div class="tab-content" id="jam-nights-tab">
+            <div class="jam-nights-container">
+                <div class="jam-nights-header">
+                    <h2>Jam Night Management</h2>
+                </div>
+                
+                <button id="addJamNightBtn" class="btn btn-primary mb-3">
+                    <i class="fas fa-plus"></i> Add Jam Night
+                </button>
+                
+                <!-- Jam Night Form -->
+                <div id="jamNightForm" style="display: none;">
+                    <form id="addJamNightForm">
+                        <div class="form-group">
+                            <label for="jamNightDate">Date</label>
+                            <input type="date" id="jamNightDate" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jamNightTimeStart">Start Time</label>
+                            <input type="time" id="jamNightTimeStart" class="form-control" value="19:30" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="jamNightTimeEnd">End Time</label>
+                            <input type="time" id="jamNightTimeEnd" class="form-control" value="21:30" required>
+                        </div>
+                        <div class="form-actions">
+                            <button type="submit" class="btn btn-primary">Save</button>
+                            <button type="button" class="cancel-button" onclick="hideJamNightForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Jam Nights List -->
+                <div class="jam-nights-list">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Day</th>
+                                <th>Time</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="jamNightsTableBody">
+                            <!-- Jam nights will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+        <!-- Term Date Management Tab -->
+        <div class="tab-content" id="term-dates-tab">
+            <div class="term-dates-container">
+                <div class="term-dates-header">
+                    <h2>Term Date Management</h2>
+                    <div class="term-actions">
+                        <button id="addTermBtn" class="btn btn-primary">
+                            <i class="fas fa-plus"></i> Add Term
+                        </button>
+                        <button id="saveOrderBtn" class="btn btn-success" style="display: none;">
+                            <i class="fas fa-save"></i> Save Order
+                        </button>
+                        <button id="discardOrderBtn" class="btn btn-secondary" style="display: none;">
+                            <i class="fas fa-times"></i> Discard Changes
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Term Form -->
+                <div id="termForm" style="display: none;">
+                    <h3 id="formTitle">Add New Term</h3>
+                    <form id="addTermForm">
+                        <div class="form-group">
+                            <label for="termName">Term Name</label>
+                            <input type="text" id="termName" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="termStartDate">Start Date</label>
+                            <input type="date" id="termStartDate" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="termEndDate">End Date</label>
+                            <input type="date" id="termEndDate" class="form-control" required>
+                        </div>
+                        <div class="form-group">
+                            <label>Term Duration</label>
+                            <div class="btn-group w-100" role="group">
+                                <input type="radio" class="btn-check" name="duration_weeks" id="duration10" value="10" checked required>
+                                <label class="btn btn-outline-primary" for="duration10">10 Weeks</label>
+                                <input type="radio" class="btn-check" name="duration_weeks" id="duration12" value="12" required>
+                                <label class="btn btn-outline-primary" for="duration12">12 Weeks</label>
+                            </div>
+                        </div>
+                        <div class="form-group mt-3">
+                            <div class="d-flex align-items-center">
+                                <div class="form-check form-switch">
+                                    <input type="checkbox" id="hasBreak" class="form-check-input" role="switch">
+                                    <label class="form-check-label" for="hasBreak">Has Break</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="breakDates" style="display: none;">
+                            <div class="form-group">
+                                <label for="breakStartDate">Break Start Date</label>
+                                <input type="date" id="breakStartDate" class="form-control">
+                            </div>
+                            <div class="form-group">
+                                <label for="breakEndDate">Break End Date</label>
+                                <input type="date" id="breakEndDate" class="form-control">
+                            </div>
+                        </div>
+                        <div class="form-actions mt-3">
+                            <button type="submit" id="submitButton" class="btn btn-primary">Add Term</button>
+                            <button type="button" class="cancel-button" onclick="hideTermForm()">Cancel</button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Terms List -->
+                <div class="terms-list">
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th style="width: 50px;">Order</th>
+                                <th>Term Name</th>
+                                <th>Start Date</th>
+                                <th>End Date</th>
+                                <th>Duration</th>
+                                <th>Break</th>
+                                <th>Status</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody id="termsTableBody" class="sortable-table">
+                            <!-- Terms will be loaded here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+
+
+
+        <!-- Music AI Tab -->
+        <div id="music-ai-tab" class="tab-content">
+            <div class="music-ai-container">
+                <h2>Music AI Platform</h2>
+                <p class="text-muted">Professional audio processing using the Music AI platform (formerly Moises)</p>
+                
+                <div class="music-ai-grid">
+                    <!-- File Upload Section -->
+                    <div class="music-ai-card">
+                        <h3><i class="fas fa-upload"></i> Upload Audio</h3>
+                        <div class="upload-zone" id="musicAiUploadZone">
+                            <div class="upload-zone-content">
+                                <i class="fas fa-music"></i>
+                                <p>Drag and drop audio files here or click to browse</p>
+                                <small class="text-muted">Supported formats: MP3, WAV, FLAC, M4A</small>
+                            </div>
+                            <input type="file" id="musicAiFileInput" accept="audio/*" multiple style="display: none;">
+                        </div>
+                        <button id="uploadToMusicAi" class="btn btn-primary mt-3" disabled>
+                            <i class="fas fa-cloud-upload-alt"></i> Upload to Music AI
+                        </button>
+                    </div>
+
+                    <!-- Stem Separation -->
+                    <div class="music-ai-card">
+                        <h3><i class="fas fa-divide"></i> Stem Separation</h3>
+                        <form id="stemSeparationForm">
+                            <div class="form-group">
+                                <label for="separationFile">Select Audio File</label>
+                                <select id="separationFile" class="form-control" required>
+                                    <option value="">Choose uploaded file...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="separationType">Separation Type</label>
+                                <select id="separationType" class="form-control" required>
+                                    <option value="">Select separation type...</option>
+                                    <option value="vocals">Vocals & Instruments</option>
+                                    <option value="drums">Drums & Music</option>
+                                    <option value="bass">Bass & Other</option>
+                                    <option value="piano">Piano & Other</option>
+                                    <option value="guitar">Guitar & Other</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-magic"></i> Separate Stems
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Audio Enhancement (Disabled) -->
+                    <div class="music-ai-card" style="opacity: 0.5; pointer-events: none;">
+                        <h3><i class="fas fa-volume-up"></i> Audio Enhancement <small class="text-muted">(Coming Soon)</small></h3>
+                        <form id="enhancementForm">
+                            <div class="form-group">
+                                <label for="enhancementFile">Select Audio File</label>
+                                <select id="enhancementFile" class="form-control" required disabled>
+                                    <option value="">Choose uploaded file...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="enhancementType">Enhancement Type</label>
+                                <select id="enhancementType" class="form-control" required disabled>
+                                    <option value="">Select enhancement...</option>
+                                    <option value="mastering">AI Mastering</option>
+                                    <option value="denoise">Noise Reduction</option>
+                                    <option value="vocal_enhance">Vocal Enhancement</option>
+                                    <option value="instrument_enhance">Instrument Enhancement</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-secondary" disabled>
+                                <i class="fas fa-sparkles"></i> Enhance Audio (Disabled)
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Song Analysis -->
+                    <div class="music-ai-card">
+                        <h3><i class="fas fa-file-music"></i> Song Analysis</h3>
+                        <form id="transcriptionForm">
+                            <div class="form-group">
+                                <label for="transcriptionFile">Select Audio File</label>
+                                <select id="transcriptionFile" class="form-control" required>
+                                    <option value="">Choose uploaded file...</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="transcriptionType">Analysis Type</label>
+                                <select id="transcriptionType" class="form-control" required>
+                                    <option value="">Select analysis type...</option>
+                                    <option value="song_sections">Song Sections Analysis</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-music"></i> Analyze Song Structure
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Job Management -->
+                    <div class="music-ai-card">
+                        <h3><i class="fas fa-tasks"></i> Processing Jobs</h3>
+                        <div id="jobsList" class="jobs-list">
+                            <p class="text-muted">No active jobs</p>
+                        </div>
+                        <button id="refreshJobs" class="btn btn-outline-primary">
+                            <i class="fas fa-sync-alt"></i> Refresh Jobs
+                        </button>
+                    </div>
+
+                    <!-- Results & Downloads -->
+                    <div class="music-ai-card">
+                        <h3><i class="fas fa-download"></i> Results & Downloads</h3>
+                        <div id="resultsList" class="results-list">
+                            <p class="text-muted">No completed jobs</p>
+                        </div>
+                        <button id="refreshResults" class="btn btn-outline-primary">
+                            <i class="fas fa-sync-alt"></i> Refresh Results
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Processing Status -->
+                <div id="musicAiStatus" class="alert alert-info" style="display: none;">
+                    <i class="fas fa-spinner fa-spin"></i> <span id="statusMessage">Processing...</span>
+                </div>
+
+                <!-- Results Section -->
+                <div id="musicAiResults" class="music-ai-results-section" style="display: none;">
+                    <h3>Processing Results</h3>
+                    <div id="musicAiResultsContent" class="music-ai-results-content">
+                        <!-- Results will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Success Modal -->
+<div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-success text-white">
+                <h5 class="modal-title" id="successModalLabel">Success</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="successMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-success" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Error Modal -->
+<div class="modal fade" id="errorModal" tabindex="-1" aria-labelledby="errorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header bg-danger text-white">
+                <h5 class="modal-title" id="errorModalLabel">Error</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="errorMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-bs-dismiss="modal">OK</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Confirmation Modal -->
+<div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmModalLabel">Confirm Action</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <p id="confirmMessage"></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="confirmButton">Confirm</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Booking Details Modal -->
+<div class="modal fade" id="bookingDetailsModal" tabindex="-1" aria-labelledby="bookingDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="bookingDetailsModalLabel">Room Bookings</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="booking-details-container">
+                    <h6 class="room-name"></h6>
+                    <div class="booking-timeline">
+                        <!-- Bookings will be displayed here -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add Room Modal -->
+<div class="modal fade" id="addRoomModal" tabindex="-1" aria-labelledby="addRoomModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addRoomModalLabel">Add New Room</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="addRoomForm">
+                    <div class="mb-3">
+                        <label for="roomName" class="form-label">Room Name</label>
+                        <input type="text" class="form-control" id="roomName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="capacity" class="form-label">Capacity</label>
+                        <input type="number" class="form-control" id="capacity" min="1" value="5" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Description</label>
+                        <textarea class="form-control" id="description" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="addRoom()">Add Room</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Edit Room Modal -->
+<div class="modal fade" id="editRoomModal" tabindex="-1" aria-labelledby="editRoomModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="editRoomModalLabel">Edit Room</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="editRoomForm">
+                    <input type="hidden" id="editRoomId">
+                    <div class="mb-3">
+                        <label for="editRoomName" class="form-label">Room Name</label>
+                        <input type="text" class="form-control" id="editRoomName" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editCapacity" class="form-label">Capacity</label>
+                        <input type="number" class="form-control" id="editCapacity" min="1" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="editDescription" class="form-label">Description</label>
+                        <textarea class="form-control" id="editDescription" rows="3"></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" onclick="updateRoom()">Save Changes</button>
+            </div>
+
+        </div>
+
+    </div>
+</div>
+
+<!-- Toast Container for Notifications -->
+<div class="toast-container position-fixed bottom-0 end-0 p-3">
+    <div id="toast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="toast-header">
+            <strong class="me-auto">Notification</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body"></div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+<script src="{{ url_for('static', filename='js/calendar.js') }}"></script>
+<script src="{{ url_for('static', filename='js/material.js') }}"></script>
+<script src="{{ url_for('static', filename='js/allocations.js') }}"></script>
+<script src="{{ url_for('static', filename='js/groups.js') }}"></script>
+<script src="{{ url_for('static', filename='js/terms.js') }}"></script>
+<script>
+    // Room Management Functions
+    let rooms = [];
+    let selectedDate = new Date().toISOString().split('T')[0];
+
+    function loadRooms() {
+        fetch('/api/rooms')
+            .then(response => response.json())
+            .then(data => {
+                rooms = data;
+                displayRooms();
+                loadBookings();
+            })
+            .catch(() => showToast('Error loading rooms', 'error'));
+    }
+
+    function loadBookings() {
+        const dateInput = document.getElementById('bookingDate');
+        if (!dateInput?.value) return;
+        
+        selectedDate = dateInput.value;
+        rooms.forEach(room => {
+            const bookingsCell = document.querySelector(`#bookings-${room.id}`);
+            if (bookingsCell) {
+                bookingsCell.innerHTML = '<div class="loading">Loading bookings...</div>';
+                fetch(`/api/room-bookings/${encodeURIComponent(room.name)}?date=${selectedDate}`)
+                    .then(response => {
+                        if (!response.ok) {
+                            throw new Error('Failed to load bookings');
+                        }
+                        return response.json();
+                    })
+                    .then(data => {
+                        if (data.error) {
+                            throw new Error(data.error);
+                        }
+                        updateRoomBookings(room.id, data.bookings || []);
+                    })
+                    .catch(error => {
+                        console.error('Error loading bookings:', error);
+                        bookingsCell.innerHTML = `<div class="error">Error loading bookings: ${error.message}</div>`;
+                    });
+            }
+        });
+    }
+
+    function updateRoomBookings(roomId, bookings) {
+        const bookingsCell = document.querySelector(`#bookings-${roomId}`);
+        if (!bookingsCell) return;
+
+        if (bookings.length > 0) {
+            const bookingsList = document.createElement('ul');
+            bookingsList.className = 'booked-students-list';
+            
+            bookings.forEach(booking => {
+                const listItem = document.createElement('li');
+                listItem.className = 'booking-item';
+                listItem.innerHTML = `
+                    <div class="booking-info">
+                        <strong>${booking.name}</strong>
+                        <span class="booking-time">${booking.time}</span>
+                        ${booking.instrument ? `<span class="booking-instrument">${booking.instrument}</span>` : ''}
+                    </div>
+                `;
+                bookingsList.appendChild(listItem);
+            });
+            
+            bookingsCell.innerHTML = '';
+            bookingsCell.appendChild(bookingsList);
+        } else {
+            bookingsCell.innerHTML = '<div class="no-bookings">No bookings for this date</div>';
+        }
+    }
+
+    function displayRooms() {
+        const tbody = document.getElementById('roomsTableBody');
+        if (!tbody) return;
+        
+        tbody.innerHTML = rooms.length ? rooms.map(room => `
+            <tr>
+                <td>${room.name}</td>
+                <td id="capacity-${room.id}">0/${room.capacity}</td>
+                <td>${room.description || '-'}</td>
+                <td id="bookings-${room.id}" class="bookings-cell">
+                    <div class="loading">Loading bookings...</div>
+                </td>
+                <td>
+                    <button class="btn btn-primary" onclick="showEditRoomModal(${room.id})">
+                        <i class="fas fa-edit"></i>
+                    </button>
+                    <button class="btn btn-danger" onclick="deleteRoom(${room.id})">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </td>
+            </tr>
+        `).join('') : '<tr><td colspan="5" class="text-center">No rooms found</td></tr>';
+        
+        // Load bookings for all rooms after displaying them
+        loadBookings();
+    }
+
+    // Initialize everything when the DOM is loaded
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize date input if it exists
+        const dateInput = document.getElementById('bookingDate');
+        if (dateInput) {
+            dateInput.value = selectedDate;
+            dateInput.addEventListener('change', loadBookings);
+        }
+
+        // Initialize tab switching
+        const tabButtons = document.querySelectorAll('.dashboard-tabs .tab-button');
+        const tabContents = document.querySelectorAll('.tab-content');
+        
+        // Load rooms when the page loads
+        loadRooms();
+
+        tabButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Remove active class from all buttons and contents
+                tabButtons.forEach(btn => btn.classList.remove('active'));
+                tabContents.forEach(content => content.classList.remove('active'));
+
+                // Add active class to clicked button and corresponding content
+                button.classList.add('active');
+                const tabId = button.getAttribute('data-tab') + '-tab';
+                const activeTab = document.getElementById(tabId);
+                if (activeTab) {
+                    activeTab.classList.add('active');
+                    
+                    // Load rooms when the rooms tab is clicked
+                    if (button.getAttribute('data-tab') === 'rooms') {
+                        loadRooms();
+                    }
+                    // Load jam nights when the jam-nights tab is clicked
+                    if (button.getAttribute('data-tab') === 'jam-nights') {
+                        loadJamNights();
+                    }
+                }
+
+
+            });
+        });
+
+        // If rooms tab is active on page load, load the rooms
+        const roomsTab = document.querySelector('[data-tab="rooms"]');
+        if (roomsTab && roomsTab.classList.contains('active')) {
+            loadRooms();
+        }
+
+        // Initialize jam night form handlers
+        const addJamNightBtn = document.getElementById('addJamNightBtn');
+        if (addJamNightBtn) {
+            addJamNightBtn.addEventListener('click', showJamNightForm);
+        }
+
+        const addJamNightForm = document.getElementById('addJamNightForm');
+        if (addJamNightForm) {
+            addJamNightForm.addEventListener('submit', handleAddJamNight);
+        }
+    });
+
+    // Auto-refresh for today's bookings
+    setInterval(() => {
+        const dateInput = document.getElementById('bookingDate');
+        if (dateInput && dateInput.value === new Date().toISOString().split('T')[0]) {
+            loadBookings();
+        }
+    }, 60000);
+
+    // Jam Night Management Functions
+    function loadJamNights() {
+        fetch('/api/jam-nights')
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to load jam nights');
+                }
+                return response.json();
+            })
+            .then(data => {
+                const tableBody = document.getElementById('jamNightsTableBody');
+                if (!tableBody) return;
+
+                tableBody.innerHTML = '';
+                data.forEach(jamNight => {
+                    const row = document.createElement('tr');
+                    const date = new Date(jamNight.date);
+                    const dayNames = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                    const dayName = dayNames[date.getDay()];
+                    
+                    row.innerHTML = `
+                        <td>${date.toLocaleDateString()}</td>
+                        <td>${dayName}</td>
+                        <td>${jamNight.time_start} - ${jamNight.time_end}</td>
+                        <td>
+                            <span class="status-badge ${jamNight.is_active ? 'active' : 'inactive'}">
+                                ${jamNight.is_active ? 'Active' : 'Inactive'}
+                            </span>
+                        </td>
+                        <td>
+                            <button class="btn btn-sm btn-primary" onclick="editJamNight(${jamNight.id})" style="width: 2.5em; height: 2.5em; padding: 0.5rem; margin-right: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-edit"></i>
+                            </button>
+                            <button class="btn btn-sm btn-danger" onclick="deleteJamNight(${jamNight.id})" style="width: 2.5em; height: 2.5em; padding: 0.5rem; margin-right: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-trash"></i>
+                            </button>
+                            <button class="btn btn-sm ${jamNight.is_active ? 'btn-warning' : 'btn-success'}" onclick="toggleJamNightStatus(${jamNight.id}, ${!jamNight.is_active})" style="width: 2.5em; height: 2.5em; padding: 0.5rem; display: flex; align-items: center; justify-content: center;">
+                                <i class="fas fa-${jamNight.is_active ? 'times' : 'check'}"></i>
+                            </button>
+                        </td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+            })
+            .catch(error => {
+                console.error('Error loading jam nights:', error);
+                showToast('Error loading jam nights', 'error');
+            });
+    }
+
+    function showJamNightForm() {
+        const form = document.getElementById('jamNightForm');
+        if (form) {
+            form.style.display = 'block';
+        }
+    }
+
+    function hideJamNightForm() {
+        const form = document.getElementById('jamNightForm');
+        if (form) {
+            form.style.display = 'none';
+            // Clear the form fields manually
+            const dateInput = document.getElementById('jamNightDate');
+            const timeStartInput = document.getElementById('jamNightTimeStart');
+            const timeEndInput = document.getElementById('jamNightTimeEnd');
+            
+            if (dateInput) dateInput.value = '';
+            if (timeStartInput) timeStartInput.value = '19:30';
+            if (timeEndInput) timeEndInput.value = '21:30';
+        }
+    }
+
+    function handleAddJamNight(event) {
+        event.preventDefault();
+        
+        const formData = {
+            date: document.getElementById('jamNightDate').value,
+            time_start: document.getElementById('jamNightTimeStart').value,
+            time_end: document.getElementById('jamNightTimeEnd').value
+        };
+
+        fetch('/api/jam-nights', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.error || 'Failed to add jam night');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            hideJamNightForm();
+            loadJamNights();
+            showToast('Jam night added successfully', 'success');
+        })
+        .catch(error => {
+            console.error('Error adding jam night:', error);
+            showToast(error.message || 'Error adding jam night', 'error');
+        });
+    }
+
+    function deleteJamNight(jamNightId) {
+        if (!confirm('Are you sure you want to delete this jam night?')) {
+            return;
+        }
+
+        fetch(`/api/jam-nights/${jamNightId}`, {
+            method: 'DELETE'
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to delete jam night');
+            }
+            loadJamNights();
+            showToast('Jam night deleted successfully', 'success');
+        })
+        .catch(error => {
+            console.error('Error deleting jam night:', error);
+            showToast('Error deleting jam night', 'error');
+        });
+    }
+
+    function toggleJamNightStatus(jamNightId, isActive) {
+        fetch(`/api/jam-nights/${jamNightId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ is_active: isActive })
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('Failed to update jam night status');
+            }
+            loadJamNights();
+            showToast('Jam night status updated successfully', 'success');
+        })
+        .catch(error => {
+            console.error('Error updating jam night status:', error);
+            showToast('Error updating jam night status', 'error');
+        });
+    }
+
+    function updateRoom() {
+        const roomId = document.getElementById('editRoomId').value;
+        const roomName = document.getElementById('editRoomName').value;
+        const roomCapacity = document.getElementById('editCapacity').value;
+        const roomDescription = document.getElementById('editDescription').value;
+
+        const data = {
+            name: roomName,
+            capacity: roomCapacity,
+            description: roomDescription
+        };
+
+        fetch(`/api/rooms/${roomId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Close the modal first
+            const editModal = document.getElementById('editRoomModal');
+            const modalInstance = bootstrap.Modal.getInstance(editModal);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+
+            // Show success message
+            const toast = document.getElementById('toast');
+            const toastBody = toast.querySelector('.toast-body');
+            toastBody.textContent = 'Room updated successfully';
+            toast.classList.remove('bg-danger');
+            toast.classList.add('bg-success', 'text-white');
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+
+            // Refresh the rooms list
+            loadRooms();
+        })
+        .catch(error => {
+            console.error('Error updating room:', error);
+            // Show error message
+            const toast = document.getElementById('toast');
+            const toastBody = toast.querySelector('.toast-body');
+            toastBody.textContent = `Error updating room: ${error.message}`;
+            toast.classList.remove('bg-success');
+            toast.classList.add('bg-danger', 'text-white');
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        });
+    }
+
+    function showSuccess(message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-success alert-dismissible fade show';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.querySelector('.container').prepend(alertDiv);
+        setTimeout(() => alertDiv.remove(), 5000);
+    }
+
+    function showError(message) {
+        const alertDiv = document.createElement('div');
+        alertDiv.className = 'alert alert-danger alert-dismissible fade show';
+        alertDiv.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.querySelector('.container').prepend(alertDiv);
+        setTimeout(() => alertDiv.remove(), 5000);
+    }
+
+    function addRoom() {
+        const roomName = document.getElementById('roomName').value;
+        const capacity = document.getElementById('capacity').value;
+        const description = document.getElementById('description').value;
+
+        const data = {
+            name: roomName,
+            capacity: capacity,
+            description: description
+        };
+
+        fetch('/api/rooms', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        })
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+            return response.json();
+        })
+        .then(data => {
+            // Close the modal
+            const addModal = document.getElementById('addRoomModal');
+            const modalInstance = bootstrap.Modal.getInstance(addModal);
+            if (modalInstance) {
+                modalInstance.hide();
+            }
+
+            // Show success message
+            const toast = document.getElementById('toast');
+            const toastBody = toast.querySelector('.toast-body');
+            toastBody.textContent = 'Room added successfully';
+            toast.classList.remove('bg-danger');
+            toast.classList.add('bg-success', 'text-white');
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+
+            // Refresh the rooms list
+            loadRooms();
+        })
+        .catch(error => {
+            console.error('Error adding room:', error);
+            // Show error message
+            const toast = document.getElementById('toast');
+            const toastBody = toast.querySelector('.toast-body');
+            toastBody.textContent = `Error adding room: ${error.message}`;
+            toast.classList.remove('bg-success');
+            toast.classList.add('bg-danger', 'text-white');
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        });
+    }
+
+    function showAddRoomModal() {
+        const modal = document.getElementById('addRoomModal');
+        const modalInstance = new bootstrap.Modal(modal);
+        modalInstance.show();
+    }
+
+    function deleteRoom(roomId) {
+        // Show confirmation modal
+        const confirmModal = document.getElementById('confirmModal');
+        const confirmMessage = document.getElementById('confirmMessage');
+        const confirmButton = document.getElementById('confirmButton');
+        
+        confirmMessage.textContent = 'Are you sure you want to delete this room? This action cannot be undone.';
+        
+        // Create a new modal instance
+        const modalInstance = new bootstrap.Modal(confirmModal);
+        
+        // Set up the confirm button handler
+        const handleConfirm = () => {
+            fetch(`/api/rooms/${roomId}`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(data => {
+                // Close the confirmation modal
+                modalInstance.hide();
+                
+                // Show success message
+                const toast = document.getElementById('toast');
+                const toastBody = toast.querySelector('.toast-body');
+                toastBody.textContent = 'Room deleted successfully';
+                toast.classList.remove('bg-danger');
+                toast.classList.add('bg-success', 'text-white');
+                const bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
+                
+                // Refresh the rooms list
+                loadRooms();
+            })
+            .catch(error => {
+                console.error('Error deleting room:', error);
+                // Show error message
+                const toast = document.getElementById('toast');
+                const toastBody = toast.querySelector('.toast-body');
+                toastBody.textContent = `Error deleting room: ${error.message}`;
+                toast.classList.remove('bg-success');
+                toast.classList.add('bg-danger', 'text-white');
+                const bsToast = new bootstrap.Toast(toast);
+                bsToast.show();
+            });
+            
+            // Remove the event listener after use
+            confirmButton.removeEventListener('click', handleConfirm);
+        };
+        
+        // Add the event listener
+        confirmButton.addEventListener('click', handleConfirm);
+        
+        // Show the modal
+        modalInstance.show();
+    }
+
+    function editJamNight(jamNightId) {
+        // Fetch jam night details
+        fetch(`/api/jam-nights/${jamNightId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Failed to fetch jam night details');
+                }
+                return response.json();
+            })
+            .then(jamNight => {
+                // Populate the form with existing data
+                document.getElementById('jamNightDate').value = jamNight.date;
+                document.getElementById('jamNightTimeStart').value = jamNight.time_start;
+                document.getElementById('jamNightTimeEnd').value = jamNight.time_end;
+                
+                // Show the form
+                const form = document.getElementById('jamNightForm');
+                if (form) {
+                    form.style.display = 'block';
+                    
+                    // Update the form title and submit button
+                    const formTitle = form.querySelector('h3') || document.createElement('h3');
+                    formTitle.textContent = 'Edit Jam Night';
+                    if (!form.querySelector('h3')) {
+                        form.insertBefore(formTitle, form.firstChild);
+                    }
+                    
+                    // Update the submit button
+                    const submitButton = form.querySelector('button[type="submit"]');
+                    if (submitButton) {
+                        submitButton.textContent = 'Update';
+                        submitButton.onclick = function(e) {
+                            e.preventDefault();
+                            updateJamNight(jamNightId);
+                        };
+                    }
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching jam night details:', error);
+                showToast('Error fetching jam night details', 'error');
+            });
+    }
+
+    function updateJamNight(jamNightId) {
+        const formData = {
+            date: document.getElementById('jamNightDate').value,
+            time_start: document.getElementById('jamNightTimeStart').value,
+            time_end: document.getElementById('jamNightTimeEnd').value
+        };
+
+        fetch(`/api/jam-nights/${jamNightId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(formData)
+        })
+        .then(response => {
+            if (!response.ok) {
+                return response.json().then(errorData => {
+                    throw new Error(errorData.error || 'Failed to update jam night');
+                });
+            }
+            return response.json();
+        })
+        .then(data => {
+            hideJamNightForm();
+            loadJamNights();
+            showToast('Jam night updated successfully', 'success');
+        })
+        .catch(error => {
+            console.error('Error updating jam night:', error);
+            showToast(error.message || 'Error updating jam night', 'error');
+        });
+    }
+
+
+
+    function showToast(message, type = 'success') {
+        const toast = document.getElementById('toast');
+        const toastBody = toast.querySelector('.toast-body');
+        
+        toastBody.textContent = message;
+        toast.classList.remove('bg-success', 'bg-danger', 'bg-warning');
+        
+        if (type === 'success') {
+            toast.classList.add('bg-success', 'text-white');
+        } else if (type === 'warning') {
+            toast.classList.add('bg-warning', 'text-dark');
+        } else {
+            toast.classList.add('bg-danger', 'text-white');
+        }
+        
+        const bsToast = new bootstrap.Toast(toast);
+        bsToast.show();
+    }
+
+    // Music AI Functionality
+    let uploadedFiles = [];
+
+    // File upload handling
+    document.addEventListener('DOMContentLoaded', function() {
+        const uploadZone = document.getElementById('musicAiUploadZone');
+        const fileInput = document.getElementById('musicAiFileInput');
+        const uploadButton = document.getElementById('uploadToMusicAi');
+
+        if (uploadZone && fileInput) {
+            // Click to upload
+            uploadZone.addEventListener('click', () => {
+                fileInput.click();
+            });
+
+            // Drag and drop
+            uploadZone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                uploadZone.classList.add('dragover');
+            });
+
+            uploadZone.addEventListener('dragleave', () => {
+                uploadZone.classList.remove('dragover');
+            });
+
+            uploadZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                uploadZone.classList.remove('dragover');
+                const files = e.dataTransfer.files;
+                handleFileSelection(files);
+            });
+
+            // File input change
+            fileInput.addEventListener('change', (e) => {
+                handleFileSelection(e.target.files);
+            });
+        }
+
+        // Upload button
+        if (uploadButton) {
+            uploadButton.addEventListener('click', uploadFilesToMusicAi);
+        }
+
+        // Form handlers
+        setupMusicAiFormHandlers();
+    });
+
+    function handleFileSelection(files) {
+        const validTypes = ['audio/mpeg', 'audio/wav', 'audio/flac', 'audio/mp4', 'audio/m4a'];
+        const maxSize = 100 * 1024 * 1024; // 100MB
+
+        for (let file of files) {
+            if (!validTypes.includes(file.type)) {
+                showToast(`${file.name} is not a supported audio format`, 'error');
+                continue;
+            }
+
+            if (file.size > maxSize) {
+                showToast(`${file.name} is too large (max 100MB)`, 'error');
+                continue;
+            }
+
+            uploadedFiles.push(file);
+        }
+
+        updateUploadZone();
+        updateFileSelectors();
+    }
+
+    function updateUploadZone() {
+        const uploadZone = document.getElementById('musicAiUploadZone');
+        const uploadButton = document.getElementById('uploadToMusicAi');
+        
+        if (uploadedFiles.length > 0) {
+            uploadZone.innerHTML = `
+                <div class="upload-zone-content">
+                    <i class="fas fa-check-circle text-success"></i>
+                    <p>${uploadedFiles.length} file(s) selected</p>
+                    <small class="text-muted">Click to add more files</small>
+                </div>
+            `;
+            uploadButton.disabled = false;
+        } else {
+            uploadZone.innerHTML = `
+                <div class="upload-zone-content">
+                    <i class="fas fa-music"></i>
+                    <p>Drag and drop audio files here or click to browse</p>
+                    <small class="text-muted">Supported formats: MP3, WAV, FLAC, M4A</small>
+                </div>
+            `;
+            uploadButton.disabled = true;
+        }
+    }
+
+    function updateFileSelectors() {
+        const selectors = ['separationFile', 'enhancementFile', 'transcriptionFile'];
+        
+        selectors.forEach(selectorId => {
+            const selector = document.getElementById(selectorId);
+            if (selector) {
+                // Keep first option
+                const firstOption = selector.querySelector('option[value=""]');
+                selector.innerHTML = '';
+                if (firstOption) {
+                    selector.appendChild(firstOption);
+                }
+
+                // Add uploaded files
+                uploadedFiles.forEach((file, index) => {
+                    const option = document.createElement('option');
+                    option.value = index;
+                    option.textContent = file.name;
+                    selector.appendChild(option);
+                });
+            }
+        });
+    }
+
+    async function uploadFilesToMusicAi() {
+        if (uploadedFiles.length === 0) return;
+
+        showStatus('Uploading files to Music AI platform...');
+
+        const formData = new FormData();
+        uploadedFiles.forEach((file, index) => {
+            formData.append(`files`, file);
+        });
+
+        try {
+            const response = await fetch('/api/music-ai/upload', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!response.ok) {
+                throw new Error('Upload failed');
+            }
+
+            const data = await response.json();
+            showToast('Files uploaded successfully!', 'success');
+            hideStatus();
+            
+            // Update file selectors with uploaded file IDs
+            updateFileSelectorsWithUploadedFiles(data.files);
+            
+        } catch (error) {
+            console.error('Upload error:', error);
+            showToast('Failed to upload files', 'error');
+            hideStatus();
+        }
+    }
+
+    function setupMusicAiFormHandlers() {
+        // Stem Separation
+        const stemForm = document.getElementById('stemSeparationForm');
+        if (stemForm) {
+            stemForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const fileIndex = document.getElementById('separationFile').value;
+                const separationType = document.getElementById('separationType').value;
+
+                if (!fileIndex || !separationType) {
+                    showToast('Please select a file and separation type', 'error');
+                    return;
+                }
+
+                await processMusicAiJob('stem-separation', {
+                    fileIndex: fileIndex,  // Keep as string (UUID)
+                    separationType
+                });
+            });
+        }
+
+        // Audio Enhancement (Disabled - Coming Soon)
+        // const enhanceForm = document.getElementById('enhancementForm');
+        // Enhancement functionality is disabled for now
+
+        // Transcription
+        const transcribeForm = document.getElementById('transcriptionForm');
+        if (transcribeForm) {
+            transcribeForm.addEventListener('submit', async (e) => {
+                e.preventDefault();
+                
+                const fileIndex = document.getElementById('transcriptionFile').value;
+                const transcriptionType = document.getElementById('transcriptionType').value;
+
+                if (!fileIndex || !transcriptionType) {
+                    showToast('Please select a file and analysis type', 'error');
+                    return;
+                }
+
+                await processMusicAiJob('transcription', {
+                    fileIndex: fileIndex,  // Keep as string (UUID)
+                    transcriptionType
+                });
+            });
+        }
+
+        // Refresh buttons
+        const refreshJobsBtn = document.getElementById('refreshJobs');
+        const refreshResultsBtn = document.getElementById('refreshResults');
+
+        if (refreshJobsBtn) {
+            refreshJobsBtn.addEventListener('click', loadJobs);
+        }
+
+        if (refreshResultsBtn) {
+            refreshResultsBtn.addEventListener('click', loadResults);
+        }
+    }
+
+    async function processMusicAiJob(jobType, params) {
+        // After upload, fileIndex is a file ID (UUID), not an array index
+        // We need to send the fileIndex directly to the backend
+        showStatus(`Starting ${jobType} processing...`);
+
+        try {
+            const response = await fetch(`/api/music-ai/${jobType}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    fileIndex: params.fileIndex,  // Send file ID directly
+                    ...params
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`${jobType} failed`);
+            }
+
+            const data = await response.json();
+            
+            // Show warning message if present
+            if (data.warning) {
+                showToast(data.warning, 'warning');
+                setTimeout(() => {
+                    showToast(`${jobType} job started successfully!`, 'success');
+                }, 2000);
+            } else {
+                showToast(`${jobType} job started successfully!`, 'success');
+            }
+            
+            hideStatus();
+            
+            // Refresh jobs list
+            setTimeout(loadJobs, 1000);
+            
+        } catch (error) {
+            console.error(`${jobType} error:`, error);
+            showToast(`Failed to start ${jobType}`, 'error');
+            hideStatus();
+        }
+    }
+
+    async function loadJobs() {
+        try {
+            const response = await fetch('/api/music-ai/jobs');
+            if (!response.ok) throw new Error('Failed to load jobs');
+            
+            const data = await response.json();
+            updateJobsList(data.jobs || []);
+        } catch (error) {
+            console.error('Error loading jobs:', error);
+        }
+    }
+
+    async function loadResults() {
+        try {
+            const response = await fetch('/api/music-ai/results');
+            if (!response.ok) throw new Error('Failed to load results');
+            
+            const data = await response.json();
+            updateResultsList(data.results || []);
+        } catch (error) {
+            console.error('Error loading results:', error);
+        }
+    }
+
+    function updateJobsList(jobs) {
+        const jobsList = document.getElementById('jobsList');
+        if (!jobsList) return;
+
+        if (jobs.length === 0) {
+            jobsList.innerHTML = '<p class="text-muted">No active jobs</p>';
+            return;
+        }
+
+        jobsList.innerHTML = jobs.map(job => `
+            <div class="job-item">
+                <div>
+                    <strong>${job.fileName}</strong><br>
+                    <small class="text-muted">${job.type}</small>
+                </div>
+                <div class="job-actions">
+                    <span class="job-status ${job.status}">${job.status}</span>
+                    ${job.status !== 'processing' ? 
+                        `<button class="btn btn-sm btn-danger ms-2" onclick="deleteJob('${job.id}')" title="Delete Job">
+                            <i class="fas fa-trash"></i>
+                        </button>` : ''}
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function updateResultsList(results) {
+        const resultsList = document.getElementById('resultsList');
+        if (!resultsList) return;
+
+        if (results.length === 0) {
+            resultsList.innerHTML = '<p class="text-muted">No completed jobs</p>';
+            return;
+        }
+
+        resultsList.innerHTML = results.map(result => `
+            <div class="result-item">
+                <div>
+                    <strong>${result.fileName}</strong><br>
+                    <small class="text-muted">${result.type}</small>
+                </div>
+                <div class="result-actions">
+                    <div class="download-links">
+                        ${result.downloadUrls.map(urlObj => 
+                            `<a href="${urlObj.url}" class="download-link" target="_blank">
+                                <i class="fas fa-download"></i> ${urlObj.name}
+                            </a>`
+                        ).join('')}
+                    </div>
+                    <button class="btn btn-sm btn-danger" onclick="deleteJob('${result.id}')" title="Delete Result">
+                        <i class="fas fa-trash"></i>
+                    </button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function showStatus(message) {
+        const status = document.getElementById('musicAiStatus');
+        const statusMessage = document.getElementById('statusMessage');
+        
+        if (status && statusMessage) {
+            statusMessage.textContent = message;
+            status.style.display = 'block';
+        }
+    }
+
+    function hideStatus() {
+        const status = document.getElementById('musicAiStatus');
+        if (status) {
+            status.style.display = 'none';
+        }
+    }
+
+    async function deleteJob(jobId) {
+        if (!confirm('Are you sure you want to delete this job? This action cannot be undone.')) {
+            return;
+        }
+
+        try {
+            const response = await fetch(`/api/music-ai/jobs/${jobId}`, {
+                method: 'DELETE'
+            });
+
+            if (!response.ok) {
+                const error = await response.json();
+                throw new Error(error.error || 'Failed to delete job');
+            }
+
+            const data = await response.json();
+            showToast('Job deleted successfully', 'success');
+            
+            // Refresh both jobs and results lists
+            setTimeout(() => {
+                loadJobs();
+                loadResults();
+            }, 500);
+
+        } catch (error) {
+            console.error('Error deleting job:', error);
+            showToast(`Failed to delete job: ${error.message}`, 'error');
+        }
+    }
+
+    function updateFileSelectorsWithUploadedFiles(files) {
+        const selectors = ['separationFile', 'transcriptionFile']; // Enhancement disabled
+        
+        selectors.forEach(selectorId => {
+            const selector = document.getElementById(selectorId);
+            if (selector) {
+                // Keep first option
+                const firstOption = selector.querySelector('option[value=""]');
+                selector.innerHTML = '';
+                if (firstOption) {
+                    selector.appendChild(firstOption);
+                }
+
+                // Add uploaded files with their IDs
+                files.forEach((file, index) => {
+                    const option = document.createElement('option');
+                    option.value = file.id;
+                    option.textContent = file.name;
+                    selector.appendChild(option);
+                });
+            }
+        });
+    }
+
+    function showAddRoomModal() {
+        const modal = document.getElementById('addRoomModal');
+        const modalInstance = new bootstrap.Modal(modal);
+        modalInstance.show();
+    }
+
+    function showEditRoomModal(roomId) {
+        const room = rooms.find(r => r.id === roomId);
+        if (room) {
+            document.getElementById('editRoomId').value = room.id;
+            document.getElementById('editRoomName').value = room.name;
+            document.getElementById('editCapacity').value = room.capacity;
+            document.getElementById('editDescription').value = room.description || '';
+            
+            const modal = document.getElementById('editRoomModal');
+            const modalInstance = new bootstrap.Modal(modal);
+            modalInstance.show();
+        }
+    }
+</script>
+{% endblock %}
+
+
+
+

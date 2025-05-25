@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+
+{% block title %}Free Taster Session{% endblock %}
+
+{% block content %}
+<section class="taster-hero">
+    <div class="taster-content">
+        <h1>Free Taster Session</h1>
+        <p>Discover your musical potential at London's premier music performance academy with a free taster session</p>
+    </div>
+</section>
+
+<section class="taster-section">
+    <div class="container">
+        <div class="taster-form-container">
+            <h2>Book Your Free Taster Session</h2>
+            <p>Fill out the form below to schedule your free taster session. Our team will contact you shortly to confirm your appointment.</p>
+            
+            {% with messages = get_flashed_messages() %}
+                {% if messages %}
+                    <div class="alert alert-danger">
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+            {% endwith %}
+            
+            <form class="taster-form" action="{{ url_for('taster') }}" method="POST">
+                <div class="form-group">
+                    <label for="student-name">Student Name</label>
+                    <input type="text" id="student-name" name="student-name" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="age">Age</label>
+                    <select id="age" name="age" required>
+                        <option value="">Select age range</option>
+                        <option value="7-9">7-9 years</option>
+                        <option value="10-12">10-12 years</option>
+                        <option value="13-15">13-15 years</option>
+                        <option value="16-17">16-17 years</option>
+                        <option value="18+">18+ years</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="email">Email</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="confirm-email">Confirm Email</label>
+                    <input type="email" id="confirm-email" name="confirm-email" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="phone">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" required>
+                </div>
+                
+                <div class="form-group">
+                    <label for="contact-method">Preferred Contact Method</label>
+                    <select id="contact-method" name="contact-method" required>
+                        <option value="">Select a contact method</option>
+                        <option value="email">Email</option>
+                        <option value="phone">Phone</option>
+                        <option value="whatsapp">WhatsApp</option>
+                        <option value="sms">SMS</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="message">Message (Optional)</label>
+                    <textarea id="message" name="message" rows="4"></textarea>
+                </div>
+                
+                <button type="submit" class="taster-button">Submit</button>
+            </form>
+        </div>
+    </div>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.querySelector('.taster-form');
+    const emailInput = document.getElementById('email');
+    const confirmEmailInput = document.getElementById('confirm-email');
+    
+    // Function to validate email confirmation
+    function validateEmailConfirmation() {
+        if (emailInput.value !== confirmEmailInput.value) {
+            confirmEmailInput.setCustomValidity('Emails do not match');
+            return false;
+        } else {
+            confirmEmailInput.setCustomValidity('');
+            return true;
+        }
+    }
+    
+    // Add event listeners for real-time validation
+    if (emailInput && confirmEmailInput) {
+        emailInput.addEventListener('input', validateEmailConfirmation);
+        confirmEmailInput.addEventListener('input', validateEmailConfirmation);
+    }
+    
+    // Form submission validation
+    if (form) {
+        form.addEventListener('submit', function(event) {
+            let isValid = true;
+            
+            // Special check for email confirmation
+            if (emailInput && confirmEmailInput && !validateEmailConfirmation()) {
+                isValid = false;
+            }
+            
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    }
+});
+</script>
+{% endblock %} 

@@ -1,0 +1,401 @@
+{% extends "base.html" %}
+
+{% block title %}Weekly Jam - Music Performance Academy{% endblock %}
+
+{% block content %}
+<div class="page-header">
+    <div class="container">
+        <h1>Weekly Jam Sessions</h1>
+        <p>Join our weekly jam sessions and play with other musicians in a fun, collaborative environment.</p>
+    </div>
+</div>
+
+<div class="weekly-jam-section">
+    <div class="container">
+        <div class="row">
+            <div class="col-md-8">
+                <div class="weekly-jam-info">
+                    <h2>About Our Weekly Jams</h2>
+                    <p>Our weekly jam sessions are a safe, welcoming space where musicians and singers of all abilities gather to perform together. These sessions provide an opportunity to:</p>
+                    <ul>
+                        <li>Play with other musicians in a supportive environment</li>
+                        <li>Improve your improvisation skills</li>
+                        <li>Learn new songs and techniques</li>
+                        <li>Network with other musicians</li>
+                        <li>Have fun and enjoy making music together</li>
+                    </ul>
+                    
+                    <h3>Session Details</h3>
+                    <div class="session-details">
+                        <div class="detail-item">
+                            <i class="fas fa-calendar-alt"></i>
+                            <span>Every Thursday</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-clock"></i>
+                            <span>7:30 PM - 9:30 PM</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-map-marker-alt"></i>
+                            <span>30 Commerce Rd, Brentford, London</span>
+                        </div>
+                        <div class="detail-item">
+                            <i class="fas fa-pound-sign"></i>
+                            <span>9 per session</span>
+                        </div>
+                    </div>
+                    
+                    <h3>What to Bring</h3>
+                    <ul>
+                        <li>Your instrument (if applicable)</li>
+                        <li>Any sheet music or chord charts you'd like to share</li>
+                        <li>A positive attitude and willingness to collaborate</li>
+                    </ul>
+                    
+                    <h3>Equipment Provided</h3>
+                    <p>We provide a professional set of backline equipment, including:</p>
+                    <ul>
+                        <li>Drum kit</li>
+                        <li>Guitar amplifiers</li>
+                        <li>Bass amplifier</li>
+                        <li>Keyboard</li>
+                        <li>Microphones for singers</li>
+                    </ul>
+                    
+                    <h3>Community & Support</h3>
+                    <p>Coming to a jam session without knowing many people can feel intimidating, but we're here to make it easier! We've created a welcoming community where you can:</p>
+                    <ul>
+                        <li>Connect with other musicians</li>
+                        <li>Suggest songs to learn and perform</li>
+                        <li>Access our curated Spotify playlist to help you feel prepared</li>
+                        <li>Build confidence through regular performance opportunities</li>
+                    </ul>
+                    
+                    <div class="cta-buttons">
+                        <a href="#contact-form" class="btn btn-primary">Contact Us</a>
+                        <a href="https://open.spotify.com/playlist/6AfcdcBzz8vXrzvEipHtZy?si=-j_Uz7BISH-RJfa6XxpAAA&pi=Yi9TECq3TW-QA " target="_blank" class="btn btn-secondary">
+                            <i class="fab fa-spotify"></i> Jam Night Playlist
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="weekly-jam-sidebar">
+                    <div class="sidebar-card">
+                        <h3>Upcoming Sessions</h3>
+                        <div class="upcoming-sessions">
+                            {% if jam_nights %}
+                                {% for jam_night in jam_nights %}
+                                <div class="session-item">
+                                    <div class="session-date">
+                                        <span class="day">{{ jam_night.date.strftime('%a').upper() }}</span>
+                                        <span class="date">{{ jam_night.date.strftime('%d') }}</span>
+                                        <span class="month">{{ jam_night.date.strftime('%b').upper() }}</span>
+                                    </div>
+                                    <div class="session-info">
+                                        <h4>Open Jam Session</h4>
+                                        <p>{{ jam_night.time_start }} - {{ jam_night.time_end }}</p>
+                                    </div>
+                                </div>
+                                {% endfor %}
+                            {% else %}
+                                <div class="no-sessions">
+                                    <p>No upcoming jam sessions scheduled.</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    <div class="sidebar-card">
+                        <h3>Testimonials</h3>
+                        <div class="testimonial">
+                            <p>"The weekly jam sessions have helped me improve my improvisation skills tremendously. It's also a great way to meet other musicians!"</p>
+                            <div class="testimonial-author">
+                                <span class="name">- James T.</span>
+                                <span class="instrument">Guitar Student</span>
+                            </div>
+                        </div>
+                        <div class="testimonial">
+                            <p>"I was nervous about playing with others at first, but the supportive environment made it easy to get involved. Now I look forward to jam sessions every week!"</p>
+                            <div class="testimonial-author">
+                                <span class="name">- Sarah M.</span>
+                                <span class="instrument">Piano Student</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- FAQs Section moved to bottom of page -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <div class="faq-section">
+                    <h2 class="text-center mb-4">Frequently Asked Questions</h2>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="faq-item">
+                                <h4>Is the Jam Night open to all skill levels?</h4>
+                                <p>Yes, our jam nights are open to musicians and singers of all abilities. Whether you're a beginner, intermediate player, or advanced musician, you are welcome to participate.</p>
+                            </div>
+                            <div class="faq-item">
+                                <h4>What genres of music are played?</h4>
+                                <p>The genres played can vary depending on the preferences of those attending. The beauty of jam nights lies in the diversity of musical styles, creating a collaborative and inclusive musical experience.</p>
+                            </div>
+                            <div class="faq-item">
+                                <h4>What instruments are welcome?</h4>
+                                <p>We welcome all instruments including guitars, bass, drums, keys, piano, singers, brass, woodwind, strings, and percussion instruments.</p>
+                            </div>
+                            <div class="faq-item">
+                                <h4>Do I need to bring my own instrument?</h4>
+                                <p>While we provide a professional set of backline equipment (drum kit, amplifiers, keyboards, and microphones), you should bring your own instrument if you play one. Drummers should bring their own drumsticks.</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="faq-item">
+                                <h4>Is there a bar or refreshments available?</h4>
+                                <p>We have a bar serving a selection of alcoholic and non-alcoholic drinks, as well as snacks to keep you refreshed during the session. Please note that ID will be required for the purchase of alcoholic beverages. We maintain a respectful environment and will not tolerate disorderly behavior - you may be asked to leave if necessary.</p>
+                            </div>
+                            <div class="faq-item">
+                                <h4>How do I get to the venue?</h4>
+                                <p>Our venue is located at 30 Commerce Rd, Brentford, London. There are several bus routes that pass directly outside the venue, and we're just a 10-minute journey from the town centre.</p>
+                            </div>
+                            <div class="faq-item">
+                                <h4>Do I need to book in advance?</h4>
+                                <p>While drop-ins are welcome, we recommend contacting us in advance to ensure there's space available, especially if you're bringing specific equipment or have any special requirements.</p>
+                            </div>
+                            <div class="faq-item">
+                                <h4>What happens during a typical jam session?</h4>
+                                <p>Each session begins with a brief introduction and warm-up. Participants can then suggest songs to play, and we'll form small groups to practice and perform. The session ends with an open mic where everyone can showcase what they've been working on.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Contact Form Section -->
+<section id="contact-form" class="contact-section">
+    <div class="container">
+        <h2>Get in Touch</h2>
+        <p class="section-intro">Have questions about our weekly jam sessions? Contact us below and we'll get back to you as soon as possible.</p>
+        
+        <form action="{{ url_for('contact') }}" method="POST" class="contact-form">
+            <div class="form-group">
+                <label for="name">Name</label>
+                <input type="text" class="form-control" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" class="form-control" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="subject">Subject</label>
+                <input type="text" class="form-control" id="subject" name="subject" value="Weekly Jam Session Inquiry" readonly>
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Message</label>
+                <textarea class="form-control" id="message" name="message" rows="5" required></textarea>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Send Message</button>
+        </form>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-content">
+            <h2>Ready to Join Our Jam Sessions?</h2>
+            <p>Experience the joy of making music with others in our welcoming community</p>
+            <div class="cta-buttons">
+                <a href="#contact-form" class="btn btn-primary">Get Started</a>
+                <a href="https://open.spotify.com/playlist/6AfcdcBzz8vXrzvEipHtZy?si=-j_Uz7BISH-RJfa6XxpAAA&pi=Yi9TECq3TW-QA " target="_blank" class="btn btn-secondary">
+                    <i class="fab fa-spotify"></i> Check Our Playlist
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock %}
+
+{% block head %}
+<style>
+    /* Existing styles */
+    
+    .contact-section {
+        padding: 80px 0;
+        background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    }
+    
+    .contact-section h2 {
+        text-align: center;
+        margin-bottom: 20px;
+        color: #2c3e50;
+    }
+    
+    .section-intro {
+        text-align: center;
+        max-width: 600px;
+        margin: 0 auto 40px;
+        color: #666;
+    }
+    
+    .contact-form {
+        max-width: 600px;
+        margin: 0 auto;
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .form-group {
+        margin-bottom: 20px;
+    }
+    
+    .form-group label {
+        display: block;
+        margin-bottom: 5px;
+        color: #2c3e50;
+        font-weight: 500;
+    }
+    
+    .form-control {
+        width: 100%;
+        padding: 10px;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        font-size: 16px;
+    }
+    
+    .form-control:focus {
+        outline: none;
+        border-color: #3498db;
+        box-shadow: 0 0 0 2px rgba(52, 152, 219, 0.2);
+    }
+    
+    .contact-form .btn {
+        width: 100%;
+        padding: 12px;
+        font-size: 16px;
+        margin-top: 10px;
+    }
+    
+    @media (max-width: 768px) {
+        .contact-form {
+            padding: 20px;
+        }
+    }
+    
+    .cta-section {
+        padding: 100px 0;
+        background: linear-gradient(135deg, #f5e6d3 0%, #f8f1e6 100%);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .cta-section::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23000000' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+        opacity: 0.1;
+    }
+    
+    .cta-content {
+        position: relative;
+        z-index: 1;
+        text-align: center;
+        max-width: 800px;
+        margin: 0 auto;
+    }
+    
+    .cta-section h2 {
+        color: #2c3e50;
+        font-size: 2.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .cta-section p {
+        color: #34495e;
+        font-size: 1.25rem;
+        margin-bottom: 2rem;
+    }
+    
+    .cta-buttons {
+        display: flex;
+        gap: 20px;
+        justify-content: center;
+    }
+    
+    .cta-section .btn {
+        padding: 12px 30px;
+        font-size: 1.1rem;
+        border-radius: 30px;
+        transition: all 0.3s ease;
+    }
+    
+    .cta-section .btn-primary {
+        background-color: #2c3e50;
+        color: white;
+        border: none;
+    }
+    
+    .cta-section .btn-primary:hover {
+        background-color: #34495e;
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    }
+    
+    .cta-section .btn-secondary {
+        background-color: transparent;
+        color: #2c3e50;
+        border: 2px solid #2c3e50;
+    }
+    
+    .cta-section .btn-secondary:hover {
+        background-color: rgba(44, 62, 80, 0.05);
+        transform: translateY(-2px);
+    }
+    
+    @media (max-width: 768px) {
+        .cta-section {
+            padding: 60px 0;
+        }
+        
+        .cta-section h2 {
+            font-size: 2rem;
+        }
+        
+        .cta-buttons {
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .cta-section .btn {
+            width: 100%;
+        }
+    }
+    
+    .page-header {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('/static/images/jam-session.jpg');
+        background-size: cover;
+        background-position: center;
+        color: white;
+        padding: 100px 0;
+        text-align: center;
+        margin-bottom: 50px;
+    }
+</style>
+{% endblock %} 
