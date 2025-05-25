@@ -9,7 +9,7 @@ Flask-Migrate==4.0.5
 Flask-Login==0.6.3
 bcrypt==4.1.2
 stripe==7.11.0
-SQLAlchemy==2.0.27
+SQLAlchemy==2.0.41
 alembic==1.11.3
 python-dotenv==1.0.1
 email-validator==2.1.0.post1
@@ -17,6 +17,7 @@ typing-extensions>=4.5.0
 Flask-Mail==0.9.1
 PyMySQL==1.1.0
 Flask-WTF==1.2.1
+pytz==2024.1
 annotated-types==0.7.0
 anyio==4.9.0
 blinker==1.9.0

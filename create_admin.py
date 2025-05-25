@@ -141,7 +141,7 @@ def create_admin_user():
             print(f"   Username: {username}")
             print(f"   Email: {email}")
             print("   Status: Requires password setup")
-            print(f"\n🔗 Setup URL: www.mpalondon.co.uk/verify-email/{verification_token}")
+            print(f"\n🔗 Setup URL: https://mpalondon.pythonanywhere.com/verify-email/{verification_token}")
             print("\n⚠️  IMPORTANT: Save this URL - you'll need it to set up the admin password!")
             print("   The admin user cannot sign in until the password is set via this URL.")
 

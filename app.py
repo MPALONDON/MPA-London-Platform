@@ -733,8 +733,8 @@ def init_db():
         
         print("Database initialized successfully")
 
-# Initialize the database
-init_db()  # Uncommented now that schema is updated
+# Database initialization moved to /admin/setup route
+# init_db()  # Moved to setup route to prevent startup issues
 
 def load_materials():
     """Load materials from SQLite database"""
@@ -2472,8 +2472,8 @@ def migrate_sessions_add_group_id():
             # Continue execution even if there's an error
             pass
 
-# Initialize the database
-init_db()  # Uncommented now that schema is updated
+# Database initialization moved to /admin/setup route
+# init_db()  # Moved to setup route to prevent startup issues
 
 @app.route('/api/materials/<int:material_id>', methods=['PATCH'])
 def update_material(material_id):
@@ -4373,8 +4373,8 @@ def initialize_default_instruments():
         
         db.session.commit()
 
-# Initialize default instruments when the app starts
-initialize_default_instruments()
+# Default instruments initialization moved to /admin/setup route
+# initialize_default_instruments()  # Moved to setup route to prevent startup issues
 
 # Music AI API Routes using Official SDK Pattern
 # Simple Music AI Client implementation based on the official SDK
@@ -5465,6 +5465,55 @@ def process_feedback_links(content):
     processed = processed.replace('\n', '<br>')
     
     return Markup(processed)
+
+@app.route('/admin/setup')
+def admin_setup():
+    """
+    Comprehensive database setup route for new deployments.
+    This handles all initialization that was previously done at module level.
+    """
+    try:
+        setup_results = []
+        
+        # 1. Create all database tables
+        setup_results.append("Creating database tables...")
+        db.create_all()
+        setup_results.append("✅ Database tables created successfully")
+        
+        # 2. Initialize default instruments
+        setup_results.append("Initializing default instruments...")
+        initialize_default_instruments()
+        setup_results.append("✅ Default instruments initialized")
+        
+        # 3. Initialize default rooms
+        setup_results.append("Initializing default rooms...")
+        initialize_default_rooms()
+        setup_results.append("✅ Default rooms initialized")
+        
+        # 4. Ensure admin user exists
+        setup_results.append("Creating admin user...")
+        ensure_admin_user_exists()
+        setup_results.append("✅ Admin user created/verified")
+        
+        # 5. Migrate passwords to bcrypt if needed
+        setup_results.append("Checking password encryption...")
+        migrate_passwords_to_bcrypt()
+        setup_results.append("✅ Password encryption verified")
+        
+        # 6. Migrate JSON data to database if needed
+        setup_results.append("Checking for data migrations...")
+        migrate_json_to_database()
+        setup_results.append("✅ Data migrations completed")
+        
+        setup_results.append("\n🎉 Database setup completed successfully!")
+        setup_results.append("You can now log in with your admin credentials.")
+        
+        return "<br>".join(setup_results)
+        
+    except Exception as e:
+        error_msg = f"❌ Setup failed: {str(e)}"
+        print(error_msg)  # Log to console
+        return f"{error_msg}<br><br>Please check the error logs for more details.", 500
 
 if __name__ == '__main__':
     app.run(host='0.0.0.0', port=5000,debug = True) 
